@@ -1,0 +1,77 @@
+---
+layout: default
+custom-foot: js/lines-js.html;js/transcript-js.html;js/annotation-js.html
+---
+
+{% assign lines = site.data[site.play] %}
+
+{%- comment -%} find all words used in the player field of our metadata {%- endcomment -%}
+{% capture players_play %}{% for line in lines %}{% unless line.player == "ACT" or line.player == "SCENE" %}{{- line.player -}};{% endunless %}{% endfor %}{% endcapture%}
+{%- assign players = players_play | split: ";" -%}
+{%- assign uniquePlayers = players | uniq -%}
+
+{%- comment -%} find all acts and sences {%- endcomment -%}
+{%- assign uniqueScenes = lines | map: 'actscene' | compact | uniq -%}
+
+<div class="container">
+    <button class="btn btn-outline-dark sticky-top float-end mt-n2 p-3 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters" id="filters">
+        Filters <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 20 20">
+            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z" />
+        </svg>
+    </button>
+
+    <div class="row my-3 sticky-top bg-white border-bottom border-left border-right d-print-none collapse w-75" id="collapseFilters">
+
+        <div class="col-md-3">
+            <p class="pt-4">
+                <select id="scenes" title="Jump to a year" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
+                    <option value="#" class="reset" selected="selected reset">Filter by Scene</option>
+
+                </select>
+            </p>
+        </div>
+        <div class="col-md-3">
+            <p class="pt-4">
+                <select id="players" title="Jump to a year" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
+                    <option value="#" class="reset" selected="selected reset">Filter by Player</option>
+
+                </select>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div id="scriptsearch" class="bg-lightr">
+                <div class="row pt-4">
+                    <div class="col-md-6">
+                        <div class="input-group fs-5">
+                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="goButton" id="quicksearch">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary rounded-right border-light input-group-text" type="submit" title="Search" alt="Search" id="goButton" onclick="filterLines()">Go</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="reset btn btn-sm btn-outline-primary mt-1" href="#" data-filter="">Reset Filters</button>
+                        <h5 class="d-none linecount mt-2 small ms-3"><span id="numberof"></span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 d-none filter-search mt-2 small">
+            <h5 class="d-none linecount small ms-3"><span id="numberoflines"></span></h5>
+            <select class=" mb-2 form-select" id="searchResults" onchange="scrollToLine();">
+    
+            </select>
+        </div>
+    </div>
+    
+
+{% include side-scene-scroll.html %}
+<div id="contents-container">
+
+</div>
+<div class="my-4">
+    <hr />
+    <hr />
+
+</div>
+</div>

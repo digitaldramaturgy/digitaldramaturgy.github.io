@@ -1,0 +1,75 @@
+<script>
+
+/*
+var elements = document.getElementsByClassName("annobutton");
+
+var mytestFunction = function() {
+    var attribute = this.getAttribute("data-filter");
+    alert(attribute);
+};
+
+for (var i = 0; i < elements.length; i++) {
+    elements[i].addEventListener('click', mytestFunction, false);
+}
+
+document.addEventListener('DOMContentLoaded', mytestFunction);
+*/
+
+var toggleAnnotation = function(annotation) {
+  console.log(annotation);
+
+  // Corresponds to: $("div").not("#" + annotation).removeClass("annotate-show");
+  document.querySelectorAll('div').forEach(function(div) {
+    if (div.id !== annotation) {
+      div.classList.remove('annotate-show');
+    }
+  });
+
+  // Corresponds to: $("div").not("#" + annotation).parent().removeClass("show-mobile-annotation");
+  document.querySelectorAll('div').forEach(function(div) {
+    if (div.id !== annotation && div.parentNode) {
+      div.parentNode.classList.remove('show-mobile-annotation');
+    }
+  });
+
+  // Corresponds to: $("#" + annotation).toggleClass('annotate-show');
+  var targetElement = document.getElementById(annotation);
+  if (targetElement) {
+    targetElement.classList.toggle('annotate-show');
+    // Corresponds to: $("#" + annotation).css('width','90%');
+    targetElement.style.width = '90%';
+    // Corresponds to: $("#" + annotation).parent().toggleClass('show-mobile-annotation');
+    if (targetElement.parentNode) {
+      targetElement.parentNode.classList.toggle('show-mobile-annotation');
+    }
+  }
+
+  // Corresponds to: $("span.hilite").not(".hi-" + annotation).removeClass('fw-bold');
+  document.querySelectorAll('span.hilite').forEach(function(span) {
+    if (!span.classList.contains('hi-' + annotation)) {
+      span.classList.remove('fw-bold');
+    }
+  });
+
+  // Corresponds to: $(".hi-" + annotation).toggleClass('fw-bold');
+  document.querySelectorAll('.hi-' + annotation).forEach(function(el) {
+    el.classList.toggle('fw-bold');
+  });
+};
+
+// Corresponds to: $(".hilite").hover(function () { ... });
+document.querySelectorAll('.hilite').forEach(function(element) {
+  element.addEventListener('mouseenter', function() {
+    var hiliteid = this.dataset.filter; // Corresponds to: $(this).data("filter");
+    document.querySelectorAll('.' + hiliteid).forEach(function(el) { // Corresponds to: $("." + hiliteid).toggleClass('fw-bold');
+      el.classList.toggle('fw-bold');
+    });
+  });
+  element.addEventListener('mouseleave', function() {
+    var hiliteid = this.dataset.filter; // Corresponds to: $(this).data("filter");
+    document.querySelectorAll('.' + hiliteid).forEach(function(el) { // Corresponds to: $("." + hiliteid).toggleClass('fw-bold');
+      el.classList.toggle('fw-bold');
+    });
+  });
+});
+</script>

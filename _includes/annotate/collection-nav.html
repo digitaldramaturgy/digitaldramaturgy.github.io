@@ -1,0 +1,104 @@
+<button class="btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample" style="position:fixed;top:0;left:0; margin:10;">
+    Menu <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+      <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+    </svg>
+  </button>
+  
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasLabel"></h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div>
+        <nav class="navbar">
+        <ul class="navbar-nav mr-auto">
+            {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%} 
+            {% for nav in navItems %}
+            {% if nav.stub %}
+            <li class="nav-item {% if page.url == nav.stub %}active{% endif %}">
+                <a class="nav-link " href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
+            </li>
+            {%- else -%}
+            <li class="nav-item">
+                {% assign navChildren = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nav.display_name' %}
+                {%- assign childStubs = navChildren | map: 'stub' -%}
+                {%- assign parent = navChildren[0].dropdown_parent | slugify -%}
+                <button class="btn btn-toggle nav-link dropdown-toggle collapsed {% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="collapse" data-bs-target="#{{parent}}-collapse" aria-expanded="true">{{ nav.display_name }}</button>
+                <div class="collapse" id="{{parent}}-collapse">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    {% for c in navChildren %}
+                    <li class="dropdown-item"><a class="link-dark rounded {% if page.url == c.stub %}active{% endif %}" href="{{ c.stub | relative_url }}">{{ c.display_name }}</a></li>
+                    {% endfor %}
+                </div>
+            </li>
+            {% endif %}
+            {%- endfor -%}
+            <li class="nav-item">
+            <button class="btn btn-toggle nav-link dropdown-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#scenes-collapse" aria-expanded="true">
+              Scenes
+            </button>
+            <div class="collapse" id="scenes-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="scenesNavDropdown">
+              
+              </ul>
+            </li>
+            </div>
+        </ul>
+        
+        <div class="mt-5">
+        {% include nav-refresh-data.html %}
+      </div>
+
+      </div>
+    </div>
+  </div>
+
+<!--  <div class="d-flex flex-column flex-shrink-0 bg-light vh-100 fixed-top" style="width: 4.5rem;">
+    <a href="/" class="d-block p-3 link-dark text-decoration-none" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only">
+      <svg class="bi" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+      <span class="visually-hidden">Icon-only</span>
+    </a>
+    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+      <li class="nav-item">
+        <a href="#" class="nav-link active py-3 border-bottom" aria-current="page" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Home"><use xlink:href="#home"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Dashboard"><use xlink:href="#speedometer2"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Orders">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Orders"><use xlink:href="#table"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Products">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Products"><use xlink:href="#grid"></use></svg>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link py-3 border-bottom" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Customers">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Customers"><use xlink:href="#people-circle"></use></svg>
+        </a>
+      </li>
+    </ul>
+    <div class="dropdown border-top">
+      <a href="#" class="d-flex align-items-center justify-content-center p-3 link-dark text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" class="rounded-circle">
+      </a>
+      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser3" style="">
+        <li><a class="dropdown-item" href="#">New project...</a></li>
+        <li><a class="dropdown-item" href="#">Settings</a></li>
+        <li><a class="dropdown-item" href="#">Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#">Sign out</a></li>
+      </ul>
+    </div>
+  </div>-->
+
+  

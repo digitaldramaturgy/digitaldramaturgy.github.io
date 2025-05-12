@@ -1,0 +1,36 @@
+{%- assign lines = site.data[site.play] -%}
+{%- assign scenes = lines | map: 'actscene' | compact | uniq -%}
+
+<script>
+  function set_constants(){
+    console.log("running set constants")
+  var dd_title = "";
+    var static_title = "{{site.title}}";
+
+     // find current configured metadata
+  var dd_title = sessionStorage.getItem("dd_title") ? sessionStorage.getItem("dd_title") : static_title;
+  // display configured metadata
+  document.getElementById("play_title").innerHTML = dd_title != "" ? dd_title : "";
+  {% if page.layout == "home" %}document.getElementById("marquee_title").innerHTML = dd_title != "" ? dd_title : "";{% endif %}
+  
+  {% unless page.layout == "home-default" %}document.getElementById("offcanvasLabel").innerHTML = dd_title != "" ? dd_title : "";{% endunless %}
+  
+  var dd_scenes = "";
+var static_scenes = '["1.1","1.2","2.1","2.2","3.1","3.2","4.1","4.2","5.1"]';
+var scenesNav = '';
+
+var dd_scenes_nav = sessionStorage.getItem("dd_scenes_store") ? sessionStorage.getItem("dd_scenes_store") : static_scenes;
+
+
+var dd_scenes = JSON.parse(dd_scenes_nav);  
+  for (var i = 0, len = dd_scenes.length; i < len; i++) {
+    var ref_url = "{{ '/?scene=' | relative_url }}";
+      var act = dd_scenes[i].split('.')[0];
+      var scene = dd_scenes[i].split('.')[1];
+      console.log(dd_scenes[i] + "-- Act" + act + " scene " + scene );
+      var sceneClass = 'act' + act + 'scene' + scene;
+      scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
+      
+  } 
+  $("#scenesNavDropdown").html(scenesNav);}
+</script>

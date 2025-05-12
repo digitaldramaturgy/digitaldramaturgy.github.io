@@ -1,0 +1,16 @@
+<div class="card mb-3">
+    <div class="card-body">
+        <h3>Use a Demo Shakespeare Link</h3>
+        <p>
+            <select id="demoUrl" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="metadata_demo_selector();">
+                <option selected>Select a Play</option>
+                {% for demo in site.data.demo-links %}
+                <option value="{{demo.link}}">{{demo.title}}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <ul>
+            <li>If you'd like to use one of these plays for your own annotations, use <a href="directions.html#option-a-use-a-prepared-shakespeare-play">the dropdown tool on our How To page</a> to get a copy of the play as a Google Sheet.</li>
+        </ul>
+    </div>
+</div>

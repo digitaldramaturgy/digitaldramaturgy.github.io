@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Dramaturgy - Cyberpunk Cover</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --primary-light: #5efbfc;
+            --secondary: #ff00aa;
+            --accent: #fc03c2;
+            --text: #e0e0e0;
+            --light: #0a0a16;
+            --dark: #000814;
+            --neon-glow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
+            --pink-glow: 0 0 10px var(--secondary), 0 0 20px var(--secondary);
+            --grid-color: rgba(0, 240, 255, 0.2);
+        }
+        
+        body {
+            background-color: var(--dark);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.1) 0%, transparent 80%),
+                linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+        
+        /* Grid background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: rotateX(60deg);
+            animation: gridMove 20s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes gridMove {
+            0% {
+                transform: rotateX(60deg) translateY(0);
+            }
+            100% {
+                transform: rotateX(60deg) translateY(40px);
+            }
+        }
+        
+        /* Glitch effect */
+        @keyframes glitch {
+            0% {
+                clip-path: inset(50% 0 40% 0);
+                transform: translate(-5px, 5px);
+            }
+            5% {
+                clip-path: inset(20% 0 60% 0);
+                transform: translate(5px, -5px);
+            }
+            10% {
+                clip-path: inset(60% 0 20% 0);
+                transform: translate(-5px, -5px);
+            }
+            15% {
+                clip-path: inset(10% 0 80% 0);
+                transform: translate(5px, 5px);
+            }
+            20% {
+                clip-path: inset(30% 0 50% 0);
+                transform: translate(5px, 5px);
+            }
+            25% {
+                clip-path: inset(20% 0 30% 0);
+                transform: translate(-5px, -5px);
+            }
+            30% {
+                clip-path: inset(80% 0 10% 0);
+                transform: translate(5px, -10px);
+            }
+            100% {
+                clip-path: inset(50% 0 40% 0);
+                transform: translate(0, 0);
+            }
+        }
+        
+        .cover-container {
+            position: relative;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(10, 10, 22, 0.9) 0%, rgba(0, 8, 20, 0.95) 100%);
+            border-radius: 2px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            z-index: 1;
+            border: 1px solid var(--primary);
+            animation: borderPulse 4s infinite alternate;
+        }
+        
+        @keyframes borderPulse {
+            0% {
+                box-shadow: 0 0 15px var(--primary), inset 0 0 5px var(--primary);
+            }
+            100% {
+                box-shadow: 0 0 5px var(--primary), inset 0 0 15px var(--primary);
+            }
+        }
+        
+        .content-wrapper {
+            position: relative;
+            background-color: rgba(0, 8, 20, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 2px;
+            padding: 3rem;
+            border-left: 2px solid var(--primary);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            z-index: 2;
+            overflow: hidden;
+        }
+        
+        .content-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 240, 255, 0.1) 50%, transparent 100%);
+            transform: translateX(-100%);
+            animation: scanLine 6s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes scanLine {
+            0% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Glitch lines */
+        .glitch-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .glitch-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: var(--primary);
+            opacity: 0.5;
+        }
+        
+        .glitch-line:nth-child(1) {
+            top: 15%;
+            animation: glitchLine 2s linear infinite;
+            animation-delay: 0s;
+        }
+        
+        .glitch-line:nth-child(2) {
+            top: 45%;
+            animation: glitchLine 3s linear infinite;
+            animation-delay: 1s;
+        }
+        
+        .glitch-line:nth-child(3) {
+            top: 75%;
+            animation: glitchLine 2.5s linear infinite;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes glitchLine {
+            0% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        #play_title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+            letter-spacing: 2px;
+            text-shadow: var(--neon-glow);
+        }
+        
+        #play_title .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        #play_title .glitch:nth-child(1) {
+            color: var(--secondary);
+            animation: glitch 4s infinite linear alternate-reverse;
+            animation-delay: 0s;
+        }
+        
+        #play_title .glitch:nth-child(2) {
+            color: var(--primary);
+            animation: glitch 4s infinite linear alternate-reverse;
+            animation-delay: 0.1s;
+        }
+        
+        .by-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: 400;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text);
+            opacity: 0.7;
+            margin: 1rem 0 0.5rem;
+        }
+        
+        .author {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 3rem;
+            text-shadow: var(--pink-glow);
+        }
+        
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            position: relative;
+        }
+        
+        .main-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            text-decoration: none;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            z-index: 1;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .main-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), transparent);
+            transform: translateX(-100%);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+        
+        .main-btn:hover {
+            color: var(--dark);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px var(--primary);
+        }
+        
+        .main-btn:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .main-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -2;
+        }
+        
+        .main-btn:hover::after {
+            opacity: 1;
+        }
+        
+        .button-group {
+            display: flex;
+            max-width: 300px;
+            width: 100%;
+            background-color: rgba(0, 240, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 0.8rem 0;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--primary);
+            background-color: rgba(0, 240, 255, 0.2);
+            text-shadow: 0 0 5px var(--primary);
+        }
+        
+        .dropdown {
+            position: relative;
+            max-width: 300px;
+            width: 100%;
+        }
+        
+        .dropdown-toggle {
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(0, 8, 20, 0.7);
+            border: 1px solid var(--primary);
+            border-radius: 2px;
+            color: var(--primary);
+            font-weight: 500;
+            text-align: left;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .dropdown-toggle:hover {
+            background-color: rgba(0, 240, 255, 0.2);
+            color: var(--text);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+        
+        .dropdown-toggle::after {
+            display: none;
+        }
+        
+        .dropdown-toggle i {
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown-toggle[aria-expanded="true"] i {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-menu {
+            width: 100%;
+            border: 1px solid var(--primary);
+            background-color: rgba(0, 8, 20, 0.9);
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            margin-top: 0.5rem;
+            overflow: hidden;
+            padding: 0;
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.5rem;
+            transition: all 0.3s ease;
+            color: var(--text);
+            font-weight: 400;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(0, 240, 255, 0.2);
+            color: var(--primary);
+            text-shadow: 0 0 5px var(--primary);
+        }
+        
+        .edition-notice {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.7;
+            font-weight: 300;
+            letter-spacing: 1px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .publisher {
+            margin-top: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        /* Binary code decoration */
+        .binary-code {
+            position: absolute;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            opacity: 0.2;
+            color: var(--primary);
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .binary-top {
+            top: 10px;
+            right: 20px;
+        }
+        
+        .binary-bottom {
+            bottom: 10px;
+            left: 20px;
+        }
+        
+        /* Circuit decoration */
+        .circuit {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        .circuit-1 {
+            bottom: -30px;
+            right: -30px;
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+        }
+        
+        .circuit-1::before {
+            content: '';
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            top: 15%;
+            left: 15%;
+        }
+        
+        .circuit-2 {
+            top: 30px;
+            right: 30px;
+            border-top: 1px solid var(--secondary);
+            border-right: 1px solid var(--secondary);
+            border-top-right-radius: 50%;
+        }
+        
+        .circuit-3 {
+            bottom: 100px;
+            left: -20px;
+            border-bottom: 1px solid var(--primary);
+            border-left: 1px solid var(--primary);
+            transform: rotate(45deg);
+        }
+        
+        @media (max-width: 768px) {
+            .cover-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .content-wrapper {
+                padding: 2rem;
+            }
+            
+            #play_title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Grid background -->
+    <div class="grid-background">
+        <div class="grid"></div>
+    </div>
+    
+    <div class="cover-container">
+        <!-- Glitch lines -->
+        <div class="glitch-lines">
+            <div class="glitch-line"></div>
+            <div class="glitch-line"></div>
+            <div class="glitch-line"></div>
+        </div>
+        
+        <!-- Circuit decorations -->
+        <div class="circuit circuit-1"></div>
+        <div class="circuit circuit-2"></div>
+        <div class="circuit circuit-3"></div>
+        
+        <div class="content-wrapper">
+            <!-- Binary code decoration -->
+            <div class="binary-code binary-top">01001100 01001111 01010110 01000101</div>
+            <div class="binary-code binary-bottom">01000001 01001100 01001101 01001111 01010011 01010100</div>
+            
+            <h1 id="play_title">
+                ALMOST, MAINE
+                <span class="glitch" aria-hidden="true">ALMOST, MAINE</span>
+                <span class="glitch" aria-hidden="true">ALMOST, MAINE</span>
+            </h1>
+            <span class="by-text">//BY</span>
+            <span class="author">JOHN CARIANI</span>
+            
+            <div class="nav-container">
+                <!-- Main button -->
+                <a href="#" class="main-btn">
+                    READ_THE_PLAY.exe
+                    <span class="ms-2"><i class="fas fa-terminal"></i></span>
+                </a>
+                
+                <!-- Button group -->
+                <div class="button-group">
+                    <button class="nav-btn">< ABOUT ></button>
+                    <button class="nav-btn">< FEATURES ></button>
+                </div>
+                
+                <!-- Dropdown -->
+                <div class="dropdown">
+                    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span>SELECT SCENE</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="scenesNavDropdown">
+                        <li><a class="dropdown-item" href="#">ACT_1.1</a></li>
+                        <li><a class="dropdown-item" href="#">ACT_1.2</a></li>
+                        <li><a class="dropdown-item" href="#">ACT_2.1</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Additional design elements -->
+            <div class="edition-notice">
+                // DIGITAL EDITION v2.0.1 //
+            </div>
+            <div class="publisher">
+                DIGITAL_DRAMATURGY.SYS
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JavaScript with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<div class="card my-2">
+    <div class="card-body">
+        <h3>Use a Published Google Sheet <a class="ml-3 btn btn-outline-primary btn-sm small" type="button" data-bs-toggle="modal" data-bs-target="#sheetsInstructionsModal">Instructions</a></h3>
+        <p>
+        <form id="metadataUrl" onsubmit="metadata_url_selector(); return false;">
+            <div class="input-group">
+                <input type="url" id="csvUrl" class="form-control" pattern="https://.*" placeholder="Paste in the URL to your Google Sheet">
+                <div class="input-group-append">
+                    <button class="btn btn-dark" type="submit">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+        </p>
+        <ul>
+            <li><strong>NOTE:</strong> If you are using a Google Sheet, you can add a parameter to the end of the site like so – <em>https://thecdil.github.io/dramabase/?play={YOUR GOOGLE SHEET LINK HERE}</em> – to share a link to your work with others.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Sheets Instruction Modal -->
+<div class="modal fade" id="sheetsInstructionsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">How to Publish/Connect Your Google Sheet</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li>In your Google Sheet, ensure that your annotated play is the first sheet in the spreadsheet (by default named "Sheet1"). The tabs can be dragged to reorder if necessary.</li>  
+                <li>Click “File”, "Share", and select “Publish to the Web”.</li>
+                <li>On the popup modal, use the dropdowns in “Link” tab to select "Entire Document" and “Comma-separated values (.csv)” options, then click “Publish” button.</li>
+                <li>Copy the link that is provided.</li>
+                <li>Paste the link into form below and click Submit.</li>
+              </ul>
+              <p>For example, our first annotated play for this project, A Midsummer Night’s Dream, looks like:</p>
+
+              <p><code class="language-plaintext highlighter-rouge">https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv</code></p>                
+                <p>If you’d like to test it out, go ahead and enter the link into the form below.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

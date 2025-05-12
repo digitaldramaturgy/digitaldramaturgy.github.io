@@ -1,0 +1,40 @@
+<div class="card my-2">
+    <div class="card-body">
+        <h3>Use Metadata CSV from Computer <a class="ml-3 btn btn-outline-primary btn-sm small" type="button" data-bs-toggle="modal" data-bs-target="#localCSVInstructionsModal">Instructions</a></h3>
+        <p>
+            <form id="metadataFile" onsubmit="metadata_file_selector(); return false;">
+                <div class="input-group">
+                    <input type="file" accept=".csv" id="csvFile" class="form-control">
+                    <div class="input-group-append">
+                        <button class="btn btn-dark" type="submit">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </p>
+    </div>
+</div>
+
+
+<!-- Local CSV Instruction Modal -->
+<div class="modal fade" id="localCSVInstructionsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">How to Download Your Google Sheet as CSV and Connect It</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li>On your Google Sheet, click “File” and select “Download as Comma-separated values”</li>
+                <li>The file should download to your computer’s Downloads folder</li>
+                <li>Click in the “Choose file” box in the form below and navigate in your file explorer to select the downloaded CSV.</li>
+              </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

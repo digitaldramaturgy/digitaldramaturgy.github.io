@@ -1,0 +1,192 @@
+<script type="text/javascript">
+  $("#players").on('change', function () {
+    var myClass = this.value;
+    $("section").removeClass("featured");
+    $('div').removeClass("anchored-highlight");
+    $(".playline").hide();
+    $('div.' + myClass).show();
+    $("input#quicksearch").val("");
+    var numberofint = $('div.'+ myClass).length;
+    $("#numberof").html(numberofint + " lines");
+    $('.linecount').removeClass('d-none');
+    $("select").not(this).val($("option:first").val());
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    params.set('player', myClass);
+    params.delete('q');
+    params.delete('scene');
+    var p = params.toString();
+    window.history.replaceState({}, '', location.pathname + '?' + p);
+  });
+
+  $("#scenes").on('change', function () {
+    var myClass = this.value;
+    $("section").removeClass("featured");
+    $('div').removeClass("anchored-highlight");
+    $(".playline").hide();
+    $('div.' + myClass).show();
+    $("input#quicksearch").val("");
+    var numberofint = $('div.'+ myClass).length;
+    $("#numberof").html(numberofint + " lines");
+    $('.linecount').removeClass('d-none');
+    $("select").not(this).val($("option:first").val());
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    params.set('scene', myClass);
+    params.delete('q');
+    params.delete('player');
+    var p = params.toString();
+    window.history.replaceState({}, '', location.pathname + '?' + p);
+  });
+
+  $("button#filters").click(function () {
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    var sceneFilter = url.searchParams.get('scene');
+    if (sceneFilter) {
+    } else
+    {
+      $('#side-scene-scroll').toggleClass('d-none');
+      $("button.reset").click();
+    }
+});
+    
+   
+
+  $("button.reset").click(function () {
+    $(".playline").show();
+    $('div').removeClass("anchored-highlight");
+    $('div').removeClass("annotate-show");
+    $("div").removeClass("featured");
+    $("section").removeClass("featured");
+    $("span").removeClass("text-danger");
+    $("input#quicksearch").val("");
+    $("#players").val($("#players option:first").val());
+    $("#scenes").val($("#scenes option:first").val());
+    var numberofint = $('section').length;
+    $("#numberof").html(numberofint + " lines");
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    params.delete('q');
+    params.delete('player');
+    params.delete('scene');
+    var p = params.toString();
+    window.history.replaceState({}, '', location.pathname + '?' + p);
+    $('.filter-search').addClass('d-none');
+    $("#searchResults").html('');
+  });
+
+  $("option:first").click(function () {
+    $("button.reset").click();
+  });
+
+ function filterLines() {
+    $('.playerline').removeClass("anchored-highlight");
+    $(".playerline").removeClass("featured");
+    var input, filter, p, span, i;
+    input = document.getElementById("quicksearch");
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    params.set('q', input.value);
+    var p = params.toString();
+    window.history.replaceState({}, '', location.pathname + '?' + p);
+    filterplain = input.value;
+    filter = input.value.toUpperCase();
+    itemcontainer = document.getElementById("contents-container");
+    item = itemcontainer.getElementsByTagName("section");
+    var searchResults = '<option>Select and scroll to a matching line</option>';
+    for (i = 0; i < item.length; i++) {
+      itemcontents = item[i].getElementsByClassName("playerline")[0];
+      var index = itemcontents.innerHTML.indexOf(filterplain);
+      if (itemcontents) {
+        if (itemcontents.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          itemcontents.classList.add("featured");
+          itemcontents.innerHTML = itemcontents.innerHTML.replace(filterplain, "<span class='text-danger'>" + filterplain + "</span>");
+          searchResults += '<option value="'+ i +'">'+itemcontents.innerHTML + '</option>';
+          } else {
+        }
+      }
+     var numberofint = $('.featured').length;
+     $("#numberoflines").html(numberofint + " lines match your query");
+     $("#searchResults").html(searchResults);
+     $('.linecount').removeClass('d-none');
+     $('.filter-search').removeClass('d-none');
+    }
+  }
+
+</script>
+<script>
+  /* fiter items by entering value of button or link pushed into quicksearch box
+
+  var filterit = function () {
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    $('#quicksearch').val('');
+    var filterValue = $(this).attr('data-filter');
+    var filterClass = $(this).attr('data-filter').replace(" ", "-").replace(" ", "-");
+    $('#quicksearch').val($('#quicksearch').val() + filterValue);
+    $('#goButton').click();
+    params.set('filter', filterValue);
+    var p = params.toString();
+    window.history.replaceState({}, '', location.pathname + '?' + p);
+    var filterValueclass = "." + filterClass;
+    $(filterValueclass).addClass('active');
+  };
+  // run filterit function when link/button with class filter clicked
+  $('a.filter').click(filterit);
+*/
+  // click goButton to search if return pressed in search box
+  $('#quicksearch').keypress(function (e) {
+    if (e.which == 13) {//Enter key pressed
+      $('#goButton').click();
+      //Trigger search button click event
+    }
+  });
+  // get hash from url
+  // var hashfilter = decodeURIComponent(location.hash.substr(1));//.replace(/%20/g, " ");
+  //var hashfilterclass = "." + location.hash.substr(1).replace("%20","-").replace("%20","-").replace("%20","-").replace(" ","-").replace(" ","-").replace(" ","-");
+
+  $(document).ready(function () {
+    let url = new URL(window.location);
+    let params = url.searchParams;
+    var dataFilter = url.searchParams.get('q');
+    var sceneFilter = url.searchParams.get('scene');
+    var playerFilter = url.searchParams.get('player');
+    var hashfilter = decodeURIComponent(location.hash.substr(1));//.replace(/%20/g, " ");
+    if (dataFilter) {
+      // code to be executed if a search filter is contained in the url
+      $('#quicksearch').val(dataFilter);
+      $('#goButton').click();
+      params.delete('scene');
+      params.delete('player');
+      $('#filters').click();
+      //$(hashfilterclass).addClass('active');
+    }
+    else if (playerFilter) {
+      params.delete('q');
+      // code to be executed if a Player filter is contained in the url search parameters
+      $('#players').val(playerFilter).change();
+      $('#filters').click();
+      //$(hashfilterclass).addClass('active');
+    }
+    else if (sceneFilter) {
+      params.delete('q');
+      // code to be executed if a Scene filter is contained in the url search parameters
+      $('#scenes').val(sceneFilter).change();
+      $('#side-scene-scroll').addClass('d-none');
+      //$(hashfilterclass).addClass('active');
+    }
+    else if (hashfilter) {
+      params.delete('q');
+      params.delete('scene');
+      params.delete('player');
+      // code to be executed if an anchor (#) is contained in the url
+      $('#' + hashfilter).addClass('anchored-highlight');
+
+    }
+    else {
+    }
+  });
+
+
+</script>
