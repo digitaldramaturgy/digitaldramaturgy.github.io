@@ -1,15 +1,38 @@
 <script type="text/javascript">
-  $("#players").on('change', function () {
+  document.getElementById('players').addEventListener('change', function () {
     var myClass = this.value;
-    $("section").removeClass("featured");
-    $('div').removeClass("anchored-highlight");
-    $(".playline").hide();
-    $('div.' + myClass).show();
-    $("input#quicksearch").val("");
-    var numberofint = $('div.'+ myClass).length;
-    $("#numberof").html(numberofint + " lines");
-    $('.linecount').removeClass('d-none');
-    $("select").not(this).val($("option:first").val());
+    document.querySelectorAll('section').forEach(function(section) {
+      section.classList.remove('featured');
+    });
+    document.querySelectorAll('div').forEach(function(div) {
+      div.classList.remove('anchored-highlight');
+    });
+    document.querySelectorAll('.playline').forEach(function(line) {
+      line.style.display = 'none';
+    });
+    document.querySelectorAll('div.' + myClass).forEach(function(div) {
+      div.style.display = ''; // Or 'block' if that's more appropriate
+    });
+    const quicksearchInput = document.getElementById('quicksearch');
+    if (quicksearchInput) {
+      quicksearchInput.value = '';
+    }
+    var numberofint = document.querySelectorAll('div.' + myClass).length;
+    const numberOfEl = document.getElementById('numberof');
+    if (numberOfEl) {
+      numberOfEl.innerHTML = numberofint + ' lines';
+    }
+    document.querySelectorAll('.linecount').forEach(function(el) {
+      el.classList.remove('d-none');
+    });
+
+    const firstOptionValue = document.querySelector('select option') ? document.querySelector('select option').value : '';
+    document.querySelectorAll('select').forEach(function(select) {
+      if (select !== this) {
+        select.value = firstOptionValue;
+      }
+    }.bind(this)); // Bind 'this' to maintain its context from the event listener
+
     let url = new URL(window.location);
     let params = url.searchParams;
     params.set('player', myClass);
@@ -19,17 +42,40 @@
     window.history.replaceState({}, '', location.pathname + '?' + p);
   });
 
-  $("#scenes").on('change', function () {
+  document.getElementById('scenes').addEventListener('change', function () {
     var myClass = this.value;
-    $("section").removeClass("featured");
-    $('div').removeClass("anchored-highlight");
-    $(".playline").hide();
-    $('div.' + myClass).show();
-    $("input#quicksearch").val("");
-    var numberofint = $('div.'+ myClass).length;
-    $("#numberof").html(numberofint + " lines");
-    $('.linecount').removeClass('d-none');
-    $("select").not(this).val($("option:first").val());
+    document.querySelectorAll('section').forEach(function(section) {
+      section.classList.remove('featured');
+    });
+    document.querySelectorAll('div').forEach(function(div) {
+      div.classList.remove('anchored-highlight');
+    });
+    document.querySelectorAll('.playline').forEach(function(line) {
+      line.style.display = 'none';
+    });
+    document.querySelectorAll('div.' + myClass).forEach(function(div) {
+      div.style.display = ''; // Or 'block'
+    });
+    const quicksearchInput = document.getElementById('quicksearch');
+    if (quicksearchInput) {
+      quicksearchInput.value = '';
+    }
+    var numberofint = document.querySelectorAll('div.' + myClass).length;
+    const numberOfEl = document.getElementById('numberof');
+    if (numberOfEl) {
+      numberOfEl.innerHTML = numberofint + ' lines';
+    }
+    document.querySelectorAll('.linecount').forEach(function(el) {
+      el.classList.remove('d-none');
+    });
+
+    const firstOptionValue = document.querySelector('select option') ? document.querySelector('select option').value : '';
+    document.querySelectorAll('select').forEach(function(select) {
+      if (select !== this) {
+        select.value = firstOptionValue;
+      }
+    }.bind(this)); // Bind 'this'
+
     let url = new URL(window.location);
     let params = url.searchParams;
     params.set('scene', myClass);
@@ -39,154 +85,249 @@
     window.history.replaceState({}, '', location.pathname + '?' + p);
   });
 
-  $("button#filters").click(function () {
-    let url = new URL(window.location);
-    let params = url.searchParams;
-    var sceneFilter = url.searchParams.get('scene');
-    if (sceneFilter) {
-    } else
-    {
-      $('#side-scene-scroll').toggleClass('d-none');
-      $("button.reset").click();
-    }
-});
-    
-   
+  const filtersButton = document.getElementById('filters');
+  if (filtersButton) {
+    filtersButton.addEventListener('click', function () {
+      let url = new URL(window.location);
+      var sceneFilter = url.searchParams.get('scene');
+      if (sceneFilter) {
+        // No action taken if sceneFilter exists
+      } else {
+        const sideSceneScroll = document.getElementById('side-scene-scroll');
+        if (sideSceneScroll) {
+          sideSceneScroll.classList.toggle('d-none');
+        }
+        const resetButton = document.querySelector('button.reset');
+        if (resetButton) {
+          resetButton.click();
+        }
+      }
+    });
+  }
 
-  $("button.reset").click(function () {
-    $(".playline").show();
-    $('div').removeClass("anchored-highlight");
-    $('div').removeClass("annotate-show");
-    $("div").removeClass("featured");
-    $("section").removeClass("featured");
-    $("span").removeClass("text-danger");
-    $("input#quicksearch").val("");
-    $("#players").val($("#players option:first").val());
-    $("#scenes").val($("#scenes option:first").val());
-    var numberofint = $('section').length;
-    $("#numberof").html(numberofint + " lines");
-    let url = new URL(window.location);
-    let params = url.searchParams;
-    params.delete('q');
-    params.delete('player');
-    params.delete('scene');
-    var p = params.toString();
-    window.history.replaceState({}, '', location.pathname + '?' + p);
-    $('.filter-search').addClass('d-none');
-    $("#searchResults").html('');
+  document.querySelectorAll('button.reset').forEach(function(button) {
+    button.addEventListener('click', function () {
+      document.querySelectorAll('.playline').forEach(function(line) {
+        line.style.display = ''; // Or 'block'
+      });
+      document.querySelectorAll('div').forEach(function(div) {
+        div.classList.remove('anchored-highlight');
+        div.classList.remove('annotate-show');
+        div.classList.remove('featured');
+      });
+      document.querySelectorAll('section').forEach(function(section) {
+        section.classList.remove('featured');
+      });
+      document.querySelectorAll('span').forEach(function(span) {
+        span.classList.remove('text-danger');
+      });
+      const quicksearchInput = document.getElementById('quicksearch');
+      if (quicksearchInput) {
+        quicksearchInput.value = '';
+      }
+      const playersSelect = document.getElementById('players');
+      if (playersSelect && playersSelect.options.length > 0) {
+        playersSelect.value = playersSelect.options[0].value;
+      }
+      const scenesSelect = document.getElementById('scenes');
+      if (scenesSelect && scenesSelect.options.length > 0) {
+        scenesSelect.value = scenesSelect.options[0].value;
+      }
+      var numberofint = document.querySelectorAll('section').length; // Assuming this counts relevant sections
+      const numberOfEl = document.getElementById('numberof');
+      if (numberOfEl) {
+        numberOfEl.innerHTML = numberofint + ' lines';
+      }
+      let url = new URL(window.location);
+      let params = url.searchParams;
+      params.delete('q');
+      params.delete('player');
+      params.delete('scene');
+      var p = params.toString();
+      window.history.replaceState({}, '', location.pathname + '?' + p);
+      document.querySelectorAll('.filter-search').forEach(function(el) {
+        el.classList.add('d-none');
+      });
+      const searchResultsEl = document.getElementById('searchResults');
+      if (searchResultsEl) {
+        searchResultsEl.innerHTML = '';
+      }
+    });
   });
 
-  $("option:first").click(function () {
-    $("button.reset").click();
-  });
+  // Note: Clicking an <option> element directly is not standard and may not work reliably.
+  // This typically should be handled by the 'change' event on the parent <select>.
+  // The original jQuery $("option:first") selects the very first option tag in the document.
+  const firstOptionElement = document.querySelector('option');
+  if (firstOptionElement) {
+    firstOptionElement.addEventListener('click', function () {
+      const resetButton = document.querySelector('button.reset');
+      if (resetButton) {
+        resetButton.click();
+      }
+    });
+  }
+
 
  function filterLines() {
-    $('.playerline').removeClass("anchored-highlight");
-    $(".playerline").removeClass("featured");
-    var input, filter, p, span, i;
-    input = document.getElementById("quicksearch");
+    document.querySelectorAll('.playerline').forEach(function(el) {
+      el.classList.remove('anchored-highlight');
+      el.classList.remove('featured');
+    });
+
+    var input = document.getElementById("quicksearch");
+    if (!input) return;
+
     let url = new URL(window.location);
     let params = url.searchParams;
     params.set('q', input.value);
     var p = params.toString();
     window.history.replaceState({}, '', location.pathname + '?' + p);
-    filterplain = input.value;
-    filter = input.value.toUpperCase();
-    itemcontainer = document.getElementById("contents-container");
-    item = itemcontainer.getElementsByTagName("section");
-    var searchResults = '<option>Select and scroll to a matching line</option>';
-    for (i = 0; i < item.length; i++) {
-      itemcontents = item[i].getElementsByClassName("playerline")[0];
-      var index = itemcontents.innerHTML.indexOf(filterplain);
+
+    var filterplain = input.value;
+    var filter = input.value.toUpperCase();
+    var itemcontainer = document.getElementById("contents-container");
+    if (!itemcontainer) return;
+
+    var items = itemcontainer.getElementsByTagName("section");
+    var searchResultsHTML = '<option>Select and scroll to a matching line</option>';
+    var featuredCount = 0;
+
+    for (var i = 0; i < items.length; i++) {
+      var itemcontents = items[i].getElementsByClassName("playerline")[0];
       if (itemcontents) {
-        if (itemcontents.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        // Reset previous highlights for this specific item if re-filtering
+        // This part is tricky without knowing the original un-highlighted state.
+        // For simplicity, we're just adding new highlights.
+        // A more robust solution would store original HTML or remove only our specific spans.
+        // For now, we'll assume the replace logic is sufficient as per original.
+
+        if (itemcontents.textContent.toUpperCase().indexOf(filter) > -1) { // Search in textContent for accuracy
           itemcontents.classList.add("featured");
-          itemcontents.innerHTML = itemcontents.innerHTML.replace(filterplain, "<span class='text-danger'>" + filterplain + "</span>");
-          searchResults += '<option value="'+ i +'">'+itemcontents.innerHTML + '</option>';
-          } else {
+          featuredCount++;
+          // Highlighting: replace only the first occurrence in the current HTML
+          // This might re-wrap existing spans if not careful.
+          // A safer way is to work with text nodes or reset innerHTML before highlighting.
+          itemcontents.innerHTML = itemcontents.innerHTML.replace(new RegExp(filterplain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), "<span class='text-danger'>$&</span>");
+          searchResultsHTML += '<option value="'+ items[i].id +'">'+itemcontents.textContent.substring(0,100) + '...</option>'; // Use item ID for value and textContent
         }
       }
-     var numberofint = $('.featured').length;
-     $("#numberoflines").html(numberofint + " lines match your query");
-     $("#searchResults").html(searchResults);
-     $('.linecount').removeClass('d-none');
-     $('.filter-search').removeClass('d-none');
     }
+    const numberOfLinesEl = document.getElementById('numberoflines');
+    if (numberOfLinesEl) {
+      numberOfLinesEl.innerHTML = featuredCount + " lines match your query";
+    }
+    const searchResultsSelect = document.getElementById('searchResults');
+    if (searchResultsSelect) {
+      searchResultsSelect.innerHTML = searchResultsHTML;
+    }
+    document.querySelectorAll('.linecount').forEach(function(el) {
+      el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.filter-search').forEach(function(el) {
+      el.classList.remove('d-none');
+    });
   }
 
 </script>
 <script>
-  /* fiter items by entering value of button or link pushed into quicksearch box
+  /* filter items by entering value of button or link pushed into quicksearch box
 
   var filterit = function () {
     let url = new URL(window.location);
     let params = url.searchParams;
-    $('#quicksearch').val('');
-    var filterValue = $(this).attr('data-filter');
-    var filterClass = $(this).attr('data-filter').replace(" ", "-").replace(" ", "-");
-    $('#quicksearch').val($('#quicksearch').val() + filterValue);
-    $('#goButton').click();
+    const quicksearch = document.getElementById('quicksearch');
+    if (quicksearch) quicksearch.value = '';
+
+    var filterValue = this.getAttribute('data-filter');
+    var filterClass = filterValue.replace(/ /g, "-"); // Replaces all spaces
+
+    if (quicksearch) quicksearch.value += filterValue;
+
+    const goButton = document.getElementById('goButton');
+    if (goButton) goButton.click();
+
     params.set('filter', filterValue);
     var p = params.toString();
     window.history.replaceState({}, '', location.pathname + '?' + p);
-    var filterValueclass = "." + filterClass;
-    $(filterValueclass).addClass('active');
-  };
-  // run filterit function when link/button with class filter clicked
-  $('a.filter').click(filterit);
-*/
-  // click goButton to search if return pressed in search box
-  $('#quicksearch').keypress(function (e) {
-    if (e.which == 13) {//Enter key pressed
-      $('#goButton').click();
-      //Trigger search button click event
-    }
-  });
-  // get hash from url
-  // var hashfilter = decodeURIComponent(location.hash.substr(1));//.replace(/%20/g, " ");
-  //var hashfilterclass = "." + location.hash.substr(1).replace("%20","-").replace("%20","-").replace("%20","-").replace(" ","-").replace(" ","-").replace(" ","-");
 
-  $(document).ready(function () {
+    var filterValueclass = "." + filterClass;
+    document.querySelectorAll(filterValueclass).forEach(el => el.classList.add('active'));
+  };
+
+  // run filterit function when link/button with class filter clicked
+  document.querySelectorAll('a.filter').forEach(el => el.addEventListener('click', filterit));
+  */
+
+  // click goButton to search if return pressed in search box
+  const quicksearchKeypress = document.getElementById('quicksearch');
+  if (quicksearchKeypress) {
+    quicksearchKeypress.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter' || e.which === 13) { //Enter key pressed
+        const goButton = document.getElementById('goButton');
+        if (goButton) {
+          goButton.click(); //Trigger search button click event
+        }
+      }
+    });
+  }
+
+
+  document.addEventListener('DOMContentLoaded', function () {
     let url = new URL(window.location);
     let params = url.searchParams;
-    var dataFilter = url.searchParams.get('q');
-    var sceneFilter = url.searchParams.get('scene');
-    var playerFilter = url.searchParams.get('player');
-    var hashfilter = decodeURIComponent(location.hash.substr(1));//.replace(/%20/g, " ");
-    if (dataFilter) {
-      // code to be executed if a search filter is contained in the url
-      $('#quicksearch').val(dataFilter);
-      $('#goButton').click();
+    var dataFilter = params.get('q');
+    var sceneFilter = params.get('scene');
+    var playerFilter = params.get('player');
+    var hashfilter = decodeURIComponent(location.hash.substring(1));
+
+    const quicksearchInput = document.getElementById('quicksearch');
+    const goButton = document.getElementById('goButton');
+    const filtersButton = document.getElementById('filters');
+    const playersSelect = document.getElementById('players');
+    const scenesSelect = document.getElementById('scenes');
+    const sideSceneScroll = document.getElementById('side-scene-scroll');
+
+
+    if (dataFilter && quicksearchInput && goButton) {
+      quicksearchInput.value = dataFilter;
+      goButton.click();
       params.delete('scene');
       params.delete('player');
-      $('#filters').click();
-      //$(hashfilterclass).addClass('active');
+      if (filtersButton) filtersButton.click();
     }
-    else if (playerFilter) {
+    else if (playerFilter && playersSelect) {
       params.delete('q');
-      // code to be executed if a Player filter is contained in the url search parameters
-      $('#players').val(playerFilter).change();
-      $('#filters').click();
-      //$(hashfilterclass).addClass('active');
+      playersSelect.value = playerFilter;
+      // Dispatch change event
+      const changeEvent = new Event('change', { bubbles: true });
+      playersSelect.dispatchEvent(changeEvent);
+      if (filtersButton) filtersButton.click();
     }
-    else if (sceneFilter) {
+    else if (sceneFilter && scenesSelect) {
       params.delete('q');
-      // code to be executed if a Scene filter is contained in the url search parameters
-      $('#scenes').val(sceneFilter).change();
-      $('#side-scene-scroll').addClass('d-none');
-      //$(hashfilterclass).addClass('active');
+      scenesSelect.value = sceneFilter;
+      // Dispatch change event
+      const changeEvent = new Event('change', { bubbles: true });
+      scenesSelect.dispatchEvent(changeEvent);
+      if (sideSceneScroll) sideSceneScroll.classList.add('d-none');
     }
     else if (hashfilter) {
       params.delete('q');
       params.delete('scene');
       params.delete('player');
-      // code to be executed if an anchor (#) is contained in the url
-      $('#' + hashfilter).addClass('anchored-highlight');
-
+      const hashedElement = document.getElementById(hashfilter);
+      if (hashedElement) {
+        hashedElement.classList.add('anchored-highlight');
+      }
     }
     else {
+      // No specific filter in URL
+    }
+    // Update URL if params were modified (e.g., by deletion)
+    var p = params.toString();
+    if (p !== url.searchParams.toString()){ // only replace if changed
+        window.history.replaceState({}, '', location.pathname + (p ? '?' + p : ''));
     }
   });
-
-
 </script>

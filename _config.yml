@@ -4,6 +4,10 @@
 # https://github.com/CollectionBuilder/collectionbuilder-csv
 ##########
 
+
+
+development-mode: true
+
 ##########
 # URL VARIABLES
 #

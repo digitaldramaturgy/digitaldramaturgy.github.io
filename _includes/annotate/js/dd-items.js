@@ -16,7 +16,7 @@ if (sessionStorage.getItem("dd_metadata_set")){
 // function to process items from Sheets and store
 function dd_items_init(results) {
   dd_items = results.data.filter(item => item["dataline"]);
-  dd_scenes = $.unique(dd_items.map(function (d) {return d.actscene;}));
+  dd_scenes = [...new Set(dd_items.map(function (d) {return d.actscene;}))];
   sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
   sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
   sessionStorage.setItem("dd_title", dd_items[1].play);
@@ -87,4 +87,7 @@ function initial_scenes(){
       scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
       
   } 
-  $("#scenesNavDropdown").html(scenesNav);}
+  document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
+
+
+}

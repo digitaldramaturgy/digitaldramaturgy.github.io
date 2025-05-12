@@ -37,5 +37,8 @@ $theme-link-color: {{ site.data.theme.link-color | default: '""' }};
 );
 {% endif %}
 
+/* pull in annotation/digital-dramaturgy styles  */
+@use "annotate";
+
 /* pull in custom styles to override everything else */
 @use "custom";

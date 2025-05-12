@@ -32,5 +32,6 @@ var dd_scenes = JSON.parse(dd_scenes_nav);
       scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
       
   } 
-  $("#scenesNavDropdown").html(scenesNav);}
+  document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
+}
 </script>

@@ -1,4 +1,7 @@
 {%- assign fields = site.data.config-browse -%}
+
+
+
 <script>
  
 /* function to make each line to page */
@@ -113,16 +116,16 @@ function filterItems(arr,q) {
     }
   }*/
   // add number 
-  $("#numberOf").html(filteredItems.length + " of " + arr.length + " items");
+  document.getElementById("numberof").innerHTML = filteredItems.length + " of " + arr.length + " items";
     // add stuff, make lines first in giant var, then add all at once to speed things up
   var lines = "";
   for (var i = 0, len = filteredItems.length; i < len; i++) {
     lines += makeLine(filteredItems[i]);
   }
-  $("#contents-container").html(lines);
+  document.getElementById("contents-container").innerHTML = lines;
 
   // finish
-  $("#loading").hide();
+  document.getElementById("loading").style.display = 'none';
 };
 
 
@@ -136,7 +139,7 @@ function selectPlayers(arr) {
     } else {
     options += '<option value="'+charClass+'">'+unique[i]+'</option>';}
   }
-  $("#players").html(options);
+  document.getElementById("players").innerHTML = options;
 }
 
 function selectScenes(arr,acts_arr) {
@@ -166,8 +169,8 @@ function selectScenes(arr,acts_arr) {
         scenesSide += '<a class="py-0 border-bottom fst-italic small text-dark scene-scroll" role="button" onclick="scrollToScene(\'act' + acts_arr[i] + '-start\')" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Jump to Act '+ acts_arr[i] +'">Act ' + acts_arr[i] +'</span></a><br>';
       }
     }
-  $("#scenes").html(options);
-  $("#scenesScroll").html(scenesSide);
+  document.getElementById("scenes").innerHTML = options;
+  document.getElementById("scenesScroll").innerHTML = scenesSide;
 }
 
 /* global bootstrap: false */
@@ -206,18 +209,18 @@ function pageInit(items) {
   /* filter if hash in initial URL */
   if(window.location.hash) {
     query = decodeURIComponent(location.hash.substr(1));
-    $('#quickSearch').val(query);
+    document.getElementById('quickSearch').value = query;
     filterItems(items,query);
   } else {
     query = "";
-    dd_actscenes = $.unique(items.map(function (d) {return d.actscene;}));
-    dd_acts = $.unique(items.map(function (d) {return d.act;}));
-    dd_players = $.unique(items.map(function (d) {return d.player;}));
+    dd_actscenes = [...new Set(items.map(function (d) {return d.actscene;}))];
+    dd_acts = [...new Set(items.map(function (d) {return d.act;}))];
+    dd_players = [...new Set(items.map(function (d) {return d.player;}))];
     selectScenes(dd_actscenes,dd_acts);
     selectPlayers(dd_players);
     filterItems(items,query);
   }
 }
 
-{% include js/dd-items.js %}
+{% include annotate/js/dd-items.js %}
 </script>

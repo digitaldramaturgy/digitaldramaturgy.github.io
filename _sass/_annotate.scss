@@ -1,0 +1,168 @@
+/* 
+    Digital Dramaturgy / Annotation SCSS 
+    These styles load just before the custom.scss file, so you can override them if you need to.        
+*/
+.annotation {
+    background-color: transparent;
+    width: 15vw;
+    font-size: .8rem !important;
+    vertical-align: baseline;
+    position: relative;
+    z-index: 0;
+    font-size: smaller;
+    cursor: pointer;
+    max-height: 30px;
+
+    div.content {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0px;
+        padding: .75em;
+
+        p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        figure,img {
+            display: none;
+        }
+    }
+}
+
+.annotate-show {
+    z-index: 100;
+    font-size: 1rem !important;
+
+    div.content {
+        overflow: visible;
+        white-space: normal !important;
+        background-color: #fff !important;
+        box-shadow: 1px 1px 4px #666;
+        padding: .75em;
+        z-index: 100;
+
+        figure,img {
+            display: block;
+        }
+    }
+}
+
+.annotated {
+    border-right: 1px solid #FFA500;
+    background-color: rgb(248, 247, 247);
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgb(247, 244, 244);
+    }
+
+    .hilite {
+        border-bottom: 2px solid #FFA500;
+        cursor: pointer;
+
+        &:hover {
+            font-weight: bold;
+        }
+    }
+}
+
+.filter-search {
+    position: relative;
+    z-index: 100; 
+}
+
+.performance-annotated {
+    border-right: 1px solid #2535c9;
+    background-color: rgb(219, 241, 253);
+}
+
+
+.blockquote {
+    font-size: 1.75rem;
+}
+
+.featured {
+    background-color: rgb(219, 241, 253) !important;
+
+    .annotated {
+        background-color: rgb(219, 241, 253) !important;
+
+    }
+}
+
+.anchored-highlight {
+    background: aquamarine;
+}
+
+
+
+.annotation {
+    img {
+        max-width: 100%;
+    }
+}
+
+.StageDirection {
+    font-style: italic;
+    margin-top: 15px;
+    .annotation{
+        font-style: normal;
+    }
+}
+
+.actstart {
+    font-weight: bold;
+    font-size: 30px;
+    margin-top: 35px;
+}
+
+.scenestart {
+    font-weight: bold;
+    font-size: 23px;
+    margin-top: 25px;
+}
+
+.scene-scroll{
+    font-size: .675em;
+    line-height: .675em;
+}
+
+// Print the columns at full width
+@media print {  
+    .col-print-1 {width:8%; }
+.col-print-2 {width:16%;}
+.col-print-3 {width:25%;}
+.col-print-4 {width:33%;}
+.col-print-5 {width:42%;}
+.col-print-6 {width:50%;}
+.col-print-7 {width:58%;}
+.col-print-8 {width:66%;}
+.col-print-9 {width:75%;}
+.col-print-10{width:83%;}
+.col-print-11{width:92%;}
+.col-print-12{width:100%;}
+body {
+    font-size:1em;
+}
+ }
+
+ .show-mobile-annotation{
+     display: block !important;
+
+ }
+ @media screen and (max-width: 576px) {
+    .show-mobile-annotation{
+        display: block !important;
+   
+    }
+ }
+
+ .btn-outline-dark {
+    background-color: white;
+    &:hover{
+        background-color: #212529 !important;
+    }
+}
+
