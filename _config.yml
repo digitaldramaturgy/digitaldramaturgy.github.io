@@ -1,12 +1,38 @@
 ##########
-# collectionbuilder-csv
-# Jekyll Digital Collection Generator
-# https://github.com/CollectionBuilder/collectionbuilder-csv
+# Digital Dramaturgy 
+# Tool for annotating/editing/publishing play scripts using Static Web Technologies
+# https://digital-dramaturgy.github.io
+# https://github.com/digital-dramaturgy/
 ##########
 
-
-
+##########
+# Play CSV LOCATION
+# The location of the CSV file that contains the play script.
+# Enter a link to a CSV file using one of three options
+#    - A Google Published Google Sheets Link 
+#    - The link should be the CSV publication version ending with "?output=csv" 
+#       -- e.g., https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv
+#    -  a relative link to a CSV file in the repository 
+#       -- e.g., /assets/data/play_example.csv)
+#    - or a link to a CSV file stored somewhere accessible on the internet 
+#       -- e.g., https://example.com/play_example.csv)
+play: https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv
+# dev mode turns on ability to change metadata; when you're finished with this project, set this to false
 development-mode: true
+
+##########
+# Site SETTINGS
+# Site
+title: A Midsummer Night's Dream
+# description appears in meta tags and other locations
+# this description might appear in search result lists, keep around 160 characters max
+description: "a collaborative annotation of "
+# creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
+author: dcnb
+
+
+
+
 
 ##########
 # URL VARIABLES
