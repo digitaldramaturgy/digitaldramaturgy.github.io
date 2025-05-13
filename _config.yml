@@ -16,20 +16,21 @@
 #       -- e.g., /assets/data/play_example.csv)
 #    - or a link to a CSV file stored somewhere accessible on the internet 
 #       -- e.g., https://example.com/play_example.csv)
-play: /assets/data/midsummer-current.csv
+play: https://docs.google.com/spreadsheets/d/e/2PACX-1vTR-PrLzlbvViHiBNVdkzUZ8iPjkw-LMmugCYpNYs0QWkvLmpi6hWXc9_edxYx5D7vAUoG369W4-5wo/pub?output=csv
 # dev mode turns on ability to change metadata; when you're finished with this project, set this to false
 development-mode: true
 
 ##########
 # Site SETTINGS
 # Site
-title: A Midsummer Night's Dream
+title: CollectionBuilder-CSV
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
 description: "a collaborative annotation of "
+# keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
+keywords: idaho; history; inland northwest
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
 author: dcnb
-
 
 
 
@@ -45,20 +46,6 @@ baseurl:
 # location of code, the full url to your github repository
 source-code: https://github.com/CollectionBuilder/collectionbuilder-csv
 
-##########
-# SITE SETTINGS
-#
-# title of site appears in banner
-title: CollectionBuilder CSV
-# tagline, a short phrase that will appear throughout the site in the top banner
-tagline: Digital Collection Magic with Static Web Technologies
-# description appears in meta tags and other locations
-# this description might appear in search result lists, keep around 160 characters max
-description: "CollectionBuilder-CSV is a template for creating digital collection exhibits using static web technology."
-# keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
-keywords: idaho; history; inland northwest
-# creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: CollectionBuilder
 
 ##########
 # COLLECTION SETTINGS
