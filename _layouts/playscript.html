@@ -1,6 +1,6 @@
 ---
 layout: default
-custom-foot: annotate/js/lines-js.html;annotate/js/transcript-js.html;annotate/js/annotation-js.html
+custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
 ---
 
 {% assign lines = site.data[site.play] %}
@@ -75,3 +75,9 @@ custom-foot: annotate/js/lines-js.html;annotate/js/transcript-js.html;annotate/j
 
 </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% include annotate/js/dd-items.js %}
+    });
+</script>
