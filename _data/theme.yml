@@ -1,4 +1,15 @@
 ##########
+# Digital Dramaturgy / Annotation OPTIONS 
+# (CollectionBuilder options below)
+##########
+
+##########
+# Home/Cover Page Stye - Digital Dramaturgy/Annotation Options 
+# cover-style determins how the cover page looks for the site
+cover-style: 2010 # choose from 'dramatists', 'cyberpunk', 'minimal', 'minimal-movement', 'notebook', '2010'
+
+
+##########
 # CollectionBuilder Theme Customization
 # values set here help configure details of individual pages in the website
 ##########

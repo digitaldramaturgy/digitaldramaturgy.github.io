@@ -13,7 +13,7 @@
   document.getElementById("play_title").innerHTML = dd_title != "" ? dd_title : "";
   {% if page.layout == "home" %}document.getElementById("marquee_title").innerHTML = dd_title != "" ? dd_title : "";{% endif %}
   
-  {% unless page.layout == "home-default" %}document.getElementById("offcanvasLabel").innerHTML = dd_title != "" ? dd_title : "";{% endunless %}
+  {% unless page.layout == "home-cover" %}document.getElementById("offcanvasLabel").innerHTML = dd_title != "" ? dd_title : "";{% endunless %}
   
   var dd_scenes = "";
 var static_scenes = '["1.1","1.2","2.1","2.2","3.1","3.2","4.1","4.2","5.1"]';
@@ -32,6 +32,7 @@ var dd_scenes = JSON.parse(dd_scenes_nav);
       scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
       
   } 
-  document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
-}
+    document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
+
+  }
 </script>

@@ -3,14 +3,17 @@
   <head prefix="og: http://ogp.me/ns#">
     {% include head/head.html %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    {{google-font-cdn}}
   </head>
   <body onload="set_constants();" class="d-flex flex-column h-100">
     <div id="skip-to-content"><a href="#maincontent">Skip to main content</a></div>
    
     <main id="maincontent" role="main" class="flex-shrink-0">
-    {{ content }}
+      {% capture style %}annotate/covers/{{site.data.theme.cover-style | default: 'minimal' }}.html{% endcapture %}
+
+      {% include {{style}} %}
     </main>
+    {% include annotate/foot.html %}
     {% include foot.html %}
   </body>
 </html>

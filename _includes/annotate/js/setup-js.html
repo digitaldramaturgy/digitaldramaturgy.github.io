@@ -26,8 +26,7 @@
         // filter for playerline value
         dd_items = results.data.filter(item => item["dataline"]);
         // filter scenes
-        const actscenes = dd_items.map(function (d) {return d.actscene;});
-        dd_scenes = [...new Set(actscenes)];
+        dd_scenes = $.unique(dd_items.map(function (d) {return d.actscene;}));
         // add to session storage
         sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
         sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));

@@ -1,80 +1,75 @@
----
-title: Cover Page, Digital Dramaturgy
-permalink: /cover.html
-layout: home-default
----
+{% assign google-font-cdn = '<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">' %}
+
+<style>
+    body {
+        background-color: #fff8a9;
+        /* Light yellow background similar to the image */
+    }
+
+    .cover-top-border {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0px 5px 5px;
+
+        border-left: 20px double #000;
+
+        height: 500px;
+    }
+
+    .cover-bottom-border {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 5px 0px;
+
+        border-top: 20px double #000;
+
+        height: 5px;
+    }
+
+    .cover-below-border {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0px 5px 0px;
+
+        border-right: 20px double #000;
+
+        height: 200px;
+    }
+
+    .cover-container {
+        max-width: 700px;
+
+        padding: 40px 20px;
+        text-align: center;
+
+        height: 500px;
+    }
 
 
-    <style>
-        body {
-            background-color: #fff8a9;
-            /* Light yellow background similar to the image */
-        }
+    .author {
+        font-size: 1.5rem;
+        margin-bottom: 40px;
+        display: block;
+    }
 
-        .cover-top-border {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0px 5px 5px;
+    .by-text {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
 
-            border-left: 20px double #000;
+    .edition-notice {
+        margin-top: 60px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
 
-            height: 500px;
-        }
-
-        .cover-bottom-border {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 5px 0px;
-
-            border-top: 20px double #000;
-
-            height: 5px;
-        }
-
-        .cover-below-border {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0px 5px 0px;
-
-            border-right: 20px double #000;
-
-            height: 200px;
-        }
-
-        .cover-container {
-            max-width: 700px;
-
-            padding: 40px 20px;
-            text-align: center;
-
-            height: 500px;
-        }
-
-
-        .author {
-            font-size: 1.5rem;
-            margin-bottom: 40px;
-            display: block;
-        }
-
-        .by-text {
-            display: block;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .edition-notice {
-            margin-top: 60px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .publisher {
-            margin-top: 40px;
-            font-weight: bold;
-            text-align: center;
-        }
-    </style>
+    .publisher {
+        margin-top: 40px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
 </head>
 
 <body>
@@ -83,12 +78,12 @@ layout: home-default
             <div class="cover-top-border">
                 <div class="cover-top-border">
                     <div class="cover-container">
-                        <h1 id="play_title" style="font-family:'Gravitas One'">ALMOST, MAINE</h1> 
+                        <h1 id="play_title" style="font-family:'Gravitas One'">ALMOST, MAINE</h1>
                         <span class="by-text">BY</span>
                         <span class="author">JOHN CARIANI</span>
 
                         <!-- Main button -->
-                        <a href="#" class="btn btn-outline-dark btn-lg">Read the Play</a><br><Br>
+                        <a href=script.html" class="btn btn-outline-dark btn-lg">Read the Play</a><br><Br>
 
                         <!-- Button group -->
                         <div class="btn-group" role="group" aria-label="Play navigation">
@@ -97,12 +92,12 @@ layout: home-default
 
                             <!-- Dropdown button -->
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <button type="button" class="btn btn-outline-dark dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     Scenes
                                 </button>
                                 <ul class="dropdown-menu" id="scenesNavDropdown">
-                                    
+
                                 </ul>
                             </div>
                         </div>
@@ -139,4 +134,3 @@ layout: home-default
     </div>
     </div>
     </div>
-
