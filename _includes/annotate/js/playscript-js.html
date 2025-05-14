@@ -13,14 +13,25 @@
   // Global viewing mode state
   var viewMode = 'cut'; // Default view mode: 'cut', 'original', or 'both'
   var showBranching = true; // Default branch visualization state
+  
+  // Global flags to track if data needs comparison features
+  var hasCuttingData = false;
+  var hasRevisionData = false;
 
   /* LINES FUNCTIONALITY */
   /* function to make each line to page */
   function makeLine(obj) {
-    // If line is cut, and we're not showing all lines, skip it
+    // Check for cutting/revision data (without affecting flow)
+    if (obj.cutting === "TRUE") hasCuttingData = true;
+    if (obj.revision) hasRevisionData = true;
+
+    // Early return if cut and we're in cut mode (original behavior preserved)
     if (obj.cutting === "TRUE" && viewMode === 'cut') {
       return '';
     }
+
+    // Get global data from session storage
+    const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
 
     var index = dd_items.findIndex(i => i.dataline == obj.dataline);
     if (index == 0) {}
@@ -31,19 +42,24 @@
     }
 
     // Handle text content - support both old format (playerline) and new format (text)
-    var playerline = "";
+    // Store original content for efficiency in version switching
+    var originalText = "";
     if (obj.text !== undefined) {
-      playerline = obj.text;
+      originalText = obj.text;
     } else if (obj.playerline !== undefined) {
-      playerline = obj.playerline;
+      originalText = obj.playerline;
     }
     
-    // Handle revised text if available
+    // Determine if this is an added line (has revision but no original text)
+    var isAddedLine = obj.revision && (!originalText || originalText.trim() === "");
+    
+    // Use revised text based on view mode
+    var playerline = originalText;
     if (obj.revision && viewMode !== 'original') {
       playerline = obj.revision;
     }
 
-    // Handle annotations
+    // Handle annotations (unchanged)
     if (obj.annotation) {
       if (obj.annotation.includes("ibid")) {
         var subtractingNumber = parseInt(obj.annotation.replace("ibid", ""));
@@ -59,10 +75,14 @@
       var annotation;
     }
 
-    // Handle highlights
+    // Handle highlights (unchanged)
     if (obj.highlight) {
       var hilite = '<span class="hilite hi-' + annoId + '" data-filter="hi-' + annoId + '">' + obj.highlight + '</span>';
       playerline = playerline.replace(obj.highlight, hilite);
+      // Also apply highlight to original text for consistency
+      if (originalText !== playerline) {
+        originalText = originalText.replace(obj.highlight, hilite);
+      }
     }
 
     // Determine player class
@@ -95,20 +115,26 @@
       var lineNumber = '';
     }
 
-    // Create line HTML
+    // Create line with data attributes for efficient version switching
     var isCut = obj.cutting === "TRUE";
     var isRevised = obj.revision ? true : false;
     var className = "";
+    
     if (viewMode === 'both') {
       if (isCut) className = "cut-line";
-      if (isRevised) className = "revised-line";
+      else if (isAddedLine) className = "added-line";
+      else if (isRevised) className = "revised-line";
     }
 
-    var line = '<section class="line ' + className + '" data-dataline="' + obj.dataline + '" data-is-cut="' + isCut + '" data-is-revised="' + isRevised + '">';
+    var line = '<section class="line ' + className + '" data-dataline="' + obj.dataline + 
+               '" data-is-cut="' + isCut + '" data-is-revised="' + isRevised + 
+               '" data-is-addition="' + isAddedLine + '"' +
+               (obj.revision ? ' data-original-text="' + encodeURIComponent(originalText) + '"' : '') + '>';
     
     // Add branching visualization if necessary
     if (viewMode === 'both' && (isCut || isRevised)) {
-      line += '<div class="branch-indicator ' + (showBranching ? '' : 'hidden') + '"></div>';
+      line += '<div class="branch-indicator ' + (showBranching ? '' : 'hidden') + ' ' + 
+              (isAddedLine ? 'branch-addition' : '') + '"></div>';
     }
     
     // add player if new player to announce
@@ -134,13 +160,20 @@
       line += '<div class="d-none d-md-block col-12 col-md-5 small"></div>';
     }
 
-    // If line is revised and we're showing both versions, add the original version too
+    // Add original version for "both" view mode
+    // For added lines, we'll show "ADDED" text in italic instead of any original text
     if (viewMode === 'both' && isRevised) {
       line += '</div><div class="original-line row playline textline">';
       line += '<div class="col-1 col-print-1"></div>';
-      // Use obj.text for original text, fall back to playerline if text isn't available
-      var originalText = obj.text !== undefined ? obj.text : (obj.playerline !== undefined ? obj.playerline : "");
-      line += '<div class="col-10 col-md-6 playerline col-print-10 original-text">' + originalText + '</div>';
+      
+      if (isAddedLine) {
+        // For added lines, show a placeholder instead of empty original text
+        line += '<div class="col-10 col-md-6 playerline col-print-10 original-text addition-marker">[ADDED]</div>';
+      } else {
+        // For regular revisions, show original text
+        line += '<div class="col-10 col-md-6 playerline col-print-10 original-text">' + originalText + '</div>';
+      }
+      
       line += '<div class="d-none d-md-block col-12 col-md-5 small"></div>';
     }
 
@@ -148,8 +181,77 @@
     return line;
   }
 
+  /* Change display mode with optimized switching */
+  function changeDisplayMode(mode) {
+    // If no cutting or revision data, changing modes has no effect
+    if (!hasCuttingData && !hasRevisionData && mode !== 'cut') {
+      // Maybe show a notification that no comparison data exists
+      return;
+    }
+
+    const oldMode = viewMode;
+    viewMode = mode;
+    
+    // Check if we need to rebuild the DOM (only when essential)
+    const needsRebuild = 
+      (oldMode === 'cut' && mode !== 'cut') || // We need to show previously hidden cut lines
+      (mode === 'cut' && oldMode !== 'cut') || // We need to hide cut lines
+      (mode === 'both' && oldMode !== 'both'); // We need to add original versions
+
+    if (needsRebuild) {
+      // Get data from session storage as dd_items is now local
+      const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+      filterItems(dd_items, "");
+    } else {
+      // More efficient switching using existing DOM
+      // For example when switching between 'original' and revised versions
+      document.querySelectorAll('[data-is-revised="true"]').forEach(function(section) {
+        const playerlineEl = section.querySelector('.playerline:not(.original-text)');
+        if (playerlineEl) {
+          // Check if it's an added line
+          const isAddition = section.getAttribute('data-is-addition') === 'true';
+          
+          if (mode === 'original') {
+            // For added lines in original mode, we hide them completely
+            if (isAddition) {
+              section.style.display = 'none';
+            } else {
+              // For regular revisions, switch to original text from data attribute
+              const originalText = decodeURIComponent(section.getAttribute('data-original-text') || '');
+              if (originalText) {
+                playerlineEl.innerHTML = originalText;
+              }
+            }
+          } else {
+            // In revised or both mode, make sure added lines are visible
+            if (isAddition) {
+              section.style.display = '';
+            }
+            
+            // Get revised text from dd_items
+            const dataline = section.getAttribute('data-dataline');
+            const items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+            const item = items.find(i => i.dataline == dataline);
+            if (item && item.revision) {
+              playerlineEl.innerHTML = item.revision;
+            }
+          }
+        }
+      });
+    }
+    
+    // Add CSS classes for styling the different views
+    const container = document.getElementById('contents-container');
+    container.classList.remove('view-cut', 'view-original', 'view-both');
+    container.classList.add('view-' + mode);
+  }
+
   /* function to filter items to be displayed on browse */
   function filterItems(arr, q) {
+    // Reset the flags for checking cutting/revision data
+    hasCuttingData = false;
+    hasRevisionData = false;
+    
     // dont filter if no q 
     var filteredItems = arr;
 
@@ -162,20 +264,21 @@
       lines += makeLine(filteredItems[i]);
     }
     document.getElementById("contents-container").innerHTML = lines;
+    
+    // After all lines are rendered, check if comparison controls should be shown
+    toggleComparisonUIVisibility();
   }
 
-  function selectPlayers(arr) {
-    var options = '<option value="#" class="reset" selected="selected reset">Filter by Player</option>';
-    var unique = [...new Set(arr)];
-    for (var i = 0, len = unique.length; i < len; i++) {
-      var charClass = unique[i].replaceAll(' ', '');
-      if (unique[i].includes(";")) {
-        // Code to execute if unique[i] contains a semicolon
+  // Function to show/hide comparison controls based on data availability
+  function toggleComparisonUIVisibility() {
+    const comparisonControls = document.getElementById('version-comparison-controls');
+    if (comparisonControls) {
+      if (!hasCuttingData && !hasRevisionData) {
+        comparisonControls.style.display = 'none';
       } else {
-        options += '<option value="' + charClass + '">' + unique[i] + '</option>';
+        comparisonControls.style.display = '';
       }
     }
-    document.getElementById("players").innerHTML = options;
   }
 
   function selectScenes(arr, acts_arr) {
@@ -204,6 +307,16 @@
     }
     document.getElementById("scenes").innerHTML = options;
     document.getElementById("scenesScroll").innerHTML = scenesSide;
+  }
+
+function selectPlayers(arr) {
+    var options = '<option value="#" class="reset" selected="selected reset">Filter by Player</option>';
+    arr.sort();
+    for (var i = 0, len = arr.length; i < len; i++) {
+      var playerClass = arr[i].replaceAll(' ', '');
+      options += '<option value="' + playerClass + '">' + arr[i] + '</option>';
+    }
+    document.getElementById("players").innerHTML = options;
   }
 
   /* Initialize tooltips for bootstrap */
@@ -261,6 +374,8 @@
   /* Change display mode based on radio selection */
   function changeDisplayMode(mode) {
     viewMode = mode;
+    // Get data from session storage as dd_items is now local
+    const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
     filterItems(dd_items, "");
     
     // Add CSS classes for styling the different views
@@ -588,7 +703,7 @@
     const style = document.createElement('style');
     style.textContent = `
       /* Version view modes */
-      .view-both .cut-line, .view-both .revised-line {
+      .view-both .cut-line, .view-both .revised-line, .view-both .added-line {
         position: relative;
         padding-left: 20px;
         margin-bottom: 5px;
@@ -611,6 +726,10 @@
         background-color: #3498db;
       }
       
+      .branch-indicator.branch-addition {
+        background-color: #2ecc71; /* Green color for additions */
+      }
+      
       .branch-indicator:before {
         content: '';
         position: absolute;
@@ -619,6 +738,10 @@
         background-color: #3498db;
         top: 50%;
         left: 0;
+      }
+      
+      .branch-indicator.branch-addition:before {
+        background-color: #2ecc71; /* Green color for additions */
       }
       
       .branch-indicator.hidden {
@@ -634,6 +757,16 @@
         background-color: rgba(255, 255, 0, 0.05);
       }
       
+      .added-line {
+        background-color: rgba(46, 204, 113, 0.05); /* Light green background for added lines */
+      }
+      
+      /* Addition marker styling */
+      .addition-marker {
+        color: #2ecc71;
+        font-style: italic;
+      }
+      
       /* Only display cut content in comparison view */
       .view-cut [data-is-cut="true"] {
         display: none;
@@ -642,10 +775,18 @@
     document.head.appendChild(style);
   }
 
-
-
   /* INITIALIZATION */
-  function pageInit(items) {
+  function pageInit() {
+    // Pull data from session storage instead of using global dd_items
+    let items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+    
+    // Make this local dd_items array available globally for backward compatibility
+    window.dd_items = items;
+    
+    // Quick pre-scan to check if cutting or revision data exists at all
+    hasCuttingData = items.some(item => item.cutting === "TRUE");
+    hasRevisionData = items.some(item => item.revision);
+    
     // Process items to extract actscene field
     items.forEach(function(item) {
       if (item.act && item.scene) {
@@ -653,9 +794,6 @@
         item.actsceneline = item.act + '.' + item.scene + '.' + item.line;
       }
     });
-    
-    // Store globally for later access
-    window.dd_items = items;
     
     // Process URL parameters on load
     let url = new URL(window.location);
@@ -733,6 +871,14 @@
   window.filterLines = filterLines;
   window.pageInit = pageInit;
   window.toggleBranchView = toggleBranchView;
+  
+  // Wait for DOM content to load, then initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    // Make sure the contents container exists before initializing
+    if (document.getElementById('contents-container')) {
+      pageInit();
+    }
+  });
 
 })();
 </script>
