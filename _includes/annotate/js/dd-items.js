@@ -19,6 +19,10 @@ function dd_items_init(results) {
   const playTitle = results.data.find(item => item.play && item.play.trim() !== '')?.play || "A Play";
   console.log("Found play title:", playTitle);
   
+  // Extract author from all data
+  const authorName = results.data.find(item => item.author && item.author.trim() !== '')?.author || "";
+  console.log("Found author:", authorName);
+  
   // Now filter for items with dataline
   dd_items = results.data.filter(item => item["dataline"]);
   
@@ -35,15 +39,97 @@ function dd_items_init(results) {
   sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
   sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
   
-  // Store the play title in sessionStorage
+  // Store the title and author in session storage
   sessionStorage.setItem("dd_title", playTitle);
+  sessionStorage.setItem("dd_author", authorName);
   console.log("Setting play title to:", playTitle);
+  console.log("Setting author to:", authorName);
   
-  // Update UI with the new title
-  updateUIWithTitle(playTitle);
+  // Update UI with the new title and author
+  updateUIWithTitleAndAuthor(playTitle, authorName);
   
   pageInit(dd_items, dd_scenes);
   initial_scenes();
+}
+
+// Function to update UI elements with the title and author
+function updateUIWithTitleAndAuthor(title, author) {
+  // Update title elements
+  if (document.getElementById("play_title")) {
+    document.getElementById("play_title").innerHTML = title;
+    
+    // Add author if available, in smaller font
+    if (author && author.trim() !== "") {
+      const authorElement = document.createElement("div");
+      authorElement.id = "play_author";
+      authorElement.className = "play-author";
+      authorElement.style.fontSize = "0.7em";
+      authorElement.style.marginTop = "5px";
+      authorElement.innerHTML = author;
+      
+      // Check if author element already exists
+      if (!document.getElementById("play_author")) {
+        document.getElementById("play_title").parentNode.insertBefore(
+          authorElement,
+          document.getElementById("play_title").nextSibling
+        );
+      } else {
+        document.getElementById("play_author").innerHTML = author;
+      }
+    }
+  }
+  
+  {% if page.layout == "home" %}
+  if (document.getElementById("marquee_title")) {
+    document.getElementById("marquee_title").innerHTML = title;
+    
+    // Add author to marquee if available, in smaller font
+    if (author && author.trim() !== "") {
+      const marqueAuthorElement = document.createElement("div");
+      marqueAuthorElement.id = "marquee_author";
+      marqueAuthorElement.className = "marquee-author";
+      marqueAuthorElement.style.fontSize = "0.7em";
+      marqueAuthorElement.style.marginTop = "5px";
+      marqueAuthorElement.innerHTML = author;
+      
+      // Check if author element already exists
+      if (!document.getElementById("marquee_author")) {
+        document.getElementById("marquee_title").parentNode.insertBefore(
+          marqueAuthorElement,
+          document.getElementById("marquee_title").nextSibling
+        );
+      } else {
+        document.getElementById("marquee_author").innerHTML = author;
+      }
+    }
+  }
+  {% endif %}
+  
+  {% unless page.layout == "home-cover" %}
+  if (document.getElementById("offcanvasLabel")) {
+    document.getElementById("offcanvasLabel").innerHTML = title;
+    
+    // Add author to offcanvas if available, in smaller font
+    if (author && author.trim() !== "") {
+      const offcanvasAuthorElement = document.createElement("div");
+      offcanvasAuthorElement.id = "offcanvas_author";
+      offcanvasAuthorElement.className = "offcanvas-author";
+      offcanvasAuthorElement.style.fontSize = "0.7em";
+      offcanvasAuthorElement.style.marginTop = "5px";
+      offcanvasAuthorElement.innerHTML = author;
+      
+      // Check if author element already exists
+      if (!document.getElementById("offcanvas_author")) {
+        document.getElementById("offcanvasLabel").parentNode.insertBefore(
+          offcanvasAuthorElement,
+          document.getElementById("offcanvasLabel").nextSibling
+        );
+      } else {
+        document.getElementById("offcanvas_author").innerHTML = author;
+      }
+    }
+  }
+  {% endunless %}
 }
 
 // Function to update UI elements with the title
@@ -86,14 +172,15 @@ if (urlParams.has("play") && urlParams.get("play").trim().length > 0) {
 else if (sessionStorage.getItem("dd_items_store")) {
   dd_items = JSON.parse(sessionStorage.getItem("dd_items_store"));
   
-  // If we have a stored title, update UI immediately
+  // If we have stored title/author, update UI immediately
   const storedTitle = sessionStorage.getItem("dd_title");
+  const storedAuthor = sessionStorage.getItem("dd_author");
+  
   if (storedTitle) {
-    updateUIWithTitle(storedTitle);
+    updateUIWithTitleAndAuthor(storedTitle, storedAuthor || "");
   }
   
   pageInit(dd_items, dd_scenes);
-
 } else if (current_metadata){ 
   /* use papaparse to get metadata from google sheets, then init page */
 
@@ -114,6 +201,7 @@ else if (sessionStorage.getItem("dd_items_store")) {
 function reset_dd_items(){
   sessionStorage.removeItem('dd_items_store');
   sessionStorage.removeItem('dd_title');
+  sessionStorage.removeItem('dd_author');
   location.reload(); 
 };
 

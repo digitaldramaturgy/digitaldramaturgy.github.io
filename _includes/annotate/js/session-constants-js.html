@@ -26,7 +26,88 @@
       }
       {% endunless %}
     } else {
-      console.log("Session title already exists, skipping static title");
+      console.log("Session title already exists, using stored title");
+      
+      // Get title and author from session storage
+      var dd_title = sessionStorage.getItem("dd_title");
+      var dd_author = sessionStorage.getItem("dd_author");
+      
+      // Update UI with title and author if available
+      if (document.getElementById("play_title")) {
+        document.getElementById("play_title").innerHTML = dd_title;
+        
+        // Add author if available, in smaller font
+        if (dd_author && dd_author.trim() !== "") {
+          const authorElement = document.createElement("div");
+          authorElement.id = "play_author";
+          authorElement.className = "play-author";
+          authorElement.style.fontSize = "0.7em";
+          authorElement.style.marginTop = "5px";
+          authorElement.innerHTML = dd_author;
+          
+          // Check if author element already exists
+          if (!document.getElementById("play_author")) {
+            document.getElementById("play_title").parentNode.insertBefore(
+              authorElement,
+              document.getElementById("play_title").nextSibling
+            );
+          } else {
+            document.getElementById("play_author").innerHTML = dd_author;
+          }
+        }
+      }
+      
+      {% if page.layout == "home" %}
+      if (document.getElementById("marquee_title")) {
+        document.getElementById("marquee_title").innerHTML = dd_title;
+        
+        // Add author to marquee if available, in smaller font
+        if (dd_author && dd_author.trim() !== "") {
+          const marqueAuthorElement = document.createElement("div");
+          marqueAuthorElement.id = "marquee_author";
+          marqueAuthorElement.className = "marquee-author";
+          marqueAuthorElement.style.fontSize = "0.7em";
+          marqueAuthorElement.style.marginTop = "5px";
+          marqueAuthorElement.innerHTML = dd_author;
+          
+          // Check if author element already exists
+          if (!document.getElementById("marquee_author")) {
+            document.getElementById("marquee_title").parentNode.insertBefore(
+              marqueAuthorElement,
+              document.getElementById("marquee_title").nextSibling
+            );
+          } else {
+            document.getElementById("marquee_author").innerHTML = dd_author;
+          }
+        }
+      }
+      {% endif %}
+      
+      {% unless page.layout == "home-cover" %}
+      if (document.getElementById("offcanvasLabel")) {
+        document.getElementById("offcanvasLabel").innerHTML = dd_title;
+        
+        // Add author to offcanvas if available, in smaller font
+        if (dd_author && dd_author.trim() !== "") {
+          const offcanvasAuthorElement = document.createElement("div");
+          offcanvasAuthorElement.id = "offcanvas_author";
+          offcanvasAuthorElement.className = "offcanvas-author";
+          offcanvasAuthorElement.style.fontSize = "0.7em";
+          offcanvasAuthorElement.style.marginTop = "5px";
+          offcanvasAuthorElement.innerHTML = dd_author;
+          
+          // Check if author element already exists
+          if (!document.getElementById("offcanvas_author")) {
+            document.getElementById("offcanvasLabel").parentNode.insertBefore(
+              offcanvasAuthorElement,
+              document.getElementById("offcanvasLabel").nextSibling
+            );
+          } else {
+            document.getElementById("offcanvas_author").innerHTML = dd_author;
+          }
+        }
+      }
+      {% endunless %}
     }
     
     // Handle scenes - but only if dd-items.js hasn't done it already
