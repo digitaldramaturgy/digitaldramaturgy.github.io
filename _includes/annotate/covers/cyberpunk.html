@@ -210,7 +210,7 @@
             }
         }
         
-        #play_title {
+        #work_title {
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             font-size: 3rem;
@@ -222,7 +222,7 @@
             text-shadow: var(--neon-glow);
         }
         
-        #play_title .glitch {
+        #work_title .glitch {
             position: absolute;
             top: 0;
             left: 0;
@@ -231,13 +231,13 @@
             opacity: 0.8;
         }
         
-        #play_title .glitch:nth-child(1) {
+        #work_title .glitch:nth-child(1) {
             color: var(--secondary);
             animation: glitch 4s infinite linear alternate-reverse;
             animation-delay: 0s;
         }
         
-        #play_title .glitch:nth-child(2) {
+        #work_title .glitch:nth-child(2) {
             color: var(--primary);
             animation: glitch 4s infinite linear alternate-reverse;
             animation-delay: 0.1s;
@@ -530,7 +530,7 @@
                 padding: 2rem;
             }
             
-            #play_title {
+            #work_title {
                 font-size: 2rem;
             }
         }
@@ -558,13 +558,13 @@
             <div class="binary-code binary-top">01001100 01001111 01010110 01000101</div>
             <div class="binary-code binary-bottom">01000001 01001100 01001101 01001111 01010011 01010100</div>
             
-            <h1 id="play_title">
+            <h1 id="work_title">
                 ALMOST, MAINE
                 <span class="glitch" aria-hidden="true">ALMOST, MAINE</span>
                 <span class="glitch" aria-hidden="true">ALMOST, MAINE</span>
             </h1>
-            <span class="by-text">//BY</span>
-            <span class="author">JOHN CARIANI</span>
+            <span class="by-text" id="by_text">//BY</span>
+            <span class="author" id="work_author">JOHN CARIANI</span>
             
             <div class="nav-container">
                 <!-- Main button -->

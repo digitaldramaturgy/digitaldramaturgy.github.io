@@ -23,6 +23,8 @@
         justify-content: center;
         line-height: 1.5;
         overflow-x: hidden;
+        overflow: hidden; /* Prevent scrollbars */
+        height: 100vh; /* Ensure full height */
     }
 
     /* Base animation classes */
@@ -138,9 +140,9 @@
     .page {
         max-width: 800px;
         width: 100%;
-        min-height: 90vh;
-        margin: 2rem;
-        padding: 3rem;
+        min-height: 80vh; /* Reduce from 90vh to 80vh */
+        margin: 2rem auto; /* Center the page horizontally */
+        padding: 2rem 3rem; /* Reduce top/bottom padding */
         position: relative;
         background-color: var(--background);
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
@@ -480,10 +482,10 @@
         overflow: hidden;
     }
 
-    .text-reveal span {
-        display: inline-block;
-        transform: translateY(100%);
-        animation: revealText 1s var(--transition-timing) forwards;
+    .text-reveal .title {
+        opacity: 0;
+        animation: fadeIn var(--transition-duration) var(--transition-timing) forwards;
+        animation-delay: 0.3s;
     }
 
     @keyframes revealText {
@@ -533,10 +535,11 @@
         <div class="center-content">
             <div class="title-container">
                 <div class="text-reveal">
-                    <span class="title slide-in-top delay-2" id="play_title">ALMOST, MAINE</span>
-                </div>
-                <div class="line draw-line"></div>
-                <div class="author slide-in-right delay-3">BY JOHN CARIANI</div>
+    <!-- Remove the "span" class from the title and fix animation conflict -->
+    <div class="title delay-2" id="work_title">{{site.title}}</div>
+</div>
+                <div class="line draw-line"></div><span class="by-text d-none" id="by_text">BY </span>
+                <div class="author slide-in-right delay-3" id="work_author">JOHN CARIANI</div>
             </div>
 
             <div class="nav-container">
