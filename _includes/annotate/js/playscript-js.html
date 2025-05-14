@@ -10,9 +10,18 @@
   // Initialize markdown-it for annotation rendering
   var md = window.markdownit();
   
+  // Global viewing mode state
+  var viewMode = 'cut'; // Default view mode: 'cut', 'original', or 'both'
+  var showBranching = true; // Default branch visualization state
+
   /* LINES FUNCTIONALITY */
   /* function to make each line to page */
   function makeLine(obj) {
+    // If line is cut, and we're not showing all lines, skip it
+    if (obj.cutting === "TRUE" && viewMode === 'cut') {
+      return '';
+    }
+
     var index = dd_items.findIndex(i => i.dataline == obj.dataline);
     if (index == 0) {}
     else {
@@ -21,6 +30,20 @@
       var prevPlayer = prevLineObject.player;
     }
 
+    // Handle text content - support both old format (playerline) and new format (text)
+    var playerline = "";
+    if (obj.text !== undefined) {
+      playerline = obj.text;
+    } else if (obj.playerline !== undefined) {
+      playerline = obj.playerline;
+    }
+    
+    // Handle revised text if available
+    if (obj.revision && viewMode !== 'original') {
+      playerline = obj.revision;
+    }
+
+    // Handle annotations
     if (obj.annotation) {
       if (obj.annotation.includes("ibid")) {
         var subtractingNumber = parseInt(obj.annotation.replace("ibid", ""));
@@ -36,25 +59,25 @@
       var annotation;
     }
 
+    // Handle highlights
     if (obj.highlight) {
       var hilite = '<span class="hilite hi-' + annoId + '" data-filter="hi-' + annoId + '">' + obj.highlight + '</span>';
-      var playerline = obj.playerline.replace(obj.highlight, hilite);
-    } else {
-      var playerline = obj.playerline;
+      playerline = playerline.replace(obj.highlight, hilite);
     }
 
+    // Determine player class
     if (obj.player == "StageDirection") {
       var player;
-      if (obj.playerline.toLowerCase().startsWith("act ")) {
+      if (playerline && playerline.toLowerCase().startsWith("act ")) {
         var playerClass = "StageDirection actstart act" + obj.act + "-start";
-      } else if (obj.playerline.toLowerCase().startsWith("scene ")) {
+      } else if (playerline && playerline.toLowerCase().startsWith("scene ")) {
         var playerClass = "StageDirection scenestart";
       } else {
         var playerClass = "StageDirection";
         if (annotation) {
-          var playerline = '[' + playerline + ']';
+          playerline = '[' + playerline + ']';
         } else {
-          var playerline = '[' + obj.playerline + ']';
+          playerline = '[' + playerline + ']';
         }
       }
     } else if (obj.player == prevPlayer) {
@@ -65,23 +88,40 @@
       var playerClass = obj.player.replaceAll(' ', '');
     }
 
+    // Line numbers
     if (parseInt(obj.line) % 5 === 0) {
-      var lineNumber = obj.actsceneline;
+      var lineNumber = obj.act + '.' + obj.scene + '.' + obj.line;
     } else {
-      var lineNumber = ''
+      var lineNumber = '';
     }
 
-    var line = '<section class="line">';
+    // Create line HTML
+    var isCut = obj.cutting === "TRUE";
+    var isRevised = obj.revision ? true : false;
+    var className = "";
+    if (viewMode === 'both') {
+      if (isCut) className = "cut-line";
+      if (isRevised) className = "revised-line";
+    }
+
+    var line = '<section class="line ' + className + '" data-dataline="' + obj.dataline + '" data-is-cut="' + isCut + '" data-is-revised="' + isRevised + '">';
+    
+    // Add branching visualization if necessary
+    if (viewMode === 'both' && (isCut || isRevised)) {
+      line += '<div class="branch-indicator ' + (showBranching ? '' : 'hidden') + '"></div>';
+    }
+    
     // add player if new player to announce
     if (player) {
       line += '<div class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row mt-4 playline" style=""><div class="col-1 small"></div><div class="col-8 col-md-9 fw-bold"><p class="mb-0 playerline fw-bold">' + obj.player.replaceAll(';', '<br>') + ': </p></div></div>';
     }
+    
     // start line
     line += '<div id="' + obj.dataline + '" class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row playline textline" style="">';
+    
     // add act.scene.line number
-    line += '<div class="col-1 col-print-1" id="' + obj.actsceneline + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + lineNumber + '</p></div>';
-    // add the line itself
-
+    line += '<div class="col-1 col-print-1" id="' + obj.act + '.' + obj.scene + '.' + obj.line + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + lineNumber + '</p></div>';
+    
     // add playerline and annotation if it exists
     if (annotation) {
       line += '<div class="col-10 col-md-6 col-print-10 pr-0 playerline annobutton annotated" onclick="toggleAnnotation(&apos;' + annoId + '&apos;);" data-filter="' + annoId + '">' + playerline + '</div>';
@@ -94,8 +134,17 @@
       line += '<div class="d-none d-md-block col-12 col-md-5 small"></div>';
     }
 
+    // If line is revised and we're showing both versions, add the original version too
+    if (viewMode === 'both' && isRevised) {
+      line += '</div><div class="original-line row playline textline">';
+      line += '<div class="col-1 col-print-1"></div>';
+      // Use obj.text for original text, fall back to playerline if text isn't available
+      var originalText = obj.text !== undefined ? obj.text : (obj.playerline !== undefined ? obj.playerline : "");
+      line += '<div class="col-10 col-md-6 playerline col-print-10 original-text">' + originalText + '</div>';
+      line += '<div class="d-none d-md-block col-12 col-md-5 small"></div>';
+    }
+
     line += '</div></section>';
-    // send back big string
     return line;
   }
 
@@ -106,6 +155,7 @@
 
     // add number 
     document.getElementById("numberof").innerHTML = filteredItems.length + " of " + arr.length + " items";
+    
     // add stuff, make lines first in giant var, then add all at once to speed things up
     var lines = "";
     for (var i = 0, len = filteredItems.length; i < len; i++) {
@@ -192,12 +242,31 @@
       
       // Highlight the element to make it more visible
       lineElement.classList.add('anchored-highlight');
-      
-      // Optional: Remove highlight after a few seconds
-      setTimeout(function() {
-        lineElement.classList.remove('anchored-highlight');
-      }, 3000);
     }
+  }
+
+  /* Toggle branching visualization */
+  function toggleBranchView() {
+    showBranching = !showBranching;
+    const branchIndicators = document.querySelectorAll('.branch-indicator');
+    branchIndicators.forEach(function(indicator) {
+      if (showBranching) {
+        indicator.classList.remove('hidden');
+      } else {
+        indicator.classList.add('hidden');
+      }
+    });
+  }
+
+  /* Change display mode based on radio selection */
+  function changeDisplayMode(mode) {
+    viewMode = mode;
+    filterItems(dd_items, "");
+    
+    // Add CSS classes for styling the different views
+    const container = document.getElementById('contents-container');
+    container.classList.remove('view-cut', 'view-original', 'view-both');
+    container.classList.add('view-' + mode);
   }
 
   /* TRANSCRIPT FUNCTIONALITY */
@@ -502,8 +571,89 @@
     });
   }
 
+  /* Setup version toggle controls */
+  function setupVersionControls() {
+    document.querySelectorAll('input[name="versionMode"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        changeDisplayMode(this.value);
+      });
+    });
+    
+    // Add CSS for branching and version display
+    addVersionDisplayStyles();
+  }
+
+  /* Add CSS for the branching and version display */
+  function addVersionDisplayStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Version view modes */
+      .view-both .cut-line, .view-both .revised-line {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 5px;
+      }
+      
+      .view-both .original-line {
+        padding-left: 30px;
+        margin-bottom: 5px;
+        color: #777;
+        font-style: italic;
+      }
+      
+      /* Branching line visualization */
+      .branch-indicator {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #3498db;
+      }
+      
+      .branch-indicator:before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 2px;
+        background-color: #3498db;
+        top: 50%;
+        left: 0;
+      }
+      
+      .branch-indicator.hidden {
+        display: none;
+      }
+      
+      /* Cut and revised line styling */
+      .cut-line {
+        background-color: rgba(255, 0, 0, 0.05);
+      }
+      
+      .revised-line {
+        background-color: rgba(255, 255, 0, 0.05);
+      }
+      
+      /* Only display cut content in comparison view */
+      .view-cut [data-is-cut="true"] {
+        display: none;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+
+
   /* INITIALIZATION */
   function pageInit(items) {
+    // Process items to extract actscene field
+    items.forEach(function(item) {
+      if (item.act && item.scene) {
+        item.actscene = item.act + '.' + item.scene;
+        item.actsceneline = item.act + '.' + item.scene + '.' + item.line;
+      }
+    });
+    
     // Store globally for later access
     window.dd_items = items;
     
@@ -523,9 +673,9 @@
     const sideSceneScroll = document.getElementById('side-scene-scroll');
 
     // Extract metadata from the play
-    const dd_actscenes = [...new Set(items.map(function(d) { return d.actscene; }))];
-    const dd_acts = [...new Set(items.map(function(d) { return d.act; }))];
-    const dd_players = [...new Set(items.map(function(d) { return d.player; }))];
+    const dd_actscenes = [...new Set(items.filter(item => item.act && item.scene).map(function(d) { return d.actscene; }))];
+    const dd_acts = [...new Set(items.filter(item => item.act).map(function(d) { return d.act; }))];
+    const dd_players = [...new Set(items.filter(item => item.player).map(function(d) { return d.player; }))];
     
     // Setup UI elements
     selectScenes(dd_actscenes, dd_acts);
@@ -537,6 +687,7 @@
     setupResetButton();
     setupQuickSearch();
     setupHighlights();
+    setupVersionControls();
     initTooltips();
 
     // Handle URL parameters for initial state
@@ -581,6 +732,7 @@
   window.scrollToLine = scrollToLine;
   window.filterLines = filterLines;
   window.pageInit = pageInit;
+  window.toggleBranchView = toggleBranchView;
 
 })();
 </script>
