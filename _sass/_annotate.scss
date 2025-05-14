@@ -84,7 +84,7 @@
 }
 
 .featured {
-    background-color: rgb(219, 241, 253) !important;
+    background-color: #dbf1fd !important;
 
     .annotated {
         background-color: rgb(219, 241, 253) !important;
@@ -93,7 +93,7 @@
 }
 
 .anchored-highlight {
-    background: aquamarine;
+    background: #dbf1fd;
 }
 
 
@@ -129,6 +129,60 @@
     line-height: .675em;
 }
 
+
+/* Version view modes */
+.view-both .cut-line, .view-both .revised-line {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 5px;
+  }
+  
+  .view-both .original-line {
+    padding-left: 30px;
+    margin-bottom: 5px;
+    color: #777;
+    font-style: italic;
+  }
+  
+  /* Branching line visualization */
+  .branch-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #3498db;
+  }
+  
+  .branch-indicator:before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background-color: #3498db;
+    top: 50%;
+    left: 0;
+  }
+  
+  .branch-indicator.hidden {
+    display: none;
+  }
+  
+  /* Cut and revised line styling */
+  .cut-line {
+    background-color: rgba(255, 0, 0, 0.05);
+  }
+  
+  .revised-line {
+    background-color: rgba(255, 255, 0, 0.05);
+  }
+  
+  /* Only display cut content in comparison view */
+  .view-cut [data-is-cut="true"] {
+    display: none;
+  }
+
+
 // Print the columns at full width
 @media print {  
     .col-print-1 {width:8%; }
@@ -146,6 +200,7 @@
 body {
     font-size:1em;
 }
+#filters{display:none !important;}
  }
 
  .show-mobile-annotation{
