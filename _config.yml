@@ -23,14 +23,14 @@ development-mode: true
 ##########
 # Site SETTINGS
 # Site
-title: CollectionBuilder-CSV
+title: Digital Dramaturgy
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
-description: "a collaborative annotation of "
+description: # put something like "a collaborative annotation of "
 # keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
-keywords: idaho; history; inland northwest
+keywords: annotation; play script; digital dramaturgy; digital humanities; theater;
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: dcnb
+author: digital-dramaturgy
 
 
 
