@@ -3,7 +3,7 @@ var dd_items = [];
 var dd_scenes = [];
 var scenesNav = [];
  // set variables
- var config_metadata = "{{ site.play | relative_url | default: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv' }}";
+ var config_metadata = "{{ site.play | relative_url }}";
 
 if (sessionStorage.getItem("dd_metadata_set")){
   var current_metadata = sessionStorage.getItem("dd_metadata_set");}
@@ -15,15 +15,56 @@ if (sessionStorage.getItem("dd_metadata_set")){
 
 // function to process items from Sheets and store
 function dd_items_init(results) {
+  // Extract play title from all data before filtering
+  const playTitle = results.data.find(item => item.play && item.play.trim() !== '')?.play || "A Play";
+  console.log("Found play title:", playTitle);
+  
+  // Now filter for items with dataline
   dd_items = results.data.filter(item => item["dataline"]);
-  dd_scenes = [...new Set(dd_items.map(function (d) {return d.actscene;}))];
+  
+  // Extract unique act and scene combinations
+  const uniqueScenes = new Set();
+  dd_items.forEach(item => {
+    if (item.act && item.scene) {
+      uniqueScenes.add(`${item.act}.${item.scene}`);
+    }
+  });
+  dd_scenes = Array.from(uniqueScenes);
+  
+  // Store data in sessionStorage
   sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
   sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
-  sessionStorage.setItem("dd_title", dd_items[1].play);
-  console.log(dd_items[1].play);
-  pageInit(dd_items,dd_scenes);
+  
+  // Store the play title in sessionStorage
+  sessionStorage.setItem("dd_title", playTitle);
+  console.log("Setting play title to:", playTitle);
+  
+  // Update UI with the new title
+  updateUIWithTitle(playTitle);
+  
+  pageInit(dd_items, dd_scenes);
   initial_scenes();
 }
+
+// Function to update UI elements with the title
+function updateUIWithTitle(title) {
+  if (document.getElementById("play_title")) {
+    document.getElementById("play_title").innerHTML = title;
+  }
+  
+  {% if page.layout == "home" %}
+  if (document.getElementById("marquee_title")) {
+    document.getElementById("marquee_title").innerHTML = title;
+  }
+  {% endif %}
+  
+  {% unless page.layout == "home-cover" %}
+  if (document.getElementById("offcanvasLabel")) {
+    document.getElementById("offcanvasLabel").innerHTML = title;
+  }
+  {% endunless %}
+}
+
 // Get the URL query string
 const queryString = window.location.search;
 
@@ -44,7 +85,14 @@ if (urlParams.has("play") && urlParams.get("play").trim().length > 0) {
 } 
 else if (sessionStorage.getItem("dd_items_store")) {
   dd_items = JSON.parse(sessionStorage.getItem("dd_items_store"));
-  pageInit(dd_items,dd_scenes);
+  
+  // If we have a stored title, update UI immediately
+  const storedTitle = sessionStorage.getItem("dd_title");
+  if (storedTitle) {
+    updateUIWithTitle(storedTitle);
+  }
+  
+  pageInit(dd_items, dd_scenes);
 
 } else if (current_metadata){ 
   /* use papaparse to get metadata from google sheets, then init page */
@@ -63,31 +111,22 @@ else if (sessionStorage.getItem("dd_items_store")) {
   });
 }
 
-
-
-
-
 function reset_dd_items(){
-  
-  sessionStorage.removeItem('dd_items_store');  
+  sessionStorage.removeItem('dd_items_store');
+  sessionStorage.removeItem('dd_title');
   location.reload(); 
 };
 
 //for initial loads
-
-
-
 function initial_scenes(){
+  scenesNav = [];
   for (var i = 0, len = dd_scenes.length; i < len; i++) {
     var ref_url = "{{ '/?scene=' | relative_url }}";
-      var act = dd_scenes[i].split('.')[0];
-      var scene = dd_scenes[i].split('.')[1];
-      console.log(dd_scenes[i] + "-- Act" + act + " scene " + scene );
-      var sceneClass = 'act' + act + 'scene' + scene;
-      scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
-      
+    var act = dd_scenes[i].split('.')[0];
+    var scene = dd_scenes[i].split('.')[1];
+    console.log(dd_scenes[i] + "-- Act" + act + " scene " + scene );
+    var sceneClass = 'act' + act + 'scene' + scene;
+    scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>'
   } 
   document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
-
-
 }
