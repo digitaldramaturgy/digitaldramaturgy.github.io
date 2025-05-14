@@ -1,0 +1,702 @@
+<script>
+// Core application structure - DramaDisplay
+// This script focuses on display and interaction for the playscript page
+// and relies on the core session storage management script for data
+const DramaDisplay = {
+  // UI management
+  ui: {
+    viewMode: 'cut', // Default: 'cut', 'original', or 'both'
+    showBranching: true, // Branch visualization state
+    
+    updateTitle() {
+      // Title and author are already managed by the core script
+      // This function is kept for compatibility with existing code
+      return this;
+    },
+    
+    updateScenesList() {
+      // Generate scene dropdown options
+      const scenes = JSON.parse(sessionStorage.getItem("dd_scenes_store") || "[]");
+      const acts = [...new Set(scenes.map(scene => scene.split('.')[0]))];
+      
+      let options = '<option value="#" class="reset" selected>Filter by Scene</option>';
+      let sideNavHtml = '';
+      
+      scenes.forEach(scene => {
+        const act = scene.split('.')[0];
+        const sceneNum = scene.split('.')[1];
+        const sceneClass = `act${act}scene${sceneNum}`;
+        
+        options += `<option value="${sceneClass}">Act ${act}, Scene ${sceneNum}</option>`;
+        sideNavHtml += `<li class="dropdown-item"><a class="link-dark rounded" href="/?scene=${sceneClass}">Act ${act}, Scene ${sceneNum}</a></li>`;
+      });
+      
+      if (document.getElementById("scenes")) {
+        document.getElementById("scenes").innerHTML = options;
+      }
+      
+      if (document.getElementById("scenesNavDropdown")) {
+        document.getElementById("scenesNavDropdown").innerHTML = sideNavHtml;
+      }
+      
+      if (document.getElementById("scenesScroll")) {
+        let scrollHtml = '';
+        
+        if (scenes.length < 18) {
+          scenes.forEach(scene => {
+            const act = scene.split('.')[0];
+            const sceneNum = scene.split('.')[1];
+            scrollHtml += `<a class="py-0 border-bottom fst-italic small text-dark scene-scroll" 
+                              role="button" 
+                              onclick="DramaDisplay.navigation.scrollToScene('act${act}scene${sceneNum}')" 
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="right" 
+                              title="Jump to Scene ${scene}">
+                              ${scene}
+                           </a><br>`;
+          });
+        } else {
+          acts.forEach(act => {
+            scrollHtml += `<a class="py-0 border-bottom fst-italic small text-dark scene-scroll" 
+                              role="button" 
+                              onclick="DramaDisplay.navigation.scrollToScene('act${act}-start')" 
+                              data-bs-toggle="tooltip" 
+                              data-bs-placement="right" 
+                              title="Jump to Act ${act}">
+                              Act ${act}
+                           </a><br>`;
+          });
+        }
+        
+        document.getElementById("scenesScroll").innerHTML = scrollHtml;
+      }
+      
+      return this;
+    },
+    
+    updatePlayersList() {
+      // Generate player dropdown options
+      const items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+      const players = [...new Set(items
+        .filter(item => item.player)
+        .map(item => item.player))];
+      
+      let options = '<option value="#" class="reset" selected>Filter by Player</option>';
+      
+      players.forEach(player => {
+        if (!player.includes(";")) {
+          const playerClass = player.replaceAll(' ', '');
+          options += `<option value="${playerClass}">${player}</option>`;
+        }
+      });
+      
+      if (document.getElementById("players")) {
+        document.getElementById("players").innerHTML = options;
+      }
+      
+      return this;
+    },
+    
+    renderLines() {
+      // Render all lines
+      const container = document.getElementById("contents-container");
+      if (!container) return this;
+      
+      const items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+      let html = "";
+      
+      items.forEach(item => {
+        html += this.renderLine(item);
+      });
+      
+      container.innerHTML = html;
+      
+      // Initialize tooltips
+      const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+      });
+      
+      return this;
+    },
+    
+    renderLine(line) {
+      // Skip cut lines in cut view mode
+      if (line.cutting === "TRUE" && this.viewMode === 'cut') {
+        return '';
+      }
+      
+      // Prepare line variables
+      const isCut = line.cutting === "TRUE";
+      const isRevised = line.revision ? true : false;
+      const playerClass = this.getPlayerClass(line);
+      const lineNumber = this.getLineNumber(line);
+      const annoId = line.annotation ? 'anno' + line.dataline : '';
+      
+      // Processed text content - supports both old and new formats
+      let playerline = "";
+      if (line.text !== undefined) {
+        playerline = line.text;
+      } else if (line.playerline !== undefined) {
+        playerline = line.playerline;
+      }
+      
+      // Apply revision if available and we're not in original mode
+      if (line.revision && this.viewMode !== 'original') {
+        playerline = line.revision;
+      }
+      
+      // Apply highlight if present
+      if (line.highlight) {
+        const hilite = `<span class="hilite hi-${annoId}" data-filter="hi-${annoId}">${line.highlight}</span>`;
+        playerline = playerline.replace(line.highlight, hilite);
+      }
+      
+      // Add stage direction formatting
+      if (line.player === "StageDirection" && !playerline.toLowerCase().startsWith("act ") && 
+          !playerline.toLowerCase().startsWith("scene ")) {
+        playerline = '[' + playerline + ']';
+      }
+      
+      // Create line HTML with appropriate classes
+      let className = "";
+      if (this.viewMode === 'both') {
+        if (isCut) className = "cut-line";
+        if (isRevised) className = "revised-line";
+      }
+      
+      let lineHtml = `<section class="line ${className}" data-dataline="${line.dataline}" data-is-cut="${isCut}" data-is-revised="${isRevised}">`;
+      
+      // Add branching visualization if necessary
+      if (this.viewMode === 'both' && (isCut || isRevised)) {
+        lineHtml += `<div class="branch-indicator ${this.showBranching ? '' : 'hidden'}"></div>`;
+      }
+      
+      // Add player name if it's a new speaker
+      const items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+      const index = items.findIndex(i => i.dataline == line.dataline);
+      if (index > 0) {
+        const prevLineObj = items[index - 1];
+        if (line.player && line.player !== prevLineObj.player && line.player !== "StageDirection") {
+          lineHtml += `
+            <div class="${playerClass} act${line.act}scene${line.scene} row mt-4 playline">
+              <div class="col-1 small"></div>
+              <div class="col-8 col-md-9 fw-bold">
+                <p class="mb-0 playerline fw-bold">${line.player.replaceAll(';', '<br>')}: </p>
+              </div>
+            </div>
+          `;
+        }
+      } else if (line.player !== "StageDirection") {
+        // First line, add player name
+        lineHtml += `
+          <div class="${playerClass} act${line.act}scene${line.scene} row mt-4 playline">
+            <div class="col-1 small"></div>
+            <div class="col-8 col-md-9 fw-bold">
+              <p class="mb-0 playerline fw-bold">${line.player.replaceAll(';', '<br>')}: </p>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Add line content
+      lineHtml += `<div id="${line.dataline}" class="${playerClass} act${line.act}scene${line.scene} row playline textline">`;
+      lineHtml += `<div class="col-1 col-print-1" id="${line.act}.${line.scene}.${line.line}">
+                     <p class="small mt-2 text-end m-0" style="font-size:10px;">${lineNumber}</p>
+                   </div>`;
+      
+      // Add line text and annotation if present
+      if (line.annotation) {
+        lineHtml += `
+          <div class="col-10 col-md-6 col-print-10 pr-0 playerline annobutton annotated" 
+               onclick="DramaDisplay.ui.toggleAnnotation('${annoId}');" data-filter="${annoId}">
+            ${playerline}
+          </div>
+          <div class="d-none d-md-block col-12 col-md-5 small anno-container">
+            <div class="annotation annobutton" onclick="DramaDisplay.ui.toggleAnnotation('${annoId}');" 
+                 id="${annoId}" data-filter="${annoId}">
+              <div class="content"><p>${md.renderInline(line.annotation)}</p></div>
+            </div>
+          </div>
+        `;
+      } else {
+        lineHtml += `
+          <div class="col-10 col-md-6 playerline col-print-10">${playerline}</div>
+          <div class="d-none d-md-block col-12 col-md-5 small"></div>
+        `;
+      }
+      
+      // If line is revised and we're showing both versions, add the original version
+      if (this.viewMode === 'both' && isRevised) {
+        lineHtml += `</div><div class="original-line row playline textline">`;
+        lineHtml += `<div class="col-1 col-print-1"></div>`;
+        
+        // Use line.text for original text, fallback to playerline if text isn't available
+        const originalText = line.text !== undefined ? line.text : 
+                            (line.playerline !== undefined ? line.playerline : "");
+                            
+        lineHtml += `
+          <div class="col-10 col-md-6 playerline col-print-10 original-text">${originalText}</div>
+          <div class="d-none d-md-block col-12 col-md-5 small"></div>
+        `;
+      }
+      
+      lineHtml += `</div></section>`;
+      return lineHtml;
+    },
+    
+    getPlayerClass(line) {
+      if (line.player === "StageDirection") {
+        if (line.playerline?.toLowerCase().startsWith("act ") || line.text?.toLowerCase().startsWith("act ")) {
+          return `StageDirection actstart act${line.act}-start`;
+        } else if (line.playerline?.toLowerCase().startsWith("scene ") || line.text?.toLowerCase().startsWith("scene ")) {
+          return "StageDirection scenestart";
+        } else {
+          return "StageDirection";
+        }
+      } else {
+        return line.player.replaceAll(' ', '');
+      }
+    },
+    
+    getLineNumber(line) {
+      return parseInt(line.line) % 5 === 0 ? `${line.act}.${line.scene}.${line.line}` : '';
+    },
+    
+    changeViewMode(mode) {
+      this.viewMode = mode;
+      this.renderLines();
+      
+      // Update CSS classes for styling
+      const container = document.getElementById('contents-container');
+      if (container) {
+        container.classList.remove('view-cut', 'view-original', 'view-both');
+        container.classList.add('view-' + mode);
+      }
+    },
+    
+    toggleBranching() {
+      this.showBranching = !this.showBranching;
+      document.querySelectorAll('.branch-indicator').forEach(indicator => {
+        if (this.showBranching) {
+          indicator.classList.remove('hidden');
+        } else {
+          indicator.classList.add('hidden');
+        }
+      });
+    },
+    
+    toggleAnnotation(annotationId) {
+      // Hide all other annotations
+      document.querySelectorAll('.annotation').forEach(div => {
+        if (div.id !== annotationId) {
+          div.classList.remove('annotate-show');
+        }
+        if (div.id !== annotationId && div.parentNode) {
+          div.parentNode.classList.remove('show-mobile-annotation');
+        }
+      });
+      
+      // Toggle target annotation
+      const target = document.getElementById(annotationId);
+      if (target) {
+        target.classList.toggle('annotate-show');
+        target.style.width = '90%';
+        if (target.parentNode) {
+          target.parentNode.classList.toggle('show-mobile-annotation');
+        }
+      }
+      
+      // Toggle highlight styling
+      document.querySelectorAll(`span.hilite:not(.hi-${annotationId})`).forEach(span => {
+        span.classList.remove('fw-bold');
+      });
+      
+      document.querySelectorAll(`.hi-${annotationId}`).forEach(span => {
+        span.classList.toggle('fw-bold');
+      });
+    },
+    
+    resetView() {
+      document.querySelectorAll('.playline').forEach(line => {
+        line.style.display = '';
+      });
+      
+      document.querySelectorAll('.annotate-show, .anchored-highlight, .featured').forEach(el => {
+        el.classList.remove('annotate-show');
+        el.classList.remove('anchored-highlight');
+        el.classList.remove('featured');
+      });
+      
+      document.querySelectorAll('span.text-danger').forEach(span => {
+        span.classList.remove('text-danger');
+      });
+      
+      const searchInput = document.getElementById('quicksearch');
+      if (searchInput) searchInput.value = '';
+      
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        if (select.options.length > 0) {
+          select.value = select.options[0].value;
+        }
+      });
+      
+      document.querySelectorAll('.filter-search').forEach(el => {
+        el.classList.add('d-none');
+      });
+      
+      const searchResults = document.getElementById('searchResults');
+      if (searchResults) {
+        searchResults.innerHTML = '';
+      }
+      
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.delete('q');
+      url.searchParams.delete('player');
+      url.searchParams.delete('scene');
+      window.history.replaceState({}, '', url);
+    }
+  },
+  
+  // Navigation functions
+  navigation: {
+    scrollToScene(sceneClass) {
+      const sceneElements = document.getElementsByClassName(sceneClass);
+      if (sceneElements.length > 0) {
+        window.scroll({
+          top: sceneElements[0].offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    },
+    
+    scrollToLine(lineId) {
+      if (!lineId || lineId === "Select and scroll to a matching line") return;
+      
+      const line = document.getElementById(lineId);
+      if (line) {
+        const position = line.offsetTop - 200; // Add offset for better visibility
+        
+        window.scroll({
+          top: position,
+          behavior: 'smooth'
+        });
+        
+        line.classList.add('anchored-highlight');
+        }
+    },
+    
+    searchLines(searchText) {
+      if (!searchText) return;
+      
+      // Clear previous highlights
+      document.querySelectorAll('.anchored-highlight, .featured').forEach(el => {
+        el.classList.remove('anchored-highlight');
+        el.classList.remove('featured');
+      });
+      
+      // Update URL params
+      let url = new URL(window.location);
+      url.searchParams.set('q', searchText);
+      url.searchParams.delete('player');
+      url.searchParams.delete('scene');
+      window.history.replaceState({}, '', url);
+      
+      // Find matching text
+      const container = document.getElementById("contents-container");
+      if (!container) return;
+      
+      const items = container.getElementsByTagName("section");
+      const filter = searchText.toUpperCase();
+      let searchResultsHTML = '<option value="">Select and scroll to a matching line</option>';
+      let matchCount = 0;
+      
+      for (let i = 0; i < items.length; i++) {
+        const textEl = items[i].querySelector(".playerline");
+        if (!textEl) continue;
+        
+        // Find line element ID for scroll functionality
+        const lineEl = items[i].querySelector('div[id]');
+        if (!lineEl) continue;
+        
+        const lineId = lineEl.id;
+        const content = textEl.textContent;
+        
+        if (content.toUpperCase().indexOf(filter) > -1) {
+          textEl.classList.add("featured");
+          matchCount++;
+          
+          // Highlight matching text
+          textEl.innerHTML = textEl.innerHTML.replace(
+            new RegExp(searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+            match => `<span class="text-danger">${match}</span>`
+          );
+          
+          // Add to dropdown
+          const previewText = content.substring(0, 100) + (content.length > 100 ? '...' : '');
+          searchResultsHTML += `<option value="${lineId}">${previewText}</option>`;
+        }
+      }
+      
+      // Update count and search results dropdown
+      const countEl = document.getElementById('numberoflines');
+      if (countEl) {
+        countEl.innerHTML = `${matchCount} lines match your query`;
+      }
+      
+      const searchResults = document.getElementById('searchResults');
+      if (searchResults) {
+        searchResults.innerHTML = searchResultsHTML;
+      }
+      
+      // Show result counts
+      document.querySelectorAll('.linecount, .filter-search').forEach(el => {
+        el.classList.remove('d-none');
+      });
+    }
+  },
+  
+  // Modal/Dialog management
+  modals: {
+    showDataChangeModal() {
+      const modalEl = document.getElementById('changeDataModal');
+      if (!modalEl) {
+        console.error('Modal element #changeDataModal not found.');
+        return;
+      }
+
+      // Create Bootstrap modal instance
+      try {
+        const modal = new bootstrap.Modal(modalEl);
+        
+        // Close sidebar if open
+        const sideNavClose = document.getElementById('side-nav-close');
+        if (sideNavClose) {
+          sideNavClose.click();
+        }
+        
+        // Show modal
+        modal.show();
+      } catch (error) {
+        console.error('Error showing modal:', error);
+      }
+    }
+  },
+  
+  // Event setup
+  setupEvents() {
+    // Version control radio buttons
+    document.querySelectorAll('input[name="versionMode"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        DramaDisplay.ui.changeViewMode(radio.value);
+      });
+    });
+    
+    // Branch toggle button
+    document.getElementById("toggleBranching")?.addEventListener('click', () => {
+      DramaDisplay.ui.toggleBranching();
+    });
+    
+    // Player filter
+    document.getElementById('players')?.addEventListener('change', function() {
+      const playerClass = this.value;
+      if (playerClass === '#') {
+        DramaDisplay.ui.resetView();
+        return;
+      }
+      
+      // Hide all lines
+      document.querySelectorAll('.playline').forEach(line => {
+        line.style.display = 'none';
+      });
+      
+      // Show only lines for selected player
+      document.querySelectorAll(`div.${playerClass}`).forEach(div => {
+        div.style.display = '';
+      });
+      
+      // Reset other filters
+      document.getElementById('quicksearch').value = '';
+      document.getElementById('scenes').value = '#';
+      
+      // Update URL
+      let url = new URL(window.location);
+      url.searchParams.set('player', playerClass);
+      url.searchParams.delete('q');
+      url.searchParams.delete('scene');
+      window.history.replaceState({}, '', url);
+      
+      // Show count
+      const count = document.querySelectorAll(`div.${playerClass}`).length;
+      document.getElementById('numberof').innerHTML = `${count} lines`;
+      document.querySelectorAll('.linecount').forEach(el => el.classList.remove('d-none'));
+    });
+    
+    // Scene filter
+    document.getElementById('scenes')?.addEventListener('change', function() {
+      const sceneClass = this.value;
+      if (sceneClass === '#') {
+        DramaDisplay.ui.resetView();
+        return;
+      }
+      
+      // Hide all lines
+      document.querySelectorAll('.playline').forEach(line => {
+        line.style.display = 'none';
+      });
+      
+      // Show only lines for selected scene
+      document.querySelectorAll(`div.${sceneClass}`).forEach(div => {
+        div.style.display = '';
+      });
+      
+      // Reset other filters
+      document.getElementById('quicksearch').value = '';
+      document.getElementById('players').value = '#';
+      
+      // Update URL
+      let url = new URL(window.location);
+      url.searchParams.set('scene', sceneClass);
+      url.searchParams.delete('q');
+      url.searchParams.delete('player');
+      window.history.replaceState({}, '', url);
+      
+      // Show count
+      const count = document.querySelectorAll(`div.${sceneClass}`).length;
+      document.getElementById('numberof').innerHTML = `${count} lines`;
+      document.querySelectorAll('.linecount').forEach(el => el.classList.remove('d-none'));
+    });
+    
+    // Quick search
+    document.getElementById('quicksearch')?.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        document.getElementById('goButton')?.click();
+      }
+    });
+    
+    document.getElementById('goButton')?.addEventListener('click', () => {
+      const searchText = document.getElementById('quicksearch').value;
+      DramaDisplay.navigation.searchLines(searchText);
+    });
+    
+    // Reset button
+    document.querySelectorAll('button.reset').forEach(button => {
+      button.addEventListener('click', () => {
+        DramaDisplay.ui.resetView();
+      });
+    });
+    
+    // Search results dropdown
+    document.getElementById('searchResults')?.addEventListener('change', () => {
+      const lineId = document.getElementById('searchResults').value;
+      DramaDisplay.navigation.scrollToLine(lineId);
+    });
+    
+    // Filters button
+    document.getElementById('filters')?.addEventListener('click', () => {
+      const url = new URL(window.location);
+      const sceneFilter = url.searchParams.get('scene');
+      
+      if (!sceneFilter) {
+        const sideSceneScroll = document.getElementById('side-scene-scroll');
+        if (sideSceneScroll) {
+          sideSceneScroll.classList.toggle('d-none');
+        }
+      }
+    });
+    
+    // Change data button
+    document.querySelector('.btn-outline-secondary[onclick="handleOpenChangeDataModal();"]')?.addEventListener('click', () => {
+      DramaDisplay.modals.showDataChangeModal();
+    });
+  },
+  
+  // App initialization
+  init() {
+    // Initialize markdown renderer
+    window.md = window.markdownit();
+    
+    // The core data is already loaded by the base script
+    // Just update the UI with the data
+    DramaDisplay.ui.updateScenesList()
+                .updatePlayersList()
+                .renderLines();
+    
+    // Setup event handlers
+    this.setupEvents();
+    
+    // Handle URL parameters for filtering
+    this.processURLParams();
+    
+    // Make global functions available
+    this.exposeGlobalFunctions();
+    
+    console.log('DramaDisplay initialized successfully');
+  },
+  
+  processURLParams() {
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    
+    const query = params.get('q');
+    const scene = params.get('scene');
+    const player = params.get('player');
+    const hash = location.hash.substring(1);
+    
+    if (query) {
+      // Search query
+      document.getElementById('quicksearch').value = query;
+      document.getElementById('goButton').click();
+    } else if (player) {
+      // Player filter
+      document.getElementById('players').value = player;
+      const event = new Event('change');
+      document.getElementById('players').dispatchEvent(event);
+    } else if (scene) {
+      // Scene filter
+      document.getElementById('scenes').value = scene;
+      const event = new Event('change');
+      document.getElementById('scenes').dispatchEvent(event);
+    } else if (hash) {
+      // Line anchor
+      const element = document.getElementById(hash);
+      if (element) {
+        element.classList.add('anchored-highlight');
+        setTimeout(() => {
+          window.scrollTo({
+            top: element.offsetTop - 100,
+            behavior: 'smooth'
+          });
+        }, 300);
+      }
+    }
+  },
+  
+  exposeGlobalFunctions() {
+    // Make key functions globally accessible
+    window.toggleAnnotation = (id) => DramaDisplay.ui.toggleAnnotation(id);
+    window.scrollToScene = (scene) => DramaDisplay.navigation.scrollToScene(scene);
+    window.scrollToLine = () => {
+      const lineId = document.getElementById('searchResults').value;
+      DramaDisplay.navigation.scrollToLine(lineId);
+    };
+    window.filterLines = () => {
+      const searchText = document.getElementById('quicksearch').value;
+      DramaDisplay.navigation.searchLines(searchText);
+    };
+    window.toggleBranchView = () => DramaDisplay.ui.toggleBranching();
+    window.handleOpenChangeDataModal = () => DramaDisplay.modals.showDataChangeModal();
+  }
+};
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Only initialize if we're on a page with the contents container
+  if (document.getElementById('contents-container')) {
+    DramaDisplay.init();
+  }
+});
+
+</script>
