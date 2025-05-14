@@ -1,144 +1,317 @@
 <script>
-  function set_constants() {
-    console.log("running set constants");
-    var static_title = "{{site.title}}";
+/* 
+ * Session Storage Management for Jekyll Play Display
+ * Handles loading data from CSV sources and maintaining UI consistency
+ */
+
+// Initialize global variables
+let dd_items = [];
+let dd_scenes = [];
+let scenesNav = [];
+
+// Default configuration
+const config_metadata = "{{ site.play | relative_url }}";
+const default_csv_url = "{{ site.play | relative_url | default: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv'}}";
+
+// Get the current metadata set or use the configured default
+const dd_metadata_set = sessionStorage.getItem("dd_metadata_set") || config_metadata;
+
+// Update the metadata menu display when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeData();
+  
+  // Update UI with current metadata source
+  const metadataMenu = document.getElementById("current-metadata-menu");
+  if (metadataMenu) {
+    metadataMenu.innerHTML = dd_metadata_set ? dd_metadata_set : "None!";
+  }
+});
+
+/**
+ * Main initialization function to determine data source and load appropriately
+ */
+function initializeData() {
+  // Check URL parameters first
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if (urlParams.has("play") && urlParams.get("play").trim()) {
+    // Clear previous data
+    sessionStorage.removeItem('dd_items_store');
+    sessionStorage.removeItem('dd_scenes_store');
+    sessionStorage.removeItem('dd_title');
+    sessionStorage.removeItem('dd_author');
+    sessionStorage.removeItem('dd_metadata_set');
     
-    // Only set the title if dd_title doesn't exist in session storage yet
-    // The dd-items.js will handle setting titles when CSV loads
-    if (!sessionStorage.getItem("dd_title")) {
-      var dd_title = static_title;
-      console.log("No session title available yet, using static title temporarily:", static_title);
-      
-      // Only update UI if not updated by dd-items.js already
-      if (document.getElementById("play_title")) {
-        document.getElementById("play_title").innerHTML = dd_title;
-      }
-      
-      {% if page.layout == "home" %}
-      if (document.getElementById("marquee_title")) {
-        document.getElementById("marquee_title").innerHTML = dd_title;
-      }
-      {% endif %}
-      
-      {% unless page.layout == "home-cover" %}
-      if (document.getElementById("offcanvasLabel")) {
-        document.getElementById("offcanvasLabel").innerHTML = dd_title;
-      }
-      {% endunless %}
-    } else {
-      console.log("Session title already exists, using stored title");
-      
-      // Get title and author from session storage
-      var dd_title = sessionStorage.getItem("dd_title");
-      var dd_author = sessionStorage.getItem("dd_author");
-      
-      // Update UI with title and author if available
-      if (document.getElementById("play_title")) {
-        document.getElementById("play_title").innerHTML = dd_title;
-        
-        // Add author if available, in smaller font
-        if (dd_author && dd_author.trim() !== "") {
-          const authorElement = document.createElement("div");
-          authorElement.id = "play_author";
-          authorElement.className = "play-author";
-          authorElement.style.fontSize = "0.7em";
-          authorElement.style.marginTop = "5px";
-          authorElement.innerHTML = dd_author;
-          
-          // Check if author element already exists
-          if (!document.getElementById("play_author")) {
-            document.getElementById("play_title").parentNode.insertBefore(
-              authorElement,
-              document.getElementById("play_title").nextSibling
-            );
-          } else {
-            document.getElementById("play_author").innerHTML = dd_author;
-          }
-        }
-      }
-      
-      {% if page.layout == "home" %}
-      if (document.getElementById("marquee_title")) {
-        document.getElementById("marquee_title").innerHTML = dd_title;
-        
-        // Add author to marquee if available, in smaller font
-        if (dd_author && dd_author.trim() !== "") {
-          const marqueAuthorElement = document.createElement("div");
-          marqueAuthorElement.id = "marquee_author";
-          marqueAuthorElement.className = "marquee-author";
-          marqueAuthorElement.style.fontSize = "0.7em";
-          marqueAuthorElement.style.marginTop = "5px";
-          marqueAuthorElement.innerHTML = dd_author;
-          
-          // Check if author element already exists
-          if (!document.getElementById("marquee_author")) {
-            document.getElementById("marquee_title").parentNode.insertBefore(
-              marqueAuthorElement,
-              document.getElementById("marquee_title").nextSibling
-            );
-          } else {
-            document.getElementById("marquee_author").innerHTML = dd_author;
-          }
-        }
-      }
-      {% endif %}
-      
-      {% unless page.layout == "home-cover" %}
-      if (document.getElementById("offcanvasLabel")) {
-        document.getElementById("offcanvasLabel").innerHTML = dd_title;
-        
-        // Add author to offcanvas if available, in smaller font
-        if (dd_author && dd_author.trim() !== "") {
-          const offcanvasAuthorElement = document.createElement("div");
-          offcanvasAuthorElement.id = "offcanvas_author";
-          offcanvasAuthorElement.className = "offcanvas-author";
-          offcanvasAuthorElement.style.fontSize = "0.7em";
-          offcanvasAuthorElement.style.marginTop = "5px";
-          offcanvasAuthorElement.innerHTML = dd_author;
-          
-          // Check if author element already exists
-          if (!document.getElementById("offcanvas_author")) {
-            document.getElementById("offcanvasLabel").parentNode.insertBefore(
-              offcanvasAuthorElement,
-              document.getElementById("offcanvasLabel").nextSibling
-            );
-          } else {
-            document.getElementById("offcanvas_author").innerHTML = dd_author;
-          }
-        }
-      }
-      {% endunless %}
+    // Get the play URL and clean it
+    let playUrl = urlParams.get("play").trim();
+    console.log("Original play URL:", playUrl);
+    
+    // Ensure the URL ends with output=csv for Google Sheets
+    if (playUrl.includes('docs.google.com') && !playUrl.includes('output=csv')) {
+      // Remove any existing query parameters
+      playUrl = playUrl.split('?')[0];
+      // Add output=csv
+      playUrl += '?output=csv';
     }
     
-    // Handle scenes - but only if dd-items.js hasn't done it already
-    if (!document.getElementById("scenesNavDropdown").innerHTML) {
-      var static_scenes = '["1.1","1.2","2.1","2.2","3.1","3.2","4.1","4.2","5.1"]';
-      var scenesNav = '';
-      
-      var dd_scenes_nav = sessionStorage.getItem("dd_scenes_store") || static_scenes;
-      
-      try {
-        var dd_scenes = JSON.parse(dd_scenes_nav);
-        for (var i = 0, len = dd_scenes.length; i < len; i++) {
-          var ref_url = "{{ '/?scene=' | relative_url }}";
-          var act = dd_scenes[i].split('.')[0];
-          var scene = dd_scenes[i].split('.')[1];
-          console.log(dd_scenes[i] + "-- Act" + act + " scene " + scene);
-          var sceneClass = 'act' + act + 'scene' + scene;
-          scenesNav += '<li class="dropdown-item"><a class="link-dark rounded " href="'+ ref_url +'act' + act + 'scene' + scene +'">Act ' + act + ', Scene ' + scene +'</a></li>';
-        }
-        
-        if (document.getElementById("scenesNavDropdown")) {
-          document.getElementById("scenesNavDropdown").innerHTML = scenesNav;
-        }
-      } catch (e) {
-        console.error("Error parsing scenes:", e);
-      }
-    }
+    console.log("Processed play URL:", playUrl);
+    
+    // Use play parameter from URL
+    loadFromCSV(playUrl);
+  } 
+  else if (sessionStorage.getItem("dd_items_store")) {
+    // Use cached data from session storage
+    loadFromSessionStorage();
+  } 
+  else if (dd_metadata_set) {
+    // Use configured metadata
+    loadFromCSV(dd_metadata_set);
+  } 
+  else {
+    // Fallback to default
+    loadFromCSV(default_csv_url);
+  }
+}
+
+/**
+ * Load data from session storage
+ */
+function loadFromSessionStorage() {
+  dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+  dd_scenes = JSON.parse(sessionStorage.getItem("dd_scenes_store") || "[]");
+  
+  // If we have stored title/author, update UI immediately
+  const storedTitle = sessionStorage.getItem("dd_title");
+  const storedAuthor = sessionStorage.getItem("dd_author");
+  
+  if (storedTitle) {
+    updateUIWithTitleAndAuthor(storedTitle, storedAuthor || "");
   }
   
-  // Add this code to ensure the function is called when the DOM is ready
-  document.addEventListener('DOMContentLoaded', function() {
-    set_constants();
+  buildScenesNavigation();
+}
+
+/**
+ * Load data from CSV source
+ */
+function loadFromCSV(source) {
+  Papa.parse(source, {
+    download: true,
+    header: true,
+    complete: (results) => dd_items_init(results),
+    error: (err) => {
+      console.error("Error parsing CSV:", err);
+      alert("There was an error loading the play data. Please check the CSV source.");
+    }
   });
+}
+
+/**
+ * Process items from CSV and initialize the page
+ */
+function dd_items_init(results) {
+  // Extract play title and author from data
+  const playTitle = results.data.find(item => item.play && item.play.trim() !== '')?.play || "A Play";
+  const authorName = results.data.find(item => item.author && item.author.trim() !== '')?.author || "";
+  
+  console.log("Found play title:", playTitle);
+  console.log("Found author:", authorName);
+  
+  // Set up global data arrays
+  dd_items = results.data;
+  
+  // Extract unique act and scene combinations
+  const uniqueScenes = new Set();
+  dd_items.forEach(item => {
+    if (item.act && item.scene) {
+      uniqueScenes.add(`${item.act}.${item.scene}`);
+    }
+  });
+  dd_scenes = Array.from(uniqueScenes);
+  
+  // Store data in sessionStorage
+  sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
+  sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
+  sessionStorage.setItem("dd_title", playTitle);
+  sessionStorage.setItem("dd_author", authorName);
+  
+  // Update UI with the title and author
+  updateUIWithTitleAndAuthor(playTitle, authorName);
+  
+  // Build scenes navigation
+  buildScenesNavigation();
+}
+
+/**
+ * Update UI elements with the title and author
+ */
+function updateUIWithTitleAndAuthor(title, author) {
+  // Update main title element
+  const titleElement = document.getElementById("work_title");
+  if (titleElement) {
+    titleElement.innerHTML = title;
+  }
+  
+  // Update author element if it exists
+  const authorElement = document.getElementById("work_author");
+  if (authorElement && author && author.trim() !== "") {
+    authorElement.innerHTML = author;
+  } else if (authorElement) {
+    authorElement.innerHTML = "";
+    document.getElementById("by_text").style.display = "none";
+  }
+  
+  // Update offcanvas elements
+  const offcanvasLabel = document.getElementById("offcanvasLabel");
+  if (offcanvasLabel) {
+    offcanvasLabel.innerHTML = title;
+  }
+  
+  const offcanvasAuthor = document.getElementById("offcanvas_author");
+  if (offcanvasAuthor && author && author.trim() !== "") {
+    offcanvasAuthor.innerHTML = author;
+  }else if (offcanvasAuthor) {
+    authorElement.innerHTML = "";
+    document.getElementById("by_text").style.display = "none";
+  }
+}
+
+/**
+ * Build navigation for scenes dropdown
+ */
+function buildScenesNavigation() {
+  const scenesNavDropdown = document.getElementById("scenesNavDropdown");
+  if (!scenesNavDropdown) return;
+  
+  scenesNav = [];
+  const ref_url = "{{ '/?scene=' | relative_url }}";
+  
+  dd_scenes.forEach(scene => {
+    const act = scene.split('.')[0];
+    const sceneNum = scene.split('.')[1];
+    const sceneClass = 'act' + act + 'scene' + sceneNum;
+    
+    scenesNav.push(
+      `<li class="dropdown-item">
+        <a class="link-dark rounded" href="${ref_url}${sceneClass}">
+          Act ${act}, Scene ${sceneNum}
+        </a>
+      </li>`
+    );
+  });
+  
+  scenesNavDropdown.innerHTML = scenesNav.join('');
+}
+
+/**
+ * Reset all stored data and reload the page
+ */
+function reset_dd_items() {
+  sessionStorage.removeItem('dd_items_store');
+  sessionStorage.removeItem('dd_scenes_store');
+  sessionStorage.removeItem('dd_title');
+  sessionStorage.removeItem('dd_author');
+  sessionStorage.removeItem('dd_metadata_set');
+  location.reload();
+}
+
+/**
+ * Parse metadata from a CSV file or URL
+ */
+function dd_items_setup(metadata_source) {
+  sessionStorage.removeItem('dd_items_store');
+  
+  Papa.parse(metadata_source, {
+    download: true,
+    header: true,
+    complete: (results) => { 
+      // Extract items
+      dd_items = results.data;
+      
+      // Extract unique scenes
+      const uniqueScenes = new Set();
+      dd_items.forEach(item => {
+        if (item.act && item.scene) {
+          uniqueScenes.add(`${item.act}.${item.scene}`);
+        }
+      });
+      dd_scenes = Array.from(uniqueScenes);
+      
+      // Store in session storage
+      sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
+      sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
+      
+      // Store title if available
+      if (dd_items.length > 0 && dd_items[0].play) {
+        sessionStorage.setItem("dd_title", dd_items[0].play);
+      }
+      
+      // Store source reference
+      sessionStorage.setItem("dd_metadata_source", 
+        typeof metadata_source === 'string' ? metadata_source : metadata_source.name);
+      
+      // Redirect to home
+      window.location.href = "{{ '/' | relative_url }}";
+    },
+    error: (err) => {
+      console.error("CSV parsing error:", err);
+      alert("There is an error parsing your CSV! Please check the configured URL or file.");
+    }
+  });
+}
+
+/**
+ * Handle local file selection for metadata
+ */
+function metadata_file_selector() {
+  const fileSelector = document.getElementById("csvFile");
+  const selectedFile = fileSelector.files[0];
+  
+  if (!selectedFile) {
+    alert("Please select a file first.");
+    return;
+  }
+  
+  // Record in session store
+  sessionStorage.setItem("dd_metadata_set", selectedFile.name);
+  
+  // Parse the file
+  dd_items_setup(selectedFile);
+}
+
+/**
+ * Handle URL input for metadata
+ */
+function metadata_url_selector() {
+  const selectedUrl = document.getElementById("csvUrl").value;
+  
+  if (!selectedUrl || selectedUrl.trim() === '') {
+    alert("Please enter a URL first.");
+    return;
+  }
+  
+  // Record in session store
+  sessionStorage.setItem("dd_metadata_set", selectedUrl);
+  
+  // Parse from URL
+  dd_items_setup(selectedUrl);
+}
+
+/**
+ * Handle demo selection for metadata
+ */
+function metadata_demo_selector() {
+  const selectedUrl = document.getElementById("demoUrl").value;
+  
+  if (!selectedUrl || selectedUrl.trim() === '') {
+    alert("No demo URL selected.");
+    return;
+  }
+  
+  // Record in session store
+  sessionStorage.setItem("dd_metadata_set", selectedUrl);
+  
+  // Parse from demo URL
+  dd_items_setup(selectedUrl);
+}
 </script>
