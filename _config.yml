@@ -11,12 +11,12 @@
 # Enter a link to a CSV file using one of three options
 #    - A Google Published Google Sheets Link 
 #    - The link should be the CSV publication version ending with "?output=csv" 
-#       -- e.g., https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv
+#       -- e.g., https://docs.google.com/spreadsheets/d/e/2PACX-1vTR-PrLzlbvViHiBNVdkzUZ8iPjkw-LMmugCYpNYs0QWkvLmpi6hWXc9_edxYx5D7vAUoG369W4-5wo/pub?output=csv
 #    -  a relative link to a CSV file in the repository 
-#       -- e.g., /assets/data/play_example.csv)
+#       -- e.g., /assets/data/play_example.csv
 #    - or a link to a CSV file stored somewhere accessible on the internet 
 #       -- e.g., https://example.com/play_example.csv)
-play: https://docs.google.com/spreadsheets/d/e/2PACX-1vTR-PrLzlbvViHiBNVdkzUZ8iPjkw-LMmugCYpNYs0QWkvLmpi6hWXc9_edxYx5D7vAUoG369W4-5wo/pub?output=csv
+play: 
 # dev mode turns on ability to change metadata; when you're finished with this project, set this to false
 development-mode: true
 

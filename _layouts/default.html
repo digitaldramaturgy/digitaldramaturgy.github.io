@@ -7,6 +7,7 @@
     <div id="skip-to-content"><a href="#maincontent">Skip to main content</a></div>
     {% include annotate/collection-banner.html %}
     {% include annotate/collection-nav.html %}
+    {% if site.development-mode %}{% include annotate/setup/modal-body.html %}{% endif %}
     <main id="maincontent" role="main" class="flex-shrink-0">
       {{ content }}
     </main>

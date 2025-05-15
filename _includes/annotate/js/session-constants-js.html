@@ -10,20 +10,32 @@ let dd_scenes = [];
 let scenesNav = [];
 
 // Default configuration
-const config_metadata = "{{ site.play | relative_url }}";
-const default_csv_url = "{{ site.play | relative_url | default: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT4-hSjZe4pN0R2-fzmNyc_yrE355W1RgOBmYJ4PF-Lsyo1bKpWVKgwYqGOxGnMvvV41__J66Yjyxa1/pub?output=csv'}}";
+const default_csv_url = "{{ site.play | relative_url }}";
 
 // Get the current metadata set or use the configured default
-const dd_metadata_set = sessionStorage.getItem("dd_metadata_set") || config_metadata;
+const dd_metadata_csv = sessionStorage.getItem("dd_metadata_csv") || default_csv_url;
 
 // Update the metadata menu display when page loads
 document.addEventListener('DOMContentLoaded', function() {
   initializeData();
   
-  // Update UI with current metadata source
-  const metadataMenu = document.getElementById("current-metadata-menu");
-  if (metadataMenu) {
-    metadataMenu.innerHTML = dd_metadata_set ? dd_metadata_set : "None!";
+  // Update Modal with current metadata source
+  const metadataCSV = document.getElementById("current-metadata-csv");
+
+  if (metadataCSV) {
+    metadataCSV.innerHTML = dd_metadata_csv ? dd_metadata_csv : "None!";
+  }
+  
+  // Check if default_csv_url is empty and open setup modal if needed
+  if ((!dd_metadata_csv || dd_metadata_csv.trim() === "") && 
+      (!default_csv_url || default_csv_url.trim() === "")) {
+    // Check if the modal exists
+    const setupModal = document.getElementById('cbSetUpModal');
+    if (setupModal) {
+      // Use Bootstrap's modal method to show the modal
+      const bsModal = new bootstrap.Modal(setupModal);
+      bsModal.show();
+    }
   }
 });
 
@@ -40,7 +52,7 @@ function initializeData() {
     sessionStorage.removeItem('dd_scenes_store');
     sessionStorage.removeItem('dd_title');
     sessionStorage.removeItem('dd_author');
-    sessionStorage.removeItem('dd_metadata_set');
+    sessionStorage.removeItem('dd_metadata_csv');
     
     // Get the play URL and clean it
     let playUrl = urlParams.get("play").trim();
@@ -63,9 +75,9 @@ function initializeData() {
     // Use cached data from session storage
     loadFromSessionStorage();
   } 
-  else if (dd_metadata_set) {
+  else if (dd_metadata_csv) {
     // Use configured metadata
-    loadFromCSV(dd_metadata_set);
+    loadFromCSV(dd_metadata_csv);
   } 
   else {
     // Fallback to default
@@ -96,7 +108,7 @@ function loadFromSessionStorage() {
  */
 function loadFromCSV(source) {
   // Store the source URL first, so it's available if we need to reload
-  sessionStorage.setItem("dd_metadata_set", source);
+  sessionStorage.setItem("dd_metadata_csv", source);
   
   Papa.parse(source, {
     download: true,
@@ -222,7 +234,7 @@ function reset_dd_items() {
   sessionStorage.removeItem('dd_scenes_store');
   sessionStorage.removeItem('dd_title');
   sessionStorage.removeItem('dd_author');
-  sessionStorage.removeItem('dd_metadata_set');
+  sessionStorage.removeItem('dd_metadata_csv');
   location.reload();
 }
 
@@ -285,7 +297,7 @@ function metadata_file_selector() {
   }
   
   // Record in session store
-  sessionStorage.setItem("dd_metadata_set", selectedFile.name);
+  sessionStorage.setItem("dd_metadata_csv", selectedFile.name);
   
   // Parse the file
   dd_items_setup(selectedFile);
@@ -303,7 +315,7 @@ function metadata_url_selector() {
   }
   
   // Record in session store
-  sessionStorage.setItem("dd_metadata_set", selectedUrl);
+  sessionStorage.setItem("dd_metadata_csv", selectedUrl);
   
   // Parse from URL
   dd_items_setup(selectedUrl);
@@ -321,7 +333,7 @@ function metadata_demo_selector() {
   }
   
   // Record in session store
-  sessionStorage.setItem("dd_metadata_set", selectedUrl);
+  sessionStorage.setItem("dd_metadata_csv", selectedUrl);
   
   // Parse from demo URL
   dd_items_setup(selectedUrl);

@@ -7,7 +7,10 @@
   </head>
   <body class="d-flex flex-column h-100">
     <div id="skip-to-content"><a href="#maincontent">Skip to main content</a></div>
-   
+       {% if site.development-mode %}<div class="d-none">{% include annotate/setup/modal-button.html %}</div>
+       {% include annotate/setup/modal-body.html %}
+    {% endif %}
+
     <main id="maincontent" role="main" class="flex-shrink-0">
       {% capture style %}annotate/covers/{{site.data.theme.cover-style | default: 'minimal' }}.html{% endcapture %}
 
