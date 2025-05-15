@@ -11,16 +11,29 @@
   var md = window.markdownit();
   
   // Global viewing mode state
-  var viewMode = 'cut'; // Default view mode: 'cut', 'original', or 'both'
+  /** @type {'cut'|'original'|'both'} */
+  var viewMode = 'cut'; // Default view mode
+  /** @type {boolean} */
   var showBranching = true; // Default branch visualization state
   
   // Global flags to track if data needs comparison features
   var hasCuttingData = false;
   var hasRevisionData = false;
+  
+  // Counter for generating unique IDs - reset on each page load
+  var lineIdCounter = 0;
+  // Map to store annotation references 
+  var lineIdToAnnotationMap = {};
 
   /* LINES FUNCTIONALITY */
   /* function to make each line to page */
   function makeLine(obj) {
+    // Generate a unique ID for this line - simpler and more reliable than dataline
+    var uniqueLineId = 'line_' + (++lineIdCounter);
+    
+    // Store original dataline as a data attribute for backward compatibility
+    var datalineAttr = obj.dataline ? ' data-old-dataline="' + obj.dataline + '"' : '';
+    
     // Check for cutting/revision data (without affecting flow)
     if (obj.cutting === "TRUE") hasCuttingData = true;
     if (obj.revision) hasRevisionData = true;
@@ -33,12 +46,12 @@
     // Get global data from session storage
     const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
 
-    var index = dd_items.findIndex(i => i.dataline == obj.dataline);
-    if (index == 0) {}
+    var index = Array.isArray(dd_items) ? lineIdCounter - 1 : -1;
+    if (index <= 0) {}
     else {
       var prevLineNum = index - 1;
       var prevLineObject = dd_items[prevLineNum];
-      var prevPlayer = prevLineObject.player;
+      var prevPlayer = prevLineObject ? prevLineObject.player : null;
     }
 
     // Handle text content - support both old format (playerline) and new format (text)
@@ -59,25 +72,27 @@
       playerline = obj.revision;
     }
 
-    // Handle annotations (unchanged)
+    // Handle annotations
+    var annotation, annoId;
     if (obj.annotation) {
       if (obj.annotation.includes("ibid")) {
         var subtractingNumber = parseInt(obj.annotation.replace("ibid", ""));
-        var mainNumber = parseInt(obj.dataline) - subtractingNumber;
+        // Calculate target line number based on current counter
+        var targetLineId = 'line_' + (lineIdCounter - subtractingNumber);
+        // Get the associated annotation ID from our map
+        annoId = lineIdToAnnotationMap[targetLineId] || 'anno_' + targetLineId;
         var ibid = obj.annotation;
-        var annoId = 'anno' + mainNumber;
       } else {
-        // render markdown in annotations
-        var annotation = md.renderInline(obj.annotation);
-        annoId = 'anno' + obj.dataline;
+        // For new annotations, create a new ID and store it in the map
+        annotation = md.renderInline(obj.annotation);
+        annoId = 'anno_' + uniqueLineId;
+        lineIdToAnnotationMap[uniqueLineId] = annoId;
       }
-    } else {
-      var annotation;
     }
 
-    // Handle highlights (unchanged)
-    if (obj.highlight) {
-      var hilite = '<span class="hilite hi-' + annoId + '" data-filter="hi-' + annoId + '">' + obj.highlight + '</span>';
+    // Handle highlights (unchanged but updated to use new IDs)
+    if (obj.highlight && annoId) {
+      var hilite = '<span class="hilite hi-' + annoId + '" data-filter="' + annoId + '">' + obj.highlight + '</span>';
       playerline = playerline.replace(obj.highlight, hilite);
       // Also apply highlight to original text for consistency
       if (originalText !== playerline) {
@@ -126,9 +141,9 @@
       else if (isRevised) className = "revised-line";
     }
 
-    var line = '<section class="line ' + className + '" data-dataline="' + obj.dataline + 
-               '" data-is-cut="' + isCut + '" data-is-revised="' + isRevised + 
-               '" data-is-addition="' + isAddedLine + '"' +
+    var line = '<section class="line ' + className + '" id="' + uniqueLineId + '"' + datalineAttr + 
+               ' data-is-cut="' + isCut + '" data-is-revised="' + isRevised + 
+               ' data-is-addition="' + isAddedLine + '"' +
                (obj.revision ? ' data-original-text="' + encodeURIComponent(originalText) + '"' : '') + '>';
     
     // Add branching visualization if necessary
@@ -142,11 +157,12 @@
       line += '<div class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row mt-4 playline" style=""><div class="col-1 small"></div><div class="col-8 col-md-9 fw-bold"><p class="mb-0 playerline fw-bold">' + obj.player.replaceAll(';', '<br>') + ': </p></div></div>';
     }
     
-    // start line
-    line += '<div id="' + obj.dataline + '" class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row playline textline" style="">';
+    // start line - using the new unique ID
+    line += '<div class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row playline textline" style="">';
     
     // add act.scene.line number
-    line += '<div class="col-1 col-print-1" id="' + obj.act + '.' + obj.scene + '.' + obj.line + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + lineNumber + '</p></div>';
+    var actSceneLineId = obj.act + '.' + obj.scene + '.' + obj.line;
+    line += '<div class="col-1 col-print-1" data-scene-ref="' + actSceneLineId + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + lineNumber + '</p></div>';
     
     // add playerline and annotation if it exists
     if (annotation) {
@@ -154,14 +170,12 @@
       line += '<div class="d-none d-md-block col-12 col-md-5 small anno-container"><div class="annotation annobutton" onclick="toggleAnnotation(&apos;' + annoId + '&apos;);" id="' + annoId + '" data-filter="' + annoId + '"><div class="content"><p>' + annotation + '</p></div></div></div>';
     } else if (ibid) {
       line += '<div class="col-10 col-md-6 col-print-10 pr-0 playerline annobutton annotated ' + annoId + '" onclick="toggleAnnotation(&apos;' + annoId + '&apos;);" data-filter="' + annoId + '">' + playerline + '</div>';
-      line += '<div class="d-none d-md-block col-12 col-md-5 small anno-container"><div class="annotation annobutton ' + annoId + '" onclick="toggleAnnotation(&apos;' + annoId + '&apos;);" data-filter="' + annoId + '"><div class="content"><p> </p></div></div></div>';
     } else {
       line += '<div class="col-10 col-md-6 playerline col-print-10">' + playerline + '</div>';
       line += '<div class="d-none d-md-block col-12 col-md-5 small"></div>';
     }
 
     // Add original version for "both" view mode
-    // For added lines, we'll show "ADDED" text in italic instead of any original text
     if (viewMode === 'both' && isRevised) {
       line += '</div><div class="original-line row playline textline">';
       line += '<div class="col-1 col-print-1"></div>';
@@ -255,6 +269,15 @@
     // dont filter if no q 
     var filteredItems = arr;
 
+    // Check if any item has cutting or revision data
+    for (var i = 0, len = filteredItems.length; i < len; i++) {
+      if (filteredItems[i].cutting === "TRUE") hasCuttingData = true;
+      if (filteredItems[i].revision && filteredItems[i].revision.trim() !== "") hasRevisionData = true;
+      
+      // Early exit if we found both types
+      if (hasCuttingData && hasRevisionData) break;
+    }
+
     // add number 
     document.getElementById("numberof").innerHTML = filteredItems.length + " of " + arr.length + " items";
     
@@ -271,13 +294,14 @@
 
   // Function to show/hide comparison controls based on data availability
   function toggleComparisonUIVisibility() {
-    const comparisonControls = document.getElementById('version-comparison-controls');
-    if (comparisonControls) {
-      if (!hasCuttingData && !hasRevisionData) {
-        comparisonControls.style.display = 'none';
-      } else {
-        comparisonControls.style.display = '';
-      }
+    const versionCompare = document.getElementById('versionCompare');
+    if (!versionCompare) return;
+    
+    // Only show the comparison UI if we have cutting data or revision data
+    if (hasCuttingData || hasRevisionData) {
+      versionCompare.classList.remove('d-none');
+    } else {
+      versionCompare.classList.add('d-none');
     }
   }
 
@@ -335,6 +359,9 @@ function selectPlayers(arr) {
     });
   }
 
+  /**
+   * Scrolls to a line selected from search results and highlights it.
+   */
   function scrollToLine() {
     var lineId = document.getElementById('searchResults').value;
     // If the lineId is not a valid ID or the first option (instructions), do nothing
@@ -358,7 +385,9 @@ function selectPlayers(arr) {
     }
   }
 
-  /* Toggle branching visualization */
+  /**
+   * Toggles the visibility of branching visualization indicators.
+   */
   function toggleBranchView() {
     showBranching = !showBranching;
     const branchIndicators = document.querySelectorAll('.branch-indicator');
@@ -369,19 +398,6 @@ function selectPlayers(arr) {
         indicator.classList.add('hidden');
       }
     });
-  }
-
-  /* Change display mode based on radio selection */
-  function changeDisplayMode(mode) {
-    viewMode = mode;
-    // Get data from session storage as dd_items is now local
-    const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
-    filterItems(dd_items, "");
-    
-    // Add CSS classes for styling the different views
-    const container = document.getElementById('contents-container');
-    container.classList.remove('view-cut', 'view-original', 'view-both');
-    container.classList.add('view-' + mode);
   }
 
   /* TRANSCRIPT FUNCTIONALITY */
@@ -581,9 +597,7 @@ function selectPlayers(arr) {
     for (var i = 0; i < items.length; i++) {
       var itemcontents = items[i].getElementsByClassName("playerline")[0];
       if (itemcontents) {
-        // Find the div with an ID inside this section (this is the actual line element)
-        var lineElement = items[i].querySelector('div[id]');
-        var lineId = lineElement ? lineElement.id : '';
+        var lineId = items[i].id; // Get ID directly from the section element
         
         if (itemcontents.textContent.toUpperCase().indexOf(filter) > -1 && lineId) {
           itemcontents.classList.add("featured");
@@ -637,7 +651,7 @@ function selectPlayers(arr) {
   // Toggle annotation visibility
   function toggleAnnotation(annotation) {
     // Hide all other annotations
-    document.querySelectorAll('div').forEach(function(div) {
+    document.querySelectorAll('div.annotation').forEach(function(div) {
       if (div.id !== annotation) {
         div.classList.remove('annotate-show');
       }
@@ -694,91 +708,28 @@ function selectPlayers(arr) {
       });
     });
     
-    // Add CSS for branching and version display
-    addVersionDisplayStyles();
-  }
-
-  /* Add CSS for the branching and version display */
-  function addVersionDisplayStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Version view modes */
-      .view-both .cut-line, .view-both .revised-line, .view-both .added-line {
-        position: relative;
-        padding-left: 20px;
-        margin-bottom: 5px;
-      }
-      
-      .view-both .original-line {
-        padding-left: 30px;
-        margin-bottom: 5px;
-        color: #777;
-        font-style: italic;
-      }
-      
-      /* Branching line visualization */
-      .branch-indicator {
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background-color: #3498db;
-      }
-      
-      .branch-indicator.branch-addition {
-        background-color: #2ecc71; /* Green color for additions */
-      }
-      
-      .branch-indicator:before {
-        content: '';
-        position: absolute;
-        width: 8px;
-        height: 2px;
-        background-color: #3498db;
-        top: 50%;
-        left: 0;
-      }
-      
-      .branch-indicator.branch-addition:before {
-        background-color: #2ecc71; /* Green color for additions */
-      }
-      
-      .branch-indicator.hidden {
-        display: none;
-      }
-      
-      /* Cut and revised line styling */
-      .cut-line {
-        background-color: rgba(255, 0, 0, 0.05);
-      }
-      
-      .revised-line {
-        background-color: rgba(255, 255, 0, 0.05);
-      }
-      
-      .added-line {
-        background-color: rgba(46, 204, 113, 0.05); /* Light green background for added lines */
-      }
-      
-      /* Addition marker styling */
-      .addition-marker {
-        color: #2ecc71;
-        font-style: italic;
-      }
-      
-      /* Only display cut content in comparison view */
-      .view-cut [data-is-cut="true"] {
-        display: none;
-      }
-    `;
-    document.head.appendChild(style);
   }
 
   /* INITIALIZATION */
   function pageInit() {
-    // Pull data from session storage instead of using global dd_items
+    // Show loading overlay initially
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'flex';
+    }
+    
+    // Pull data from session storage
     let items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
+    
+    // If no items but we have a URL parameter, the data might still be loading
+    if (items.length === 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("play")) {
+        console.log("Data not yet available, will retry in 300ms");
+        setTimeout(pageInit, 300); // Try again in 300ms
+        return;
+      }
+    }
     
     // Make this local dd_items array available globally for backward compatibility
     window.dd_items = items;
@@ -862,6 +813,17 @@ function selectPlayers(arr) {
     if (p !== url.searchParams.toString()) {
       window.history.replaceState({}, '', location.pathname + (p ? '?' + p : ''));
     }
+    
+    // Hide the loading overlay after all initialization is complete
+    // Use setTimeout to ensure the content is rendered before hiding the loader
+    setTimeout(() => {
+      if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+        }, 300);
+      }
+    }, 300);
   }
 
   // Make functions globally accessible

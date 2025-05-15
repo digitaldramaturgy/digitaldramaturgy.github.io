@@ -56,7 +56,7 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
                 </div>
             </div>
         </div>
-        <div class="col-12" id="versionCompare">
+        <div class="col-12 d-none" id="versionCompare">
             <div class="mt-2 small">
                 <div class="d-flex align-items-center mb-2">
                     <span class="me-3">Play Version:</span>
@@ -87,6 +87,7 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
         </div>
     </div>
     
+{% include annotate/style/loading.html %}
 
 {% include annotate/side-scene-scroll.html %}
 <div id="contents-container">

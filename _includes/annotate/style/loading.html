@@ -1,0 +1,106 @@
+<style>
+/* Loading overlay styling */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s;
+}
+
+.loading-container {
+  text-align: center;
+}
+
+.quill-container {
+  position: relative;
+  width: 60px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.quill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 150'%3E%3Cpath d='M30,10 C25,20 10,40 10,80 C10,100 20,120 30,140 C40,120 50,100 50,80 C50,40 35,20 30,10Z' fill='%23f8f9fa' stroke='%23212529'/%3E%3Cpath d='M30,140 L28,145 L30,150 L32,145 Z' fill='%23212529'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: writing 2s infinite;
+}
+
+.ink-dots {
+  position: absolute;
+  bottom: -10px;
+  left: 30px;
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: #212529;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.dot:nth-child(1) {
+  animation: fadeInOut 2s infinite 0.2s;
+}
+
+.dot:nth-child(2) {
+  animation: fadeInOut 2s infinite 0.4s;
+}
+
+.dot:nth-child(3) {
+  animation: fadeInOut 2s infinite 0.6s;
+}
+
+.loading-text {
+  margin-top: 15px;
+  font-style: italic;
+  color: #212529;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes writing {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(-1deg) translateY(-2px); }
+  50% { transform: rotate(0deg) translateY(0); }
+  75% { transform: rotate(1deg) translateY(-2px); }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+</style>
+
+<!-- Add this before the contents-container div -->
+<div id="loading-overlay">
+  <div class="loading-container">
+    <div class="quill-container">
+      <div class="quill"></div>
+      <div class="ink-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+    <div class="loading-text">Writing...</div>
+  </div>
+</div>

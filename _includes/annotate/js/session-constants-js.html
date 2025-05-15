@@ -95,10 +95,21 @@ function loadFromSessionStorage() {
  * Load data from CSV source
  */
 function loadFromCSV(source) {
+  // Store the source URL first, so it's available if we need to reload
+  sessionStorage.setItem("dd_metadata_set", source);
+  
   Papa.parse(source, {
     download: true,
     header: true,
-    complete: (results) => dd_items_init(results),
+    complete: (results) => {
+      dd_items_init(results);
+      
+      // If we're on the script page, trigger the pageInit
+      if (typeof window.pageInit === 'function' &&
+          document.getElementById('contents-container')) {
+        window.pageInit();
+      }
+    },
     error: (err) => {
       console.error("Error parsing CSV:", err);
       alert("There was an error loading the play data. Please check the CSV source.");
@@ -250,8 +261,9 @@ function dd_items_setup(metadata_source) {
       sessionStorage.setItem("dd_metadata_source", 
         typeof metadata_source === 'string' ? metadata_source : metadata_source.name);
       
-      // Redirect to home
-      window.location.href = "{{ '/' | relative_url }}";
+      // reload the page
+      window.location.reload();
+     
     },
     error: (err) => {
       console.error("CSV parsing error:", err);

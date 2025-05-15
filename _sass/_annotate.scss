@@ -129,59 +129,75 @@
     line-height: .675em;
 }
 
-
 /* Version view modes */
-.view-both .cut-line, .view-both .revised-line {
-    position: relative;
-    padding-left: 20px;
-    margin-bottom: 5px;
-  }
-  
-  .view-both .original-line {
-    padding-left: 30px;
-    margin-bottom: 5px;
-    color: #777;
-    font-style: italic;
-  }
-  
-  /* Branching line visualization */
-  .branch-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: #3498db;
-  }
-  
-  .branch-indicator:before {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 2px;
-    background-color: #3498db;
-    top: 50%;
-    left: 0;
-  }
-  
-  .branch-indicator.hidden {
-    display: none;
-  }
-  
-  /* Cut and revised line styling */
-  .cut-line {
-    background-color: rgba(255, 0, 0, 0.05);
-  }
-  
-  .revised-line {
-    background-color: rgba(255, 255, 0, 0.05);
-  }
-  
-  /* Only display cut content in comparison view */
-  .view-cut [data-is-cut="true"] {
-    display: none;
-  }
-
+      .view-both .cut-line, .view-both .revised-line, .view-both .added-line {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 5px;
+      }
+      
+      .view-both .original-line {
+        padding-left: 30px;
+        margin-bottom: 5px;
+        color: #777;
+        font-style: italic;
+      }
+      
+      /* Branching line visualization */
+      .branch-indicator {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #3498db;
+      }
+      
+      .branch-indicator.branch-addition {
+        background-color: #2ecc71; /* Green color for additions */
+      }
+      
+      .branch-indicator:before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 2px;
+        background-color: #3498db;
+        top: 50%;
+        left: 0;
+      }
+      
+      .branch-indicator.branch-addition:before {
+        background-color: #2ecc71; /* Green color for additions */
+      }
+      
+      .branch-indicator.hidden {
+        display: none;
+      }
+      
+      /* Cut and revised line styling */
+      .cut-line {
+        background-color: rgba(255, 0, 0, 0.05);
+      }
+      
+      .revised-line {
+        background-color: rgba(255, 255, 0, 0.05);
+      }
+      
+      .added-line {
+        background-color: rgba(46, 204, 113, 0.05); /* Light green background for added lines */
+      }
+      
+      /* Addition marker styling */
+      .addition-marker {
+        color: #2ecc71;
+        font-style: italic;
+      }
+      
+      /* Only display cut content in comparison view */
+      .view-cut [data-is-cut="true"] {
+        display: none;
+      }
 
 // Print the columns at full width
 @media print {  
