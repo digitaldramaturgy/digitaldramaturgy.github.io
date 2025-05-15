@@ -1,193 +1,225 @@
 <!-- Set up modal -->
-<div class="modal fade" id="cbSetUpModal" tabindex="-1" aria-labelledby="cbSetUpModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="cbSetUpModal" tabindex="-1" aria-labelledby="cbSetUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title" id="cbSetUpModalLabel">Digital Dramaturgy Config</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-dark text-white">
+                <h1 class="modal-title" id="cbSetUpModalLabel">Welcome to Digital Dramaturgy</h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-9">
+                        <h2>Bring playscripts to life with interactive annotations</h2>
+                        <p class="lead">Use the options below you to explore pre-built demo plays, or to load your own
+                            script from the web or your local computer. </p>
+                    </div>
+                    <div class="col-md-3 p-2">
+                        <a href="https://digitaldramaturgy.github.io/docs/" class="btn btn-primary" target="_blank">
+                            <i class="bi bi-book"></i> Documentation
+                        </a><br>
+                        <a href="https://digitaldramaturgy.github.io/docs/setup/"
+                            class=" mt-3 btn btn-outline-secondary" target="_blank">
+                            <i class="bi bi-gear"></i> Full Setup Guide
+                        </a>
+                    </div>
 
-                <p>Welcome to Digital Dramaturgy!</p>
+                    <div class="col-12">
 
-                <p>Using the options below you can select demo metadata to explore a pre-built annotated play, or load your own script from the web or your local computer. The configurations are temporarily stored in your browser's session storage, so will remain only until you close this window!</p>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Current Configuration</h5>
+                                <div id="configured-text">
+                                    <p class="card-text small">The site is currently using this spreadsheet: <code
+                                            id="current-metadata-csv" class="small"></code></p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" id="refreshMetadata">Refresh Your
+                                            Data</button>
+                                    </div>
+                                </div>
+                                <div id="nonconfigured-text" style="display: none;">
+                                    <p class="card-text small">The site is not currently loading a script. See below for
+                                        configuration options.</p>
+                                    <div class="d-flex gap-2">
 
-                The site is currently configured to feature **<span id="current_play_title"></span>** via the following
-                spreadsheet:
-                - ***<span id="current-metadata-csv" class="small"></span>***
+                                        <button class="btn btn-sm btn-outline-primary" id="loadFirstDemo"
+                                            style="display: inline-block;">Load a Demo</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                Use one of the below forms to change the playscript featured. Note that configurations are stored in
-                your browser's session storage, so any changes will disappear after you quit your browser session! If
-                you'd like to make your changes permanent, go through our [How To directions](directions.html).
-
-                <div class="accordion my-5" id="cbMetadataOptions">
+                </div>
+                <div class="accordion my-4" id="cbMetadataOptions">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-3" type="button" data-bs-toggle="collapse"
+                            <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Select Demo Metadata
+                                <i class="bi bi-play-circle me-2"></i> Try a Demo Shakespeare Play
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show"
                             data-bs-parent="#cbMetadataOptions">
                             <div class="accordion-body">
-                                <h3>Use a Demo Shakespeare Link</h3>
-                                <p>
-                                    <select id="demoUrl" class="form-select form-select-lg mb-3"
-                                        aria-label=".form-select-lg example" onchange="metadata_demo_selector();">
-                                        <option selected>Select a Play</option>
-                                        {% for demo in site.data.demo-links %}
-                                        <option value="{{demo.link}}">{{demo.title}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </p>
-                                <ul>
-                                    <li>If you'd like to use one of these plays for your own annotations, use <a
-                                            href="directions.html#option-a-use-a-prepared-shakespeare-play">the dropdown
-                                            tool on our How To page</a> to get a copy of the play as a Google Sheet.
-                                    </li>
-                                </ul>
+                                <p>Explore a pre-annotated Shakespeare play to see Digital Dramaturgy in action:</p>
+                                <select id="demoUrl" class="form-select form-select-lg mb-3"
+                                    aria-label=".form-select-lg example" onchange="metadata_demo_selector();">
+                                    <option selected>Select a Play</option>
+                                    {% for demo in site.data.demo-links %}
+                                    <option value="{{demo.link}}">{{demo.title}}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="alert alert-success">
+                                    <i class="bi bi-lightbulb"></i> Want to use one of these plays for your own
+                                    annotations? Visit our <a
+                                        href="https://digitaldramaturgy.github.io/docs/setup/spreadsheet/"
+                                        class="alert-link">spreadsheet preparation guide</a> to get started.
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-3 collapsed" type="button" data-bs-toggle="collapse"
+                            <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Use Metadata CSV Link (e.g. Google Sheet)
+                                <i class="bi bi-google me-2"></i> Use Your Google Sheet
                             </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#cbMetadataOptions">
                             <div class="accordion-body">
-                                <h3>Use a Published Google Sheet <a class="ml-3 btn btn-outline-primary btn-sm small"
-                                        type="button" data-bs-toggle="modal"
-                                        data-bs-target="#sheetsInstructionsModal">Instructions</a></h3>
-                                <p>
+                                <p>Already have your play prepared in a Google Sheet? Publish it and paste the link
+                                    here:</p>
                                 <form id="metadataUrl" onsubmit="metadata_url_selector(); return false;">
-                                    <div class="input-group">
+                                    <div class="input-group mb-3">
                                         <input type="url" id="csvUrl" class="form-control" pattern="https://.*"
-                                            placeholder="Paste in the URL to your Google Sheet">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-dark" type="submit">
-                                                Submit
-                                            </button>
-                                        </div>
+                                            placeholder="Paste your published Google Sheet URL">
+                                        <button class="btn btn-primary" type="submit">
+                                            Load Play
+                                        </button>
                                     </div>
                                 </form>
-                                </p>
-                                <ul>
-                                    <li><strong>NOTE:</strong> If you are using a Google Sheet, you can add a parameter
-                                        to the end of the site like so -
-                                        <em>https://thecdil.github.io/dramabase/?play={YOUR GOOGLE SHEET LINK HERE}</em>
-                                        - to share a link to your work with others.
-                                    </li>
-                                </ul>
+                                <div class="card border-light mb-3">
+                                    <div class="card-header">How to Publish Your Google Sheet</div>
+                                    <div class="card-body">
+                                        <ol class="mb-0">
+                                            <li>In your Google Sheet, click "File" > "Share" > "Publish to the Web"</li>
+                                            <li>Select "Entire Document" and "Comma-separated values (.csv)"</li>
+                                            <li>Click "Publish" and copy the link</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-link"></i> <strong>Sharing tip:</strong> You can share your work by
+                                    adding your Google Sheet link to the end of our URL like:
+                                    <code>https://digitaldramaturgy.github.io/?play={YOUR-GOOGLE-SHEET-LINK}</code>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-3 collapsed" type="button" data-bs-toggle="collapse"
+                            <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Use Metadata CSV from your Computer
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i> Upload CSV from Your Computer
                             </button>
                         </h2>
                         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#cbMetadataOptions">
                             <div class="accordion-body">
-                                <h3>Use Metadata CSV from Computer <a class="ml-3 btn btn-outline-primary btn-sm small"
-                                        type="button" data-bs-toggle="modal"
-                                        data-bs-target="#localCSVInstructionsModal">Instructions</a></h3>
-                                <p>
+                                <p>Have a CSV file on your computer? Upload it directly:</p>
                                 <form id="metadataFile" onsubmit="metadata_file_selector(); return false;">
-                                    <div class="input-group">
+                                    <div class="input-group mb-3">
                                         <input type="file" accept=".csv" id="csvFile" class="form-control">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-dark" type="submit">
-                                                Submit
-                                            </button>
-                                        </div>
+                                        <button class="btn btn-primary" type="submit">
+                                            Load Play
+                                        </button>
                                     </div>
                                 </form>
-                                </p>
+                                <div class="card border-light">
+                                    <div class="card-header">How to Download from Google Sheets</div>
+                                    <div class="card-body">
+                                        <ol class="mb-0">
+                                            <li>In your Google Sheet, click "File" > "Download" > "Comma Separated
+                                                Values (.csv)"</li>
+                                            <li>Upload the downloaded file using the form above</li>
+                                        </ol>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="row mt-5">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title"><i class="bi bi-mortarboard"></i> For Educators</h4>
+                                <p class="card-text">Create collaborative annotation projects for drama courses,
+                                    allowing students to contribute research and analysis to a shared digital edition.
+                                </p>
+                                <a href="https://digitaldramaturgy.github.io/docs/examples/"
+                                    class="btn btn-sm btn-outline-primary">See Classroom Examples</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title"><i class="bi bi-theatre"></i> For Theater Companies</h4>
+                                <p class="card-text">Preserve dramaturgical research, performance notes, and production
+                                    insights as a lasting digital resource.</p>
+                                <a href="https://digitaldramaturgy.github.io/docs/features/"
+                                    class="btn btn-sm btn-outline-primary">Explore Features</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <h3 id="how-to-publish-your-google-sheet">How to Publish Your Google Sheet</h3>
-
-                <ul>
-                    <li>In your Google Sheet, ensure that your metadata is the first sheet in the spreadsheet (by
-                        default named "Sheet1"). The tabs can be dragged to reorder if necessary.</li>
-                    <li>Click “File”, “Share”, and select “Publish to the Web”.</li>
-                    <li>On the popup modal, use the dropdowns in “Link” tab to select “Entire Document” and
-                        “Comma-separated values (.csv)” options, then click “Publish” button.</li>
-                    <li>Copy the link that is provided.</li>
-                    <li>In the "Use Metadata CSV Link" form above, paste the link and click "Submit".</li>
-                </ul>
-
-                <p>For example, a published link looks like:</p>
-
-                <p><code
-                        class="language-plaintext highlighter-rouge">https://docs.google.com/spreadsheets/d/e/2PACX-1vSn7AA-cbsXT3_nNUGftc1ab-CKXOJHMQCIENeR9NHElbyI9_qA99o0-HNZdG04v-M2_N21bUe_krQQ/pub?output=csv</code>
-                </p>
-
-                <h3 id="how-to-download-your-google-sheet-as-csv">How to Download Your Google Sheet as CSV</h3>
-
-                <ul>
-                    <li>On your Google Sheet, switch to the sheet tab that contains your metadata (by default "Sheet1").
-                    </li>
-                    <li>Click “File”, “Download”, and select as "Comma Separated Values (.csv)”</li>
-                    <li>The file should download to your computer’s Downloads folder</li>
-                    <li>In the "Use Metadata CSV from your Computer" form above, click “Choose file” and navigate in
-                        your file explorer to select the downloaded CSV, then click "Submit".</li>
-                </ul>
-
-                <h3 id="other-web-csv">Other Web CSV</h3>
-
-                <p>If you have a CSV available anywhere on the web, you can use it by referencing the full URL.
-                    However, depending on where your CSV is hosted, you may encounter <a
-                        href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">CORS errors</a>.</p>
-
-                <p>For example, to use a CSV hosted in a GitHub repository, use the “raw” link:</p>
-
-                <p><code
-                        class="language-plaintext highlighter-rouge">https://raw.githubusercontent.com/CollectionBuilder/collectionbuilder-sample-data/main/psychiana_cbdemo_gh.csv</code>
-                </p>
-
-                <p>Paste the link into the "Use Metadata CSV Link" form above and click Submit.</p>
-
-                <h2 id="share-via-url">Share via URL</h2>
-
-                <p>To share your work with others, the default template can also load web CSV metadata specified as a
-                    parameter in the URL.
-                    Add your full metadata link to the end of the CB-Sheets instance’s URL as the “csv” option, like:
-                </p>
-
-                <p><code
-                        class="language-plaintext highlighter-rouge">https://collectionbuilder.github.io/collectionbuilder-sheets/?csv=&lt;your metadata url here&gt;</code>
-                </p>
-
-                <p>For example:</p>
-
-                <p><code
-                        class="language-plaintext highlighter-rouge">https://collectionbuilder.github.io/collectionbuilder-sheets/?csv=https://raw.githubusercontent.com/CollectionBuilder/collectionbuilder-sample-data/main/psychiana_cbdemo_gh.csv</code>
-                </p>
-
-                <p>or</p>
-
-                <p><code
-                        class="language-plaintext highlighter-rouge">https://collectionbuilder.github.io/collectionbuilder-sheets/?csv=https://docs.google.com/spreadsheets/d/e/2PACX-1vSn7AA-cbsXT3_nNUGftc1ab-CKXOJHMQCIENeR9NHElbyI9_qA99o0-HNZdG04v-M2_N21bUe_krQQ/pub?output=csv</code>
-                </p>
-
-                <p><strong>Note:</strong> the metadata URL can not have any <code
-                        class="language-plaintext highlighter-rouge">&amp;</code> (i.e. additional query string
-                    parameters).
-                    Having a <code class="language-plaintext highlighter-rouge">&amp;</code> in the URL will cause the
-                    parsing to fail.</p>
-
+                <div class="text-center mt-5">
+                    <p><strong>Ready to create your own Digital Dramaturgy site?</strong> Select "Use This Template" at
+                        the top of Our GitHub Repository.</p>
+                    <a href="https://www.github.com/digitaldramaturgy/digitaldramaturgy.github.io/"
+                        class="btn btn-lg btn-success">Set Up Your GitHub Repository <svg
+                            xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor"
+                            class="bi bi-github" viewBox="0 0 16 16">
+                            <path
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Add refresh metadata function -->
+<script>
+    document.getElementById('refreshMetadata').addEventListener('click', function () {
+        location.reload();
+    });
+
+    // Check if metadata is empty in session storage and show the Try Demo button if so
+    document.addEventListener('DOMContentLoaded', function () {
+        const metadataCSV = sessionStorage.getItem('dd_metadata_csv');
+        const configuredText = document.getElementById('configured-text');
+        const nonconfiguredText = document.getElementById('nonconfigured-text');
+
+        // Show the button if metadata is empty or null in session storage
+        if (!metadataCSV || metadataCSV === '') {
+            nonconfiguredText.style.display = 'block';
+            configuredText.style.display = 'none';
+        }
+
+        // Add click event to load the first demo
+        loadFirstDemoButton.addEventListener('click', function () {
+            const demoSelect = document.getElementById('demoUrl');
+            if (demoSelect && demoSelect.options.length > 1) {
+                // Select the first actual demo (index 1, since index 0 is "Select a Play")
+                demoSelect.selectedIndex = 1;
+                // Trigger the change event to load the selected demo
+                metadata_demo_selector();
+            }
+        });
+    });
+</script>
