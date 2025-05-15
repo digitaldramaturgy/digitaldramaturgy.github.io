@@ -6,8 +6,8 @@
         </div>
         <div id="title" class="{% if site.organization-logo-banner %}col-md-9{% else %}col-12{% endif %} mt-3">
             <h1><a class="text-dark fw-normal" href="{{ site.baseurl }}/" id="work_title"></a></h1>
-            <h3><span class="by-text" id="by_text">BY </span>
-            <span class="author" id="work_author"></span></h3>	 
+            <p class="h4"><span class="fst-italic small" id="by_text">by </span>
+            <span class="author" id="work_author"></span></p>	 
         </div>
         {% else %}
         <div id="project-title" class="col-12 mt-2">
@@ -24,3 +24,4 @@
         {% endif %}
     </div>
 </div>
+{% include annotate/setup/modal-body.html %}

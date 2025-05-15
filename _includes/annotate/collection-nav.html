@@ -47,7 +47,8 @@
         </ul>
         
         <div class="mt-5">
-        {% include annotate/nav-refresh-data.html %}
+          {% if site.development-mode == true %}{% include annotate/setup/modal-button.html %}{% endif %}
+
       </div>
 
       </div>
