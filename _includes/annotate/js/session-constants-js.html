@@ -195,7 +195,7 @@ function buildScenesNavigation() {
   if (!scenesNavDropdown) return;
   
   scenesNav = [];
-  const ref_url = "{{ '/?scene=' | relative_url }}";
+  const ref_url = "{{ '/script.html?scene=' | relative_url }}";
   
   dd_scenes.forEach(scene => {
     const act = scene.split('.')[0];
