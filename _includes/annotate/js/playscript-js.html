@@ -22,8 +22,12 @@
   
   // Counter for generating unique IDs - reset on each page load
   var lineIdCounter = 0;
+  // Counter for spoken dialogue line numbering
+  var dialogueLineCounter = 0;
   // Map to store annotation references 
   var lineIdToAnnotationMap = {};
+  // Variable to track the last player
+  var lastPlayer = null;
 
   /* LINES FUNCTIONALITY */
   /* function to make each line to page */
@@ -41,17 +45,6 @@
     // Early return if cut and we're in cut mode (original behavior preserved)
     if (obj.cutting === "TRUE" && viewMode === 'cut') {
       return '';
-    }
-
-    // Get global data from session storage
-    const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
-
-    var index = Array.isArray(dd_items) ? lineIdCounter - 1 : -1;
-    if (index <= 0) {}
-    else {
-      var prevLineNum = index - 1;
-      var prevLineObject = dd_items[prevLineNum];
-      var prevPlayer = prevLineObject ? prevLineObject.player : null;
     }
 
     // Handle text content - support both old format (playerline) and new format (text)
@@ -100,8 +93,16 @@
       }
     }
 
+    // Determine if this is a stage direction
+    var isStageDirection = obj.player === "StageDirection";
+    
+    // Increment dialogue counter only for spoken lines (not stage directions) and not cut lines
+    if (!isStageDirection && obj.cutting !== "TRUE") {
+      dialogueLineCounter++;
+    }
+
     // Determine player class
-    if (obj.player == "StageDirection") {
+    if (isStageDirection) {
       var player;
       if (playerline && playerline.toLowerCase().startsWith("act ")) {
         var playerClass = "StageDirection actstart act" + obj.act + "-start";
@@ -115,19 +116,23 @@
           playerline = '[' + playerline + ']';
         }
       }
-    } else if (obj.player == prevPlayer) {
-      var player;
-      var playerClass = obj.player.replaceAll(' ', '');
     } else {
-      var player = obj.player;
-      var playerClass = obj.player.replaceAll(' ', '');
+      // Fix: Use the lastPlayer variable to track current speaker
+      if (obj.player == lastPlayer) {
+        var player;
+        var playerClass = obj.player ? obj.player.replace(/\s+/g, '') : '';
+      } else {
+        var player = obj.player;
+        var playerClass = obj.player ? obj.player.replace(/\s+/g, '') : '';
+        // Update the lastPlayer with the current player
+        lastPlayer = obj.player;
+      }
     }
 
-    // Line numbers
-    if (parseInt(obj.line) % 5 === 0) {
-      var lineNumber = obj.act + '.' + obj.scene + '.' + obj.line;
-    } else {
-      var lineNumber = '';
+    // Line numbers - display every 5th line for spoken dialogue
+    var lineNumber = '';
+    if (!isStageDirection && dialogueLineCounter % 5 === 0) {
+      lineNumber = obj.act + '.' + obj.scene + '.' + dialogueLineCounter;
     }
 
     // Create line with data attributes for efficient version switching
@@ -154,15 +159,22 @@
     
     // add player if new player to announce
     if (player) {
-      line += '<div class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row mt-4 playline" style=""><div class="col-1 small"></div><div class="col-8 col-md-9 fw-bold"><p class="mb-0 playerline fw-bold">' + obj.player.replaceAll(';', '<br>') + ': </p></div></div>';
+      var safePlayerClass = playerClass ? playerClass.replace(/;/g, ' ') : '';
+      var safePlayer = obj.player ? obj.player.replace(/;/g, '<br>') : '';
+      line += '<div class="' + safePlayerClass + ' act' + obj.act + 'scene' + obj.scene + ' row mt-4 playline" style=""><div class="col-1 small"></div><div class="col-8 col-md-9 fw-bold"><p class="mb-0 playerline fw-bold">' + safePlayer + ': </p></div></div>';
     }
     
     // start line - using the new unique ID
-    line += '<div class="' + playerClass.replaceAll(';', ' ') + ' act' + obj.act + 'scene' + obj.scene + ' row playline textline" style="">';
+    var safePlayerClass = playerClass ? playerClass.replace(/;/g, ' ') : '';
+    line += '<div class="' + safePlayerClass + ' act' + obj.act + 'scene' + obj.scene + ' row playline textline" style="">';
     
-    // add act.scene.line number
-    var actSceneLineId = obj.act + '.' + obj.scene + '.' + obj.line;
-    line += '<div class="col-1 col-print-1" data-scene-ref="' + actSceneLineId + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + lineNumber + '</p></div>';
+    // add act.scene.line number using automatic dialogue counter
+    var actSceneLineId = obj.act + '.' + obj.scene + '.' + (!isStageDirection ? dialogueLineCounter : '');
+    
+    // Store the automatic line number as a data attribute for reference
+    line += '<div class="col-1 col-print-1" data-scene-ref="' + actSceneLineId + '" data-dialogue-line="' + 
+            (!isStageDirection ? dialogueLineCounter : '') + '"><p class="small mt-2 text-end m-0" style="font-size:10px;">' + 
+            lineNumber + '</p></div>';
     
     // add playerline and annotation if it exists
     if (annotation) {
@@ -181,8 +193,8 @@
       line += '<div class="col-1 col-print-1"></div>';
       
       if (isAddedLine) {
-        // For added lines, show a placeholder instead of empty original text
-        line += '<div class="col-10 col-md-6 playerline col-print-10 original-text addition-marker">[ADDED]</div>';
+        // For added lines, don't show anything
+        
       } else {
         // For regular revisions, show original text
         line += '<div class="col-10 col-md-6 playerline col-print-10 original-text">' + originalText + '</div>';
@@ -265,6 +277,9 @@
     // Reset the flags for checking cutting/revision data
     hasCuttingData = false;
     hasRevisionData = false;
+    
+    // Reset the dialogue line counter when filtering
+    dialogueLineCounter = 0;
     
     // dont filter if no q 
     var filteredItems = arr;
@@ -722,11 +737,22 @@ function selectPlayers(arr) {
     let items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
     
     // If no items but we have a URL parameter, the data might still be loading
+    const urlParams = new URLSearchParams(window.location.search);
     if (items.length === 0) {
-      const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("play")) {
         console.log("Data not yet available, will retry in 300ms");
         setTimeout(pageInit, 300); // Try again in 300ms
+        return;
+      } else {
+        // No items and no play parameter - hide loading overlay
+        if (loadingOverlay) {
+          loadingOverlay.style.opacity = '0';
+          setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+          }, 100);
+        }
+        // If there's no data at all, we shouldn't try to process anything further
+        console.log("No data available and no play parameter");
         return;
       }
     }
@@ -821,9 +847,9 @@ function selectPlayers(arr) {
         loadingOverlay.style.opacity = '0';
         setTimeout(() => {
           loadingOverlay.style.display = 'none';
-        }, 300);
+        }, 100);
       }
-    }, 300);
+    }, 100);
   }
 
   // Make functions globally accessible
