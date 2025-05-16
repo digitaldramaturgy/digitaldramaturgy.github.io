@@ -33,7 +33,7 @@
                                     <p class="card-text small">The site is currently using this spreadsheet: <code
                                             id="current-metadata-csv" class="small"></code></p>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" onclick="reset_dd_items();">Refresh Your
+                                        <button class="btn btn-sm btn-outline-primary" id="refreshMetadata">Refresh Your
                                             Data</button>
                                     </div>
                                 </div>
@@ -203,18 +203,9 @@
 <!-- Add refresh metadata function -->
 <script>
     document.getElementById('refreshMetadata').addEventListener('click', function () {
-         // First, alert user that we're resetting
-  window.alert("Session data will be reset. The page will reload.");
-  // get csv in session store
-var refresh_dd_metadata_csv = sessionStorage.getItem("dd_metadata_csv") || default_csv_url;  
+        reset_dd_items();
 
-  // Simply clear ALL session storage
-  sessionStorage.clear();
-   
-  // Parse from demo URL
-  dd_items_setup(refresh_dd_metadata_csv);
 
-  
     });
 
     // Check if metadata is empty in session storage and show the Try Demo button if so
