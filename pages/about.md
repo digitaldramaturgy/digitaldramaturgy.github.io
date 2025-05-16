@@ -26,9 +26,9 @@ Digital Dramaturgy was awarded an NEH grant to support its development in 2025, 
 
 ## Documentation
 
-- **[Full Digital Dramaturgy Documentation](https://digitaldramaturgy.github.io/docs/) -** Our documentation provides how to guides, tutorials, and stepped instruction for building your own Oral History as Data project.  
+- **[Full Digital Dramaturgy Documentation](https://digitaldramaturgy.github.io/docs/) -** Our documentation provides how to guides, tutorials, and stepped instruction for building your own Digital Dramaturgy project.  
 
-- **[CollectionBuilder Documentation](https://collectionbuilder.github.io/docs/) -** OHD is built on top of a CollectionBuilder-CSV template, so any options used in CSV can be used here. 
+- **[CollectionBuilder Documentation](https://collectionbuilder.github.io/docs/) -** Digital Dramaturgy is built on top of a CollectionBuilder-CSV template, so any options used in CSV can be used here. 
 
 
 Please feel free to contact me with any questions. I'm happy to help. <dbecker@uidaho.edu>
