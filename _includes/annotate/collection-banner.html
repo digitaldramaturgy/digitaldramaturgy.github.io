@@ -9,7 +9,7 @@
             </a>
         </div>
         {% else %}
-            <p class="fst-italic text-end fs-5">A <a target="_blank" href="https://digitialdramaturgy.github.io" class="text-dark">Digital Dramaturgy</a> Project</p>
+            <p class="fst-italic text-end fs-5">A <a target="_blank" href="https://digitaldramaturgy.github.io/" class="text-dark">Digital Dramaturgy</a> Project</p>
         {% endif %}
         </div>
         <div id="title" class="{% if site.organization-logo-banner %}col-md-9{% else %}col-12{% endif %} mt-3">
@@ -20,7 +20,15 @@
         {% else %}
         <div id="project-title" class="col-12 mt-2">
             <p class="text-end mb-2"><a class="text-dark fw-normal fs-3" href="{{ site.baseurl }}/" id="work_title"></a></p>	 
-            <p class="fst-italic text-end fs-6">A <a target="_blank" href="https://cdil.lib.uidaho.edu/projects/dramaturgy.html" class="text-dark">Digital Dramaturgy</a> Project</p>
+            {% if site.organization-logo-banner %}
+        <div class="d-none d-lg-block text-end">
+            <a class="btn btn-outline-light" href="{{ site.organization-link }}" target="_blank" rel="noopener">
+                <img class="img-fluid" src="{{ site.organization-logo-banner | relative_url }}" title="{{ site.organization-name }}" alt="{{ site.organization-name }} home" style="max-width: 100px; height: auto;">
+            </a>
+        </div>
+        {% else %}
+            <p class="fst-italic text-end fs-5">A <a target="_blank" href="https://digitaldramaturgy.github.io/" class="text-dark">Digital Dramaturgy</a> Project</p>
+        {% endif %}
         </div>
         {% endif %}
     </div>
