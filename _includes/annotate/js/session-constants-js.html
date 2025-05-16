@@ -112,6 +112,14 @@ function loadFromSessionStorage() {
  * Load data from CSV source
  */
 function loadFromCSV(source) {
+  // Don't proceed if source is empty or invalid
+  if (!source || source.trim() === "") {
+    console.warn("No valid CSV source provided");
+    const playTitle = "A Play";
+  const authorName = "";
+  updateUIWithTitleAndAuthor(playTitle, authorName);
+    return;
+  }
   // Store the source URL first, so it's available if we need to reload
   sessionStorage.setItem("dd_metadata_csv", source);
   
