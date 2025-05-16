@@ -1,4 +1,11 @@
 <!-- Set up modal -->
+ <style>
+  /* Add hover effect to accordion buttons that matches the non-collapsed state */
+  .accordion-button:hover {
+    color: #0c63e4;
+    background-color: #e7f1ff;
+  }
+</style>
 <div class="modal fade" id="cbSetUpModal" tabindex="-1" aria-labelledby="cbSetUpModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -53,15 +60,16 @@
                     </div>
 
                 </div>
+                <p class="fs-4">Three Options to Load Play Data</p>
                 <div class="accordion my-4" id="cbMetadataOptions">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse"
+                            <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                <i class="bi bi-play-circle me-2"></i> Try a Demo Shakespeare Play
+                                <i class="bi bi-play-circle me-2"></i>1. Try a Demo Shakespeare Play
                             </button>
                         </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show"
+                        <div id="collapseOne" class="accordion-collapse collapse"
                             data-bs-parent="#cbMetadataOptions">
                             <div class="accordion-body">
                                 <p>Explore a pre-annotated Shakespeare play to see Digital Dramaturgy in action:</p>
@@ -85,7 +93,7 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                <i class="bi bi-google me-2"></i> Use Your Google Sheet
+                                <i class="bi bi-google me-2"></i>2. Use Your Google Sheet
                             </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#cbMetadataOptions">
@@ -128,7 +136,7 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                <i class="bi bi-file-earmark-spreadsheet me-2"></i> Upload CSV from Your Computer
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>3. Upload CSV from Your Computer
                             </button>
                         </h2>
                         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#cbMetadataOptions">
