@@ -1,4 +1,4 @@
-{% assign plays = site.data.shakestarter %}
+{% assign plays = site.data.all-demo-links %}
 <select id="play-select" class="form-select form-select-lg mb-3  w-75" name="play" onchange="openPlayLinkInNewTab()">
     <option value="">Copy a Starter Play/Spreadsheet</option>{% for play in plays %}
     <option value="{{play.spreadsheet}}">{{play.title}}</option>{%endfor%}
