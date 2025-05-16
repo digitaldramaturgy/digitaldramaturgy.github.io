@@ -68,8 +68,23 @@
     // Handle annotations
     var annotation, annoId;
     if (obj.annotation) {
-      if (obj.annotation.includes("ibid")) {
-        var subtractingNumber = parseInt(obj.annotation.replace("ibid", ""));
+      // Make case-insensitive check for 'ibid'
+      if (obj.annotation.toLowerCase().startsWith("ibid")) {
+        // Extract the number after "ibid", handling different formats
+        var ibidText = obj.annotation.toLowerCase();
+        var subtractingNumber;
+        
+        // Check if there's a number after "ibid"
+        var numMatch = ibidText.match(/ibid(\d+)/);
+        
+        if (numMatch && numMatch[1]) {
+          // If explicit number provided (e.g., "ibid3"), use it
+          subtractingNumber = parseInt(numMatch[1]);
+        } else {
+          // If just "ibid" with no number, default to 1 (previous line)
+          subtractingNumber = 1;
+        }
+        
         // Calculate target line number based on current counter
         var targetLineId = 'line_' + (lineIdCounter - subtractingNumber);
         // Get the associated annotation ID from our map
