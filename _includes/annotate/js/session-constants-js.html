@@ -21,13 +21,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Update Modal with current metadata source
   const metadataCSV = document.getElementById("current-metadata-csv");
-
   if (metadataCSV) {
     metadataCSV.innerHTML = dd_metadata_csv ? dd_metadata_csv : "None!";
   }
   
+  // Check URL parameters for modal=false flag
+  const urlParams = new URLSearchParams(window.location.search);
+  const suppressModal = urlParams.get('modal') === 'false';
+  
   // Check if default_csv_url is empty and open setup modal if needed
-  if ((!dd_metadata_csv || dd_metadata_csv.trim() === "") && 
+  // Only show modal if suppressModal is false
+  if (!suppressModal && 
+      (!dd_metadata_csv || dd_metadata_csv.trim() === "") && 
       (!default_csv_url || default_csv_url.trim() === "")) {
     // Check if the modal exists
     const setupModal = document.getElementById('cbSetUpModal');
@@ -230,12 +235,28 @@ function buildScenesNavigation() {
  * Reset all stored data and reload the page
  */
 function reset_dd_items() {
+  // First, alert user that we're resetting
+  window.alert("Session data will be reset. The page will reload.");
+  
+  // Store the default URL before clearing storage
+  const csvUrl = dd_metadata_csv || "";
+  
+  // Only clear play-related data, not ALL session storage
   sessionStorage.removeItem('dd_items_store');
   sessionStorage.removeItem('dd_scenes_store');
   sessionStorage.removeItem('dd_title');
   sessionStorage.removeItem('dd_author');
-  sessionStorage.removeItem('dd_metadata_csv');
-  location.reload();
+  
+  // If there's a default URL, set it in session storage
+  // Otherwise, remove any existing metadata CSV
+  if (csvUrl && csvUrl.trim() !== "") {
+    sessionStorage.setItem("dd_metadata_csv", csvUrl);
+  } else {
+    sessionStorage.removeItem("dd_metadata_csv");
+  }
+  
+  // Reload with a clean URL
+  window.location = window.location.pathname;
 }
 
 /**

@@ -18,9 +18,9 @@
                         <a href="https://digitaldramaturgy.github.io/docs/" class="btn btn-primary" target="_blank">
                             <i class="bi bi-book"></i> Documentation
                         </a><br>
-                        <a href="https://digitaldramaturgy.github.io/docs/setup/"
-                            class=" mt-3 btn btn-outline-secondary" target="_blank">
-                            <i class="bi bi-gear"></i> Full Setup Guide
+                        <a href="{{'directions.html' | relative_url}}" class="mt-3 btn btn-outline-secondary"
+                            target="_blank">
+                            <i class="bi bi-gear"></i> Quick Setup Guide
                         </a>
                     </div>
 
@@ -33,13 +33,15 @@
                                     <p class="card-text small">The site is currently using this spreadsheet: <code
                                             id="current-metadata-csv" class="small"></code></p>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" id="refreshMetadata">Refresh Your
+                                        <button class="btn btn-sm btn-outline-primary" onclick="reset_dd_items();">Refresh Your
                                             Data</button>
                                     </div>
                                 </div>
                                 <div id="nonconfigured-text" style="display: none;">
                                     <p class="card-text small">The site is not currently loading a script. See below for
-                                        configuration options.</p>
+                                        configuration options. Click the button below to load an annotated version of
+                                        <i>A Midsummer Night's Dream</i> and see the tool in action.
+                                    </p>
                                     <div class="d-flex gap-2">
 
                                         <button class="btn btn-sm btn-outline-primary" id="loadFirstDemo"
@@ -107,6 +109,11 @@
                                             <li>Select "Entire Document" and "Comma-separated values (.csv)"</li>
                                             <li>Click "Publish" and copy the link</li>
                                         </ol>
+                                        <p class="small ms-5">A link will look like: <code
+                                                class="small">https://docs.google.com/spreadsheets/d/e/2PACX-1vTR-PrLzlbvViHiBNVdkzUZ8iPjkw-LMmugCYpNYs0QWkvLmpi6hWXc9_edxYx5D7vAUoG369W4-5wo/pub?output=csv</code>
+                                        </p>
+
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="alert alert-info">
@@ -196,7 +203,18 @@
 <!-- Add refresh metadata function -->
 <script>
     document.getElementById('refreshMetadata').addEventListener('click', function () {
-        location.reload();
+         // First, alert user that we're resetting
+  window.alert("Session data will be reset. The page will reload.");
+  // get csv in session store
+var refresh_dd_metadata_csv = sessionStorage.getItem("dd_metadata_csv") || default_csv_url;  
+
+  // Simply clear ALL session storage
+  sessionStorage.clear();
+   
+  // Parse from demo URL
+  dd_items_setup(refresh_dd_metadata_csv);
+
+  
     });
 
     // Check if metadata is empty in session storage and show the Try Demo button if so
@@ -212,7 +230,7 @@
         }
 
         // Add click event to load the first demo
-        loadFirstDemoButton.addEventListener('click', function () {
+        document.getElementById('loadFirstDemo').addEventListener('click', function () {
             const demoSelect = document.getElementById('demoUrl');
             if (demoSelect && demoSelect.options.length > 1) {
                 // Select the first actual demo (index 1, since index 0 is "Select a Play")
