@@ -263,7 +263,12 @@ function reset_dd_items() {
  * Parse metadata from a CSV file or URL
  */
 function dd_items_setup(metadata_source) {
-  sessionStorage.removeItem('dd_items_store');
+    sessionStorage.removeItem('dd_items_store');
+    sessionStorage.removeItem('dd_scenes_store');
+    sessionStorage.removeItem('dd_author');
+    sessionStorage.removeItem('dd_author');
+
+
   
   Papa.parse(metadata_source, {
     download: true,
@@ -289,9 +294,14 @@ function dd_items_setup(metadata_source) {
       if (dd_items.length > 0 && dd_items[0].play) {
         sessionStorage.setItem("dd_title", dd_items[0].play);
       }
+
+      // Store title if available
+      if (dd_items.length > 0 && dd_items[0].author) {
+        sessionStorage.setItem("dd_author", dd_items[0].author);
+      }
       
       // Store source reference
-      sessionStorage.setItem("dd_metadata_source", 
+      sessionStorage.setItem("dd_metadata_csv", 
         typeof metadata_source === 'string' ? metadata_source : metadata_source.name);
       
       // reload the page
