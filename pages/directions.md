@@ -58,6 +58,9 @@ The simplest way to publish your playscript spreadsheet on Digital Dramaturgy is
  
 - Click around and check your play -- any edits you make to your Google Sheet will now update your site. 
 - If you make edits to your spreadsheet, click the "Refresh Playscript Data" button via the side-nav menu to refresh the website
+
+#### Share Your Temporary Site
+
 - If you'd like to share a link to the site or, add your link as a parameter after the digital dramaturgy website like so: 
     - ***https://digitaldramaturgy.github.io?play="{YOUR GOOGLE SHEET LINK HERE}***
     - This enables you to send this option as a link to others with whom you might want to share the site.
