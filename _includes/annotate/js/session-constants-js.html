@@ -57,6 +57,7 @@ function initializeData() {
     sessionStorage.removeItem('dd_scenes_store');
     sessionStorage.removeItem('dd_title');
     sessionStorage.removeItem('dd_author');
+    sessionStorage.removeItem('dd_description');
     sessionStorage.removeItem('dd_metadata_csv');
     
     // Get the play URL and clean it
@@ -97,12 +98,13 @@ function loadFromSessionStorage() {
   dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
   dd_scenes = JSON.parse(sessionStorage.getItem("dd_scenes_store") || "[]");
   
-  // If we have stored title/author, update UI immediately
+  // If we have stored title/author/description, update UI immediately
   const storedTitle = sessionStorage.getItem("dd_title");
   const storedAuthor = sessionStorage.getItem("dd_author");
+  const storedDescription = sessionStorage.getItem("dd_description");
   
   if (storedTitle) {
-    updateUIWithTitleAndAuthor(storedTitle, storedAuthor || "");
+    updateUIWithMetadata(storedTitle, storedAuthor || "", storedDescription || "");
   }
   
   buildScenesNavigation();
@@ -116,8 +118,9 @@ function loadFromCSV(source) {
   if (!source || source.trim() === "") {
     console.warn("No valid CSV source provided");
     const playTitle = "A Play";
-  const authorName = "";
-  updateUIWithTitleAndAuthor(playTitle, authorName);
+    const authorName = "";
+    const description = "";
+    updateUIWithMetadata(playTitle, authorName, description);
     return;
   }
   // Store the source URL first, so it's available if we need to reload
@@ -146,12 +149,14 @@ function loadFromCSV(source) {
  * Process items from CSV and initialize the page
  */
 function dd_items_init(results) {
-  // Extract play title and author from data
+  // Extract play title, author, and description from data
   const playTitle = results.data.find(item => item.play && item.play.trim() !== '')?.play || "A Play";
   const authorName = results.data.find(item => item.author && item.author.trim() !== '')?.author || "";
+  const description = results.data.find(item => item.description && item.description.trim() !== '')?.description || "";
   
   console.log("Found play title:", playTitle);
   console.log("Found author:", authorName);
+  console.log("Found description:", description);
   
   // Set up global data arrays
   dd_items = results.data;
@@ -170,18 +175,19 @@ function dd_items_init(results) {
   sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
   sessionStorage.setItem("dd_title", playTitle);
   sessionStorage.setItem("dd_author", authorName);
+  sessionStorage.setItem("dd_description", description);
   
-  // Update UI with the title and author
-  updateUIWithTitleAndAuthor(playTitle, authorName);
+  // Update UI with the title, author, and description
+  updateUIWithMetadata(playTitle, authorName, description);
   
   // Build scenes navigation
   buildScenesNavigation();
 }
 
 /**
- * Update UI elements with the title and author
+ * Update UI elements with the title, author, and description
  */
-function updateUIWithTitleAndAuthor(title, author) {
+function updateUIWithMetadata(title, author, description) {
   // Update main title element
   const titleElement = document.getElementById("work_title");
   if (titleElement) {
@@ -197,6 +203,12 @@ function updateUIWithTitleAndAuthor(title, author) {
     document.getElementById("by_text").style.display = "none";
   }
   
+  // Update description elements if they exist
+  const projectDescription = document.getElementById("project-description");
+  if (projectDescription && description && description.trim() !== "") {
+    projectDescription.innerHTML = description;
+  }
+  
   // Update offcanvas elements
   const offcanvasLabel = document.getElementById("offcanvasLabel");
   if (offcanvasLabel) {
@@ -206,9 +218,14 @@ function updateUIWithTitleAndAuthor(title, author) {
   const offcanvasAuthor = document.getElementById("offcanvas_author");
   if (offcanvasAuthor && author && author.trim() !== "") {
     offcanvasAuthor.innerHTML = author;
-  }else if (offcanvasAuthor) {
-    authorElement.innerHTML = "";
+  } else if (offcanvasAuthor) {
+    offcanvasAuthor.innerHTML = "";
     document.getElementById("by_text").style.display = "none";
+  }
+  
+  const offcanvasDescription = document.getElementById("offcanvas-description");
+  if (offcanvasDescription && description && description.trim() !== "") {
+    offcanvasDescription.innerHTML = description;
   }
 }
 
@@ -217,7 +234,9 @@ function updateUIWithTitleAndAuthor(title, author) {
  */
 function buildScenesNavigation() {
   const scenesNavDropdown = document.getElementById("scenesNavDropdown");
-  if (!scenesNavDropdown) return;
+  const offcanvasScenesNavDropdown = document.getElementById("offcanvasScenesNavDropdown");
+  
+  if (!scenesNavDropdown && !offcanvasScenesNavDropdown) return;
   
   scenesNav = [];
   const ref_url = "{{ '/script.html?scene=' | relative_url }}";
@@ -236,7 +255,15 @@ function buildScenesNavigation() {
     );
   });
   
-  scenesNavDropdown.innerHTML = scenesNav.join('');
+  // Only update if element exists
+  if (scenesNavDropdown) {
+    scenesNavDropdown.innerHTML = scenesNav.join('');
+  }
+  
+  // Only update if element exists
+  if (offcanvasScenesNavDropdown) {
+    offcanvasScenesNavDropdown.innerHTML = scenesNav.join('');
+  }
 }
 
 /**
@@ -254,6 +281,7 @@ function reset_dd_items() {
   sessionStorage.removeItem('dd_scenes_store');
   sessionStorage.removeItem('dd_title');
   sessionStorage.removeItem('dd_author');
+  sessionStorage.removeItem('dd_description');
   
   // If there's a default URL, set it in session storage
   // Otherwise, remove any existing metadata CSV
@@ -273,9 +301,9 @@ function reset_dd_items() {
 function dd_items_setup(metadata_source) {
     sessionStorage.removeItem('dd_items_store');
     sessionStorage.removeItem('dd_scenes_store');
+    sessionStorage.removeItem('dd_title');
     sessionStorage.removeItem('dd_author');
-    sessionStorage.removeItem('dd_author');
-
+    sessionStorage.removeItem('dd_description');
 
   
   Papa.parse(metadata_source, {
@@ -303,9 +331,14 @@ function dd_items_setup(metadata_source) {
         sessionStorage.setItem("dd_title", dd_items[0].play);
       }
 
-      // Store title if available
+      // Store author if available
       if (dd_items.length > 0 && dd_items[0].author) {
         sessionStorage.setItem("dd_author", dd_items[0].author);
+      }
+      
+      // Store description if available
+      if (dd_items.length > 0 && dd_items[0].description) {
+        sessionStorage.setItem("dd_description", dd_items[0].description);
       }
       
       // Store source reference

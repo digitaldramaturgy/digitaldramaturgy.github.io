@@ -1,4 +1,7 @@
-{% assign google-font-cdn = '<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">' %}
+{% assign google-font-cdn = '
+<link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet">' %}
 
 <style>
     body {
@@ -81,7 +84,7 @@
                         <h1 id="work_title" style="font-family:'Gravitas One'">{{ site.title }}</h1>
                         <span class="by-text" id="by_text">BY</span>
                         <span class="author" id="work_author"></span>
-
+                        <p id="project-description">{{site.description}}</p>
                         <!-- Main button -->
                         <a href=script.html" class="btn btn-outline-dark btn-lg">Read the Play</a><br><Br>
 
@@ -97,7 +100,7 @@
                                     Scenes
                                 </button>
                                 <ul class="dropdown-menu" id="scenesNavDropdown">
-                        <li><a class="dropdown-item" href="#">No Scenes Loaded Yet</a></li>
+                                    <li><a class="dropdown-item" href="#">No Scenes Loaded Yet</a></li>
 
                                 </ul>
                             </div>
