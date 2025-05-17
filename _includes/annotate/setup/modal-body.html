@@ -1,10 +1,10 @@
 <!-- Set up modal -->
- <style>
-  /* Add hover effect to accordion buttons that matches the non-collapsed state */
-  .accordion-button:hover {
-    color: #0c63e4;
-    background-color: #e7f1ff;
-  }
+<style>
+    /* Add hover effect to accordion buttons that matches the non-collapsed state */
+    .accordion-button:hover {
+        color: #0c63e4;
+        background-color: #e7f1ff;
+    }
 </style>
 <div class="modal fade" id="cbSetUpModal" tabindex="-1" aria-labelledby="cbSetUpModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -25,8 +25,8 @@
                         <a href="https://digitaldramaturgy.github.io/docs/" class="btn btn-primary" target="_blank">
                             <i class="bi bi-book"></i> Documentation
                         </a><br>
-                        <a href="{{'directions.html?modal=false' | relative_url}}" class="mt-3 btn btn-outline-secondary"
-                            target="_blank">
+                        <a href="{{'directions.html?modal=false' | relative_url}}"
+                            class="mt-3 btn btn-outline-secondary" target="_blank">
                             <i class="bi bi-gear"></i> Quick Setup Guide
                         </a>
                     </div>
@@ -52,13 +52,12 @@
 
                                         <button class="btn btn-sm btn-outline-primary" id="loadFirstDemo"
                                             style="display: inline-block;">Load our
-                                        <i>A Midsummer Night's Dream</i> Demo</button>
+                                            <i>A Midsummer Night's Dream</i> Demo</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <p class="fs-4">Three Options to Load Play Data</p>
                 <div class="accordion my-4" id="cbMetadataOptions">
@@ -69,8 +68,7 @@
                                 <i class="bi bi-play-circle me-2"></i>1. Try a Demo Shakespeare Play
                             </button>
                         </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse"
-                            data-bs-parent="#cbMetadataOptions">
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#cbMetadataOptions">
                             <div class="accordion-body">
                                 <p>Explore a pre-annotated Shakespeare play to see Digital Dramaturgy in action:</p>
                                 <select id="demoUrl" class="form-select form-select-lg mb-3"
@@ -165,7 +163,24 @@
                     </div>
                 </div>
 
-                <div class="row mt-5">
+<div class="alert alert-info small mt-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-info-square" viewBox="0 0 16 16">
+                                <path
+                                    d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                                <path
+                                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                            </svg> Site Data for Digital Dramaturgy projects is stored in your browser's Session
+                            Storage, so sites built using these options will remain only until you close your browser! 
+                            <ul><li>For a permanent site,
+                            <a
+                                href="{{'directions.html#step-4-setup-your-own-github-repository-to-publish-your-annotated-playscript' | relative_url}}"
+                                class="alert-link">follow our directions</a>.
+                                </li><li>If you're using a Google Sheet, you can also <a href="{{'directions.html#share-your-temporary-site!| relative_url}}" class="alert-link">share a temporary site</a>!</li>
+                                </ul>
+                        </div>
+
+                <div class="row mt-5 d-none">
                     <div class="col-md-6">
                         <div class="card h-100">
                             <div class="card-body">
