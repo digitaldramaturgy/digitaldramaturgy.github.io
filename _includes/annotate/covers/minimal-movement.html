@@ -538,8 +538,11 @@
     <!-- Remove the "span" class from the title and fix animation conflict -->
     <div class="title delay-2" id="work_title">{{site.title}}</div>
 </div>
-                <div class="line draw-line"></div><span class="by-text d-none" id="by_text">BY </span>
+                <span class="by-text d-none" id="by_text">BY </span>
                 <div class="author slide-in-right delay-3" id="work_author"></div>
+                <div class="line draw-line"></div>
+                            <p id="project-description">{{site.description}}</p>
+
             </div>
 
             <div class="nav-container">
@@ -550,7 +553,7 @@
 
                 <!-- Button group -->
                 <div class="button-group slide-in-left delay-4">
-                    <button href="{{ '/about.html' | relative_url }}" class="nav-btn">ABOUT</button>
+                    <a href="{{ '/about.html' | relative_url }}" class="nav-btn">ABOUT</a>
                     <button class="nav-btn">FEATURES</button>
                 </div>
 
