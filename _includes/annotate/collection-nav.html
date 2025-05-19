@@ -11,9 +11,9 @@
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="side-nav-close"></button>
     </div>
     <div class="offcanvas-body">
-      <div>
+            <p id="offcanvas-description" class="pb-0">{{site.description | default "..."}}</p>
+
         <nav class="navbar">
-          <p id="offcanvas-description">{{site.description}}</p>
         <ul class="navbar-nav mr-auto">
             {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%} 
             {% for nav in navItems %}
