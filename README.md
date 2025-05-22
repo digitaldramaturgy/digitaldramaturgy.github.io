@@ -1,42 +1,46 @@
-# CollectionBuilder-CSV
+# Digital Dramaturgy
 
-CollectionBuilder-CSV is a robust and flexible "stand alone" template for creating digital collection and exhibit websites using Jekyll and a metadata CSV.
-Driven by your collection metadata, the template generates engaging visualizations to browse and explore your objects.
-The resulting static site can be hosted on any basic web server (or built automatically using GitHub Actions).
+_Digital Dramaturgy_ enables the publication of annotated and/or edited playscripts that can be used as collaborative educational activities in classrooms or as dramaturgical aids for dramatic presentations.
 
-Visit the [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/) for step-by-step details for getting started and building collections!
+## Quick Start Guide
 
-## Brief Overview of Building a Collection
+### Overview
 
-The [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/) contain detailed information about building a collection from start to finish--including installing software, using Git/GitHub, preparing digital objects, and formatting metadata.
-However, here is a super quick overview of the process:
+_Digital Dramaturgy_ provides a simple framework to:
 
-- Make your own copy of this template repository by clicking the green "Use this Template" button on GitHub (see [repository set up docs](https://collectionbuilder.github.io/cb-docs/docs/repository/)). This copy of the template is the starting point for your "project repository", i.e. the source code for your digital collection site!
-- Prepare your collection metadata following the CB-CSV template (see our demo [metadata template on Google Sheets](https://docs.google.com/spreadsheets/d/1nN_k4JQB4LJraIzns7WcM3OXK-xxGMQhW1shMssflNM/edit?usp=sharing) and [metadata docs](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/)). Your metadata will include links to your digital files (images, pdfs, videos, etc) and thumbnails wherever they are hosted.
-- Add your metadata as a CSV to your project repository's "_data" folder (see [upload metadata docs](https://collectionbuilder.github.io/cb-docs/docs/metadata/uploading/)).
-- Edit your project's "_config.yml" with your collection information (see [site configuration docs](https://collectionbuilder.github.io/cb-docs/docs/config/)). Additional customization is done via a theme file, configuration files, CSS tweaks, and more--however, once your "_config.yml" is edited your site is ready to be previewed. 
-- Generate your site using Jekyll! (see docs for how to [use Jekyll locally](https://collectionbuilder.github.io/cb-docs/docs/repository/generate/) and [deploy on the web](https://collectionbuilder.github.io/cb-docs/docs/deploy/))
+1. Create your annotated playscript using a Google Sheet
+2. Preview your script on our platform
+3. Deploy your own version as a website
 
-Please feel free to ask questions in the main [CollectionBuilder discussion forum](https://github.com/CollectionBuilder/collectionbuilder.github.io/discussions).
+### Basic Steps
 
-----------
+1. **Prepare Your Script**
+   - Use one of our [Shakespeare play templates](https://digitaldramaturgy.github.io/directions.html#shakespeare-templates)
+   - Or create your own with our [blank template](https://docs.google.com/spreadsheets/d/1OD4D9xQe59fCAxJN0Aag30BkbKDPHXbM5J_m_hvhTAk/copy)
 
-## CollectionBuilder 
+2. **Publish Your Spreadsheet**
+   - In Google Sheets: File → Publish to the Web
+   - Select Sheet 1 and CSV format
+   - Copy the provided link
 
-<https://collectionbuilder.github.io/>
+3. **Preview Your Script**
+   - Visit our [directions page](https://digitaldramaturgy.github.io/directions.html) to test your script
 
-CollectionBuilder is a project of University of Idaho Library's [Digital Initiatives](https://www.lib.uidaho.edu/digital/) and the [Center for Digital Inquiry and Learning](https://cdil.lib.uidaho.edu) (CDIL) following the [Lib-Static](https://lib-static.github.io/) methodology. 
-Powered by the open source static site generator [Jekyll](https://jekyllrb.com/) and a modern static web stack, it puts collection metadata to work building beautiful sites.
+4. **Create Your Own Site** (requires GitHub account)
+   - Use our [template repository](https://github.com/thecdil/dramabase)
+   - Configure with your spreadsheet link
+   - Deploy via GitHub Pages
 
-The basic theme is created using [Bootstrap](https://getbootstrap.com/).
-Metadata visualizations are built using open source libraries such as [DataTables](https://datatables.net/), [Leafletjs](http://leafletjs.com/), [Spotlight gallery](https://github.com/nextapps-de/spotlight), [lazysizes](https://github.com/aFarkas/lazysizes), and [Lunr.js](https://lunrjs.com/).
-Object metadata is exposed using [Schema.org](http://schema.org) and [Open Graph protocol](http://ogp.me/) standards.
+For detailed instructions, see our [complete directions page](https://digitaldramaturgy.github.io/directions.html).
 
-Questions can be directed to **collectionbuilder.team@gmail.com**
+## Built on CollectionBuilder
+
+Digital Dramaturgy is built on [CollectionBuilder](https://collectionbuilder.github.io/), an open-source framework for creating digital collection websites with Jekyll. CollectionBuilder transforms collection metadata into engaging visualizations and browsable exhibits.
+
+The platform generates static sites that can be hosted on any basic web server or deployed automatically via GitHub Pages. It uses modern web technologies including Bootstrap, DataTables, Leaflet, and Lunr.js.
+
+For more information about extending your Digital Dramaturgy site with additional features, visit the [CollectionBuilder Documentation](https://collectionbuilder.github.io/cb-docs/).
 
 ## License
 
-CollectionBuilder documentation and general web content is licensed [Creative Commons Attribution-ShareAlike 4.0 International](http://creativecommons.org/licenses/by-sa/4.0/). 
-This license does *NOT* include any objects or images used in digital collections, which may have individually applied licenses described by a "rights" field.
-CollectionBuilder code is licensed [MIT](https://github.com/CollectionBuilder/collectionbuilder-csv/blob/master/LICENSE). 
-This license does not include external dependencies included in the `assets/lib` directory, which are covered by their individual licenses.
+This project is licensed under [Creative Commons Attribution-ShareAlike 4.0 International](http://creativecommons.org/licenses/by-sa/4.0/) for documentation and content, and [MIT](https://github.com/CollectionBuilder/collectionbuilder-csv/blob/master/LICENSE) for code, following the CollectionBuilder license model.
