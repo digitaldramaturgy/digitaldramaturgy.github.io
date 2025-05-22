@@ -41,3 +41,10 @@ plugins.md
 ## API recipes
 
 youtube.md
+
+## Platform Documentation
+- [Platform Overview](overview.md)
+- [Quickstart Guide](quickstart.md)
+- [Preparing Your Content](preparing-content.md)
+- [Publishing Your Site](publishing-site.md)
+- [Troubleshooting](troubleshooting.md)
