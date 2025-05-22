@@ -1,7 +1,7 @@
 ---
 title: Publishing Your Site
 nav_order: 4
-permalink: /docs/publishing-site.html
+layout: docs_page
 ---
 
 # Publishing Your Site

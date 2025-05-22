@@ -1,3 +1,8 @@
+---
+title: Documentation Home
+nav_order: 0
+layout: docs_page
+---
 # CollectionBuilder-CSV Docs
 
 ## Set Up 

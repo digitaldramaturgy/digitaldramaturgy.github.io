@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting
 nav_order: 5
-permalink: troubleshooting.html
+layout: docs_page
 ---
 
 # Troubleshooting

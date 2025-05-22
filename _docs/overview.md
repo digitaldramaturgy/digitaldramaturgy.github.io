@@ -1,7 +1,7 @@
 ---
 title: Platform Overview
 nav_order: 1
-permalink: /docs
+layout: docs_page
 ---
 
 # Platform Overview

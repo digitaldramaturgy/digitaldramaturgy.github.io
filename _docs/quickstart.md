@@ -1,7 +1,7 @@
 ---
 title: Quickstart Guide
 nav_order: 2
-permalink: /docs/quickstart.html
+layout: docs_page
 ---
 
 # Quickstart Guide
