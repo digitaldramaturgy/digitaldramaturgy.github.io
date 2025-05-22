@@ -1,6 +1,7 @@
 ---
 title: Preparing Your Content
 nav_order: 3
+permalink: /docs/preparing-content.html
 ---
 
 # Preparing Your Content
