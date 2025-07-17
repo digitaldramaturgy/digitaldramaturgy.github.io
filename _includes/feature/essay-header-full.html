@@ -1,0 +1,65 @@
+{%- comment -%}
+Full-width image header for essays
+Creates a viewport-height background image with centered overlay text
+{%- endcomment -%}
+
+{% assign header_title = page.header-title | default: page.title %}
+{% assign header_subtitle = page.header-subtitle %}
+{% assign header_image = page.header-image %}
+{% assign header_caption = page.header-image-caption %}
+{% assign overlay_opacity = page.header-overlay-opacity | default: 0.5 %}
+{% assign header_alt = page.header-image-alt | default: header_title %}
+
+{% if header_image %}
+  {% if header_image contains '/' %}
+    {% assign header_src = header_image | relative_url %}
+  {% else %}
+    {% assign header_item = site.data[site.metadata] | where: "objectid", header_image | first %}
+    {% assign header_src = header_item.object_location | default: header_item.image_small | relative_url %}
+  {% endif %}
+{% endif %}
+
+<div class="essay-header-full position-relative" style="background-image: url('{{ header_src }}');">
+  <!-- Crop marks for design aesthetic -->
+  <div class="essay-crop-marks">
+    <div class="crop-mark crop-top-left-h"></div>
+    <div class="crop-mark crop-top-left-v"></div>
+    <div class="crop-mark crop-top-right-h"></div>
+    <div class="crop-mark crop-top-right-v"></div>
+    <div class="crop-mark crop-bottom-left-h"></div>
+    <div class="crop-mark crop-bottom-left-v"></div>
+    <div class="crop-mark crop-bottom-right-h"></div>
+    <div class="crop-mark crop-bottom-right-v"></div>
+  </div>
+  
+  <div class="essay-header-overlay" style="background-color: rgba(0,0,0,{{ overlay_opacity }});"></div>
+  <div class="container-fluid h-100">
+    <div class="row h-100 align-items-center justify-content-center">
+      <div class="col-12 text-center">
+        <div class="essay-header-content">
+          <div class="essay-publication-label text-white-50 mb-3">{{site.title}}</div>
+          {% if header_title %}
+            <h1 class="essay-header-title display-3 text-white mb-3">{{ header_title }}</h1>
+            <div class="essay-divider-line mx-auto"></div>
+          {% endif %}
+          {% if header_subtitle %}
+            <h2 class="essay-header-subtitle h4 text-white mb-0">{{ header_subtitle }}</h2>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if header_image and header_alt %}
+    <span class="sr-only visually-hidden">{{ header_alt }}</span>
+  {% endif %}
+</div>
+
+{% if header_caption %}
+<div class="container-fluid py-3">
+  <div class="row">
+    <div class="col-12">
+      <p class="essay-header-caption text-muted text-start mb-0 small">{{ header_caption }}</p>
+    </div>
+  </div>
+</div>
+{% endif %}

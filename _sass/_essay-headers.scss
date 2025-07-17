@@ -1,0 +1,331 @@
+/* Essay Header Styles - Inspired by minimal design principles */
+
+/* Crop marks for design aesthetic */
+.essay-crop-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crop-mark {
+  position: absolute;
+  background-color: #111111;
+}
+
+/* For full headers with dark backgrounds, make crop marks white */
+.essay-header-full .crop-mark {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Top left crop marks */
+.crop-top-left-h {
+  top: 15px;
+  left: 15px;
+  width: 12px;
+  height: 1px;
+}
+
+.crop-top-left-v {
+  top: 15px;
+  left: 15px;
+  width: 1px;
+  height: 12px;
+}
+
+/* Top right crop marks */
+.crop-top-right-h {
+  top: 15px;
+  right: 15px;
+  width: 12px;
+  height: 1px;
+}
+
+.crop-top-right-v {
+  top: 15px;
+  right: 15px;
+  width: 1px;
+  height: 12px;
+}
+
+/* Bottom left crop marks */
+.crop-bottom-left-h {
+  bottom: 15px;
+  left: 15px;
+  width: 12px;
+  height: 1px;
+}
+
+.crop-bottom-left-v {
+  bottom: 15px;
+  left: 15px;
+  width: 1px;
+  height: 12px;
+}
+
+/* Bottom right crop marks */
+.crop-bottom-right-h {
+  bottom: 15px;
+  right: 15px;
+  width: 12px;
+  height: 1px;
+}
+
+.crop-bottom-right-v {
+  bottom: 15px;
+  right: 15px;
+  width: 1px;
+  height: 12px;
+}
+
+/* Publication label styling */
+.essay-publication-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #111111;
+  font-weight: 400;
+}
+
+.essay-header-full .essay-publication-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Divider line styling */
+.essay-divider-line {
+  width: 40px;
+  height: 2px;
+  background-color: #111111;
+  margin: 1.5rem 0;
+}
+
+.essay-header-full .essay-divider-line {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Full-width header styles */
+.essay-header-full {
+  position: relative;
+  height: 100vh;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.essay-header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.essay-header-content {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.essay-header-caption {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  max-width: 800px;
+}
+
+.essay-header-title {
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.essay-header-subtitle {
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+/* Half-width header styles */
+.essay-header-half {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.essay-header-half .essay-publication-label {
+  color: #111111;
+}
+
+.essay-header-half .essay-divider-line {
+  background-color: #111111;
+}
+
+.min-vh-50 {
+  min-height: 50vh;
+}
+
+.essay-header-image {
+  position: relative;
+}
+
+.essay-header-image img {
+  transition: transform 0.3s ease;
+}
+
+.essay-header-image:hover img {
+  transform: scale(1.02);
+}
+
+/* Overlay title for mobile */
+.essay-header-overlay-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  width: 90%;
+}
+
+.essay-header-overlay-title::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.essay-header-overlay-title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Text-only header styles */
+.essay-header-none {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 4rem 0;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.essay-header-none .essay-publication-label {
+  color: #111111;
+  margin-bottom: 1rem;
+}
+
+.essay-header-none .essay-divider-line {
+  background-color: #111111;
+}
+
+/* Essay content styles */
+.essay-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.essay-content h2 {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.essay-content h3 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.essay-content p {
+  margin-bottom: 1.5rem;
+}
+
+.essay-content blockquote {
+  border-left: 4px solid var(--bs-primary);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: var(--bs-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .essay-header-full {
+    height: 70vh;
+    min-height: 400px;
+  }
+  
+  .essay-header-title {
+    font-size: 2.5rem !important;
+  }
+  
+  .essay-header-subtitle {
+    font-size: 1.1rem !important;
+  }
+  
+  .essay-content {
+    font-size: 1rem;
+  }
+  
+  /* Half header mobile adjustments */
+  .essay-header-half .min-vh-50 {
+    min-height: auto;
+  }
+  
+  .essay-header-overlay-title h1 {
+    font-size: 1.75rem;
+  }
+  
+  .essay-header-subtitle-mobile {
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .essay-header-full {
+    height: 60vh;
+    min-height: 350px;
+  }
+  
+  .essay-header-title {
+    font-size: 2rem !important;
+  }
+  
+  .essay-header-subtitle {
+    font-size: 1rem !important;
+  }
+  
+  .essay-header-overlay-title h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .essay-header-full,
+  .essay-header-half,
+  .essay-header-none {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .essay-header-full {
+    height: auto;
+    background: none !important;
+    color: black !important;
+  }
+  
+  .essay-header-overlay {
+    display: none;
+  }
+}

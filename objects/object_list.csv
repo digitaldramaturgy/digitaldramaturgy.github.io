@@ -1,6 +1,8 @@
 filename,object_location,image_small,image_thumb
 210a.jpg,/objects/210a.jpg,/objects/small/210a_sm.jpg,/objects/thumbs/210a_th.jpg
 210b.jpg,/objects/210b.jpg,/objects/small/210b_sm.jpg,/objects/thumbs/210b_th.jpg
+Angelo's_House–Escalus_a_Justice_Elbow_Froth_Clown_Officers_etc._(Shakespeare_Measure_for_Measure_Act_2_Scene_1)_MET_DP109517.jpg,/objects/Angelo's_House–Escalus_a_Justice_Elbow_Froth_Clown_Officers_etc._(Shakespeare_Measure_for_Measure_Act_2_Scene_1)_MET_DP109517.jpg,/objects/small/angelo's_house–escalus_a_justice_elbow_froth_clown_officers_etc._(shakespeare_measure_for_measure_act_2_scene_1)_met_dp109517_sm.jpg,/objects/thumbs/angelo's_house–escalus_a_justice_elbow_froth_clown_officers_etc._(shakespeare_measure_for_measure_act_2_scene_1)_met_dp109517_th.jpg
+First-page-first-folio-measure-for-measure.jpg,/objects/First-page-first-folio-measure-for-measure.jpg,/objects/small/first-page-first-folio-measure-for-measure_sm.jpg,/objects/thumbs/first-page-first-folio-measure-for-measure_th.jpg
 demo_001.jpg,/objects/demo_001.jpg,/objects/small/demo_001_sm.jpg,/objects/thumbs/demo_001_th.jpg
 demo_002.pdf,/objects/demo_002.pdf,/objects/small/demo_002_sm.jpg,/objects/thumbs/demo_002_th.jpg
 demo_003.mp3,/objects/demo_003.mp3,,
@@ -9,3 +11,4 @@ demo_005.txt,/objects/demo_005.txt,,
 demo_012.md,/objects/demo_012.md,,
 hells_half_theta.jpg,/objects/hells_half_theta.jpg,/objects/small/hells_half_theta_sm.jpg,/objects/thumbs/hells_half_theta_th.jpg
 hughes_article.png,/objects/hughes_article.png,/objects/small/hughes_article_sm.jpg,/objects/thumbs/hughes_article_th.jpg
+meryl-measure-for-measure_paris-review.jpg,/objects/meryl-measure-for-measure_paris-review.jpg,/objects/small/meryl-measure-for-measure_paris-review_sm.jpg,/objects/thumbs/meryl-measure-for-measure_paris-review_th.jpg
