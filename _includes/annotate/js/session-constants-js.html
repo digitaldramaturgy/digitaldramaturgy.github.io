@@ -7,6 +7,7 @@
 // Initialize global variables
 let dd_items = [];
 let dd_scenes = [];
+let dd_characters = [];
 let scenesNav = [];
 
 // Default configuration
@@ -55,6 +56,7 @@ function initializeData() {
     // Clear previous data
     sessionStorage.removeItem('dd_items_store');
     sessionStorage.removeItem('dd_scenes_store');
+    sessionStorage.removeItem('dd_characters_store');
     sessionStorage.removeItem('dd_title');
     sessionStorage.removeItem('dd_author');
     sessionStorage.removeItem('dd_description');
@@ -97,6 +99,7 @@ function initializeData() {
 function loadFromSessionStorage() {
   dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
   dd_scenes = JSON.parse(sessionStorage.getItem("dd_scenes_store") || "[]");
+  dd_characters = JSON.parse(sessionStorage.getItem("dd_characters_store") || "[]");
   
   // If we have stored title/author/description, update UI immediately
   const storedTitle = sessionStorage.getItem("dd_title");
@@ -170,9 +173,51 @@ function dd_items_init(results) {
   });
   dd_scenes = Array.from(uniqueScenes);
   
+  // Extract unique characters with scene appearances
+  const characterMap = new Map();
+  dd_items.forEach(item => {
+    if (item.player && item.player.trim() !== '' && item.player.trim() !== 'StageDirection' && item.act && item.scene) {
+      const characterName = item.player.trim();
+      const sceneKey = `${item.act}.${item.scene}`;
+      
+      if (!characterMap.has(characterName)) {
+        characterMap.set(characterName, {
+          name: characterName,
+          scenes: new Set(),
+          scenesList: [],
+          scenesString: ""
+        });
+      }
+      
+      characterMap.get(characterName).scenes.add(sceneKey);
+    }
+  });
+  
+  // Convert to final array format
+  dd_characters = Array.from(characterMap.values()).map(character => {
+    // Convert Set to sorted array
+    character.scenesList = Array.from(character.scenes).sort((a, b) => {
+      const [actA, sceneA] = a.split('.').map(Number);
+      const [actB, sceneB] = b.split('.').map(Number);
+      if (actA !== actB) return actA - actB;
+      return sceneA - sceneB;
+    });
+    
+    // Create semicolon-separated string for compatibility
+    character.scenesString = character.scenesList.join(';');
+    
+    // Remove the Set as it's not serializable
+    delete character.scenes;
+    
+    return character;
+  }).sort((a, b) => a.name.localeCompare(b.name));
+  
+  console.log("Found characters with scenes:", dd_characters);
+  
   // Store data in sessionStorage
   sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
   sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
+  sessionStorage.setItem("dd_characters_store", JSON.stringify(dd_characters));
   sessionStorage.setItem("dd_title", playTitle);
   sessionStorage.setItem("dd_author", authorName);
   sessionStorage.setItem("dd_description", description);
@@ -279,6 +324,7 @@ function reset_dd_items() {
   // Only clear play-related data, not ALL session storage
   sessionStorage.removeItem('dd_items_store');
   sessionStorage.removeItem('dd_scenes_store');
+  sessionStorage.removeItem('dd_characters_store');
   sessionStorage.removeItem('dd_title');
   sessionStorage.removeItem('dd_author');
   sessionStorage.removeItem('dd_description');
@@ -301,6 +347,7 @@ function reset_dd_items() {
 function dd_items_setup(metadata_source) {
     sessionStorage.removeItem('dd_items_store');
     sessionStorage.removeItem('dd_scenes_store');
+    sessionStorage.removeItem('dd_characters_store');
     sessionStorage.removeItem('dd_title');
     sessionStorage.removeItem('dd_author');
     sessionStorage.removeItem('dd_description');
@@ -322,9 +369,49 @@ function dd_items_setup(metadata_source) {
       });
       dd_scenes = Array.from(uniqueScenes);
       
+      // Extract unique characters with scene appearances
+      const characterMap = new Map();
+      dd_items.forEach(item => {
+        if (item.player && item.player.trim() !== '' && item.player.trim() !== 'StageDirection' && item.act && item.scene) {
+          const characterName = item.player.trim();
+          const sceneKey = `${item.act}.${item.scene}`;
+          
+          if (!characterMap.has(characterName)) {
+            characterMap.set(characterName, {
+              name: characterName,
+              scenes: new Set(),
+              scenesList: [],
+              scenesString: ""
+            });
+          }
+          
+          characterMap.get(characterName).scenes.add(sceneKey);
+        }
+      });
+      
+      // Convert to final array format
+      dd_characters = Array.from(characterMap.values()).map(character => {
+        // Convert Set to sorted array
+        character.scenesList = Array.from(character.scenes).sort((a, b) => {
+          const [actA, sceneA] = a.split('.').map(Number);
+          const [actB, sceneB] = b.split('.').map(Number);
+          if (actA !== actB) return actA - actB;
+          return sceneA - sceneB;
+        });
+        
+        // Create semicolon-separated string for compatibility
+        character.scenesString = character.scenesList.join(';');
+        
+        // Remove the Set as it's not serializable
+        delete character.scenes;
+        
+        return character;
+      }).sort((a, b) => a.name.localeCompare(b.name));
+      
       // Store in session storage
       sessionStorage.setItem("dd_items_store", JSON.stringify(dd_items));
       sessionStorage.setItem("dd_scenes_store", JSON.stringify(dd_scenes));
+      sessionStorage.setItem("dd_characters_store", JSON.stringify(dd_characters));
       
       // Store title if available
       if (dd_items.length > 0 && dd_items[0].play) {
