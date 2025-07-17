@@ -69,7 +69,7 @@ The simplest way to publish your playscript spreadsheet on Digital Dramaturgy is
 
 _You will need a GitHub account to complete the next steps_
 
-- Go to the [Digital Dramaturgy GitHub Repository](https://github.com/thecdil/dramabase)
+- Go to the [Digital Dramaturgy GitHub Repository](https://github.com/digitaldramaturgy/digitaldramaturgy.github.io)
 - Click the green Use this template button and then the Create a new repository dropdown option.
 - Leave the repository as Public. Enter a repository name (use a lowercase name without spaces or odd characters) and click Create repository from template.
 - Open the `_config.yml` file and find the "play" variable towards the top of the file 
