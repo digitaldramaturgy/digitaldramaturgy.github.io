@@ -14,13 +14,13 @@ This is a quick start guide for setting up a project.
 
 ### A Broad Overview
 
-_Digital Dramaturgy_ offers a three-part framework that allows users to 
+_Digital Dramaturgy_ offers a three-part framework that allows you to 
 
-1. Start building their annotated playscript using a Google Sheet 
+1. [Build your annotated playscript](#step-1-prepare-your-script) using a Google Sheet 
 
-2. Test how the script appears on our site by publishing it the via Google Sheets and connecting the link created when you do so to our main digital dramaturgy site. 
+2. [Test how the script appears on our site by publishing it the via Google Sheets](#step-2-make-your-script-publicly-available-using-google-sheets) and connecting the link created when you do so to our main digital dramaturgy site. 
 
-3. Create their own website by making a copy of the Digital Dramaturgy GitHub repository on which this website is built and then replacing the base information collected with their own. 
+3. To create your own site, [make a copy of the Digital Dramaturgy GitHub repository](#step-4-setup-your-own-github-repository-to-publish-your-annotated-playscript) on which this website is built and then replace the base information with your own. This
 
 ### Step 1: Prepare your Script
 

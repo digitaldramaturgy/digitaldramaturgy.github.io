@@ -14,7 +14,7 @@ If you'd like to copy an Digital Dramaturgy template and get started, go to this
 
 ***To create your own About page for your project, just delete everything here and use Markdown to write your content.***
 
-For more instruction, [see our documentation](https://digitaldramaturgy.github.io/docs/)
+For more instruction, [see our directions](https://digitaldramaturgy.github.io/directions.html) 
 
 ## About Digital Dramaturgy
 
@@ -26,7 +26,7 @@ Digital Dramaturgy was awarded an NEH grant to support its development in 2025, 
 
 ## Documentation
 
-- **[Full Digital Dramaturgy Documentation](https://digitaldramaturgy.github.io/docs/) -** Our documentation provides how to guides, tutorials, and stepped instruction for building your own Digital Dramaturgy project.  
+- **[Instructions](https://digitaldramaturgy.github.io/directions.html) -** Our documentation is currently fairly short but helpful. As the project grows, we will build more!   
 
 - **[CollectionBuilder Documentation](https://collectionbuilder.github.io/docs/) -** Digital Dramaturgy is built on top of a CollectionBuilder-CSV template, so any options used in CSV can be used here. 
 
