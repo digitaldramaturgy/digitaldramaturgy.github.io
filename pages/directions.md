@@ -8,7 +8,7 @@ permalink: /directions.html
 
 _Digital Dramaturgy_ enables the publication of an annotated and/or edited playscript that can be used as a collaborative educational activity in a classroom or as a dramaturgical aid and preservation measure for dramatic presentations. 
 
-This is a quick start guide for setting up a project. For more in depth documentation and insturction, [see our documentation site](https://digitaldramaturgy.github.io/docs/)
+This is a quick start guide for setting up a project. 
 
 ## How it Works
 
