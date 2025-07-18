@@ -1,0 +1,278 @@
+{% comment %}
+Character Cards Feature
+Displays character cards in a responsive grid layout with search and filter capabilities
+{% endcomment %}
+
+{% include js/character-csv-data.html %}
+
+<div id="characterCardsContainer" class="container-fluid mt-4">
+    <div class="row mb-3 justify-content-center">
+        <div class="col-md-8 text-center">
+            <form role="search" id="characterFilter" onsubmit="filterCharacters(); return false;">
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control" id="characterFilterInput" placeholder="Search characters..." aria-label="Search characters">
+                    <button class="btn btn-success" type="submit" title="Filter characters">Search</button>
+                    <button class="btn btn-outline-secondary" onclick="resetCharacterFilter(); return false;">Reset</button>
+                </div>
+            </form>
+            <div class="h4 mt-2" id="characterCount"></div>
+        </div>
+        <div class="col-md-2">
+            <div class="dropdown">
+                <button class="btn btn-secondary mt-1 dropdown-toggle" type="button" id="characterSortButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort by <span id="characterSortFilter">Name</span>
+                </button>
+                <div class="dropdown-menu character-sort-menu" aria-labelledby="characterSortButton">
+                    <button class="dropdown-item character-sort-item active" data-filter="name">Name</button>
+                    <button class="dropdown-item character-sort-item" data-filter="scenes">Scene Count</button>
+                    <button class="dropdown-item character-sort-item" data-filter="connections">Connections</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="characterLoadingIcon" class="text-center">
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden">Loading characters...</span>
+        </div>
+    </div>
+
+    <div class="row" id="characterCards"></div>
+</div>
+
+<script>
+// Character cards functionality
+let allCharacters = [];
+let filteredCharacters = [];
+let currentSort = 'name';
+
+// Initialize character cards when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof dd_characters !== 'undefined' && dd_characters.length > 0) {
+        loadCharacterCards();
+    } else {
+        // Wait for session data to load
+        setTimeout(loadCharacterCards, 1000);
+    }
+});
+
+function loadCharacterCards() {
+    if (typeof dd_characters === 'undefined' || dd_characters.length === 0) {
+        const loadingIcon = document.getElementById('characterLoadingIcon');
+        if (loadingIcon) {
+            loadingIcon.innerHTML = '<p class="text-muted">No character data available</p>';
+        }
+        return;
+    }
+
+    // Process characters and calculate connections
+    allCharacters = dd_characters.map(character => {
+        const connections = calculateCharacterConnections(character);
+        return {
+            ...character,
+            connections: connections,
+            connectionCount: connections.length
+        };
+    });
+
+    filteredCharacters = [...allCharacters];
+    sortCharacters(currentSort);
+    renderCharacterCards();
+    updateCharacterCount();
+    
+    // Hide loading indicator
+    const loadingIcon = document.getElementById('characterLoadingIcon');
+    if (loadingIcon) {
+        loadingIcon.style.display = 'none';
+    }
+}
+
+function calculateCharacterConnections(character) {
+    const connections = [];
+    const characterScenes = character.scenesList || [];
+    
+    dd_characters.forEach(otherCharacter => {
+        if (otherCharacter.name === character.name) return;
+        
+        const otherScenes = otherCharacter.scenesList || [];
+        const sharedScenes = characterScenes.filter(scene => otherScenes.includes(scene));
+        
+        if (sharedScenes.length > 0) {
+            connections.push({
+                character: otherCharacter.name,
+                sharedScenes: sharedScenes,
+                connectionStrength: sharedScenes.length
+            });
+        }
+    });
+    
+    return connections;
+}
+
+function renderCharacterCards() {
+    const cardsContainer = document.getElementById('characterCards');
+    cardsContainer.innerHTML = '';
+    
+    filteredCharacters.forEach((character, index) => {
+        const card = createCharacterCard(character, index);
+        cardsContainer.appendChild(card);
+    });
+}
+
+function createCharacterCard(character, index) {
+    const col = document.createElement('div');
+    col.className = 'col-md-4 col-lg-3 mb-4';
+    
+    // Get character data from CSV if available
+    const csvData = getCharacterCSVData(character.name);
+    const hasImage = csvData && csvData.image && csvData.image.trim() !== '';
+    const hasDescription = csvData && csvData.description && csvData.description.trim() !== '';
+    
+    // Fix image path - remove duplicate 'objects/' if present
+    const imagePath = hasImage ? csvData.image.replace(/^objects\//, '') : '';
+    
+    col.innerHTML = `
+        <div class="card h-100 character-card" data-character="${character.name}">
+            ${hasImage ? `
+                <img src="{{ site.baseurl }}/objects/${imagePath}" class="card-img-top" alt="${character.name}" style="height: 200px; object-fit: cover;">
+            ` : ''}
+            <div class="card-body">
+                <h5 class="card-title">${character.name}</h5>
+                ${hasDescription ? `
+                    <p class="card-text">${csvData.description.substring(0, 100)}${csvData.description.length > 100 ? '...' : ''}</p>
+                ` : ''}
+                <div class="character-stats">
+                    <small class="text-muted">
+                        <i class="fas fa-theater-masks"></i> ${character.scenesList ? character.scenesList.length : 0} scenes<br>
+                        <i class="fas fa-users"></i> ${character.connectionCount} connections
+                    </small>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <button class="btn btn-sm btn-primary" onclick="showCharacterDetail('${character.name}')">
+                    View Details
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return col;
+}
+
+function getCharacterCSVData(characterName) {
+    // Use global character CSV data loaded from Jekyll
+    if (typeof window.characterCSVData !== 'undefined') {
+        const characterData = window.characterCSVData.find(char => 
+            char.character && char.character.toLowerCase() === characterName.toLowerCase()
+        );
+        
+        if (characterData) {
+            return {
+                description: characterData.description || '',
+                image: characterData.image || '',
+                notes: characterData.notes || ''
+            };
+        }
+    }
+    
+    return null;
+}
+
+function filterCharacters() {
+    const filterValue = document.getElementById('characterFilterInput').value.toLowerCase();
+    
+    if (!filterValue) {
+        filteredCharacters = [...allCharacters];
+    } else {
+        filteredCharacters = allCharacters.filter(character => 
+            character.name.toLowerCase().includes(filterValue)
+        );
+    }
+    
+    renderCharacterCards();
+    updateCharacterCount();
+}
+
+function resetCharacterFilter() {
+    document.getElementById('characterFilterInput').value = '';
+    filteredCharacters = [...allCharacters];
+    renderCharacterCards();
+    updateCharacterCount();
+}
+
+function sortCharacters(sortBy) {
+    currentSort = sortBy;
+    
+    filteredCharacters.sort((a, b) => {
+        switch (sortBy) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'scenes':
+                return (b.scenesList ? b.scenesList.length : 0) - (a.scenesList ? a.scenesList.length : 0);
+            case 'connections':
+                return b.connectionCount - a.connectionCount;
+            default:
+                return a.name.localeCompare(b.name);
+        }
+    });
+    
+    renderCharacterCards();
+    
+    // Update button text
+    const sortFilterEl = document.getElementById('characterSortFilter');
+    if (sortFilterEl) {
+        sortFilterEl.textContent = 
+            sortBy.charAt(0).toUpperCase() + sortBy.slice(1);
+    }
+    
+    // Update active state
+    document.querySelectorAll('.character-sort-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.filter === sortBy) {
+            item.classList.add('active');
+        }
+    });
+}
+
+function updateCharacterCount() {
+    const count = filteredCharacters.length;
+    const characterCountEl = document.getElementById('characterCount');
+    if (characterCountEl) {
+        characterCountEl.textContent = 
+            `${count} character${count !== 1 ? 's' : ''}`;
+    }
+}
+
+// Event listeners for sort buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.character-sort-item').forEach(item => {
+        item.addEventListener('click', function() {
+            sortCharacters(this.dataset.filter);
+        });
+    });
+});
+
+function showCharacterDetail(characterName) {
+    // This function will be implemented in the character-detail.html include
+    if (typeof openCharacterModal === 'function') {
+        openCharacterModal(characterName);
+    }
+}
+</script>
+
+<style>
+.character-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.character-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.character-stats i {
+    width: 16px;
+    text-align: center;
+}
+</style>

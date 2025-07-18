@@ -173,7 +173,7 @@ function dd_items_init(results) {
   });
   dd_scenes = Array.from(uniqueScenes);
   
-  // Extract unique characters with scene appearances
+  // Extract unique characters with scene appearances and line counts
   const characterMap = new Map();
   dd_items.forEach(item => {
     if (item.player && item.player.trim() !== '' && item.player.trim() !== 'StageDirection' && item.act && item.scene) {
@@ -185,11 +185,13 @@ function dd_items_init(results) {
           name: characterName,
           scenes: new Set(),
           scenesList: [],
-          scenesString: ""
+          scenesString: "",
+          lineCount: 0
         });
       }
       
       characterMap.get(characterName).scenes.add(sceneKey);
+      characterMap.get(characterName).lineCount++;
     }
   });
   

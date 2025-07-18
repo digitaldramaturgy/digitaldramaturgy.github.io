@@ -1,0 +1,301 @@
+<!-- Character Interactions JavaScript includes -->
+<script src="{{ '/assets/js/character-interactions.js' | relative_url }}"></script>
+
+<script>
+// Additional initialization for character cards page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Character interactions page loaded');
+    
+    // Initialize any additional character card functionality
+    setupCharacterCardAnimations();
+    setupCharacterSearch();
+    
+    // Add statistics display if element exists
+    const statsElement = document.getElementById('characterStatistics');
+    if (statsElement) {
+        displayCharacterStatistics();
+    }
+});
+
+// Setup character card animations
+function setupCharacterCardAnimations() {
+    // Add intersection observer for card animations
+    if ('IntersectionObserver' in window) {
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '50px'
+        });
+        
+        // Observe character cards as they're added
+        const observeCards = () => {
+            document.querySelectorAll('.character-card').forEach(card => {
+                if (!card.hasAttribute('data-observed')) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    card.setAttribute('data-observed', 'true');
+                    cardObserver.observe(card);
+                }
+            });
+        };
+        
+        // Initial observation
+        setTimeout(observeCards, 100);
+        
+        // Re-observe when cards are filtered/sorted
+        const originalRenderCards = window.renderCharacterCards;
+        if (typeof originalRenderCards === 'function') {
+            window.renderCharacterCards = function() {
+                originalRenderCards.apply(this, arguments);
+                setTimeout(observeCards, 50);
+            };
+        }
+    }
+}
+
+// Setup enhanced character search
+function setupCharacterSearch() {
+    const searchInput = document.getElementById('characterFilterInput');
+    if (!searchInput) return;
+    
+    // Add search suggestions/autocomplete
+    const searchContainer = searchInput.parentElement;
+    const suggestionsDiv = document.createElement('div');
+    suggestionsDiv.className = 'character-search-suggestions';
+    suggestionsDiv.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    `;
+    searchContainer.style.position = 'relative';
+    searchContainer.appendChild(suggestionsDiv);
+    
+    // Handle search input with suggestions
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        
+        if (query.length < 2) {
+            suggestionsDiv.style.display = 'none';
+            return;
+        }
+        
+        // Get character suggestions
+        const suggestions = getCharacterSuggestions(query);
+        displaySearchSuggestions(suggestions, suggestionsDiv, searchInput);
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!searchContainer.contains(event.target)) {
+            suggestionsDiv.style.display = 'none';
+        }
+    });
+}
+
+// Get character search suggestions
+function getCharacterSuggestions(query) {
+    if (typeof dd_characters === 'undefined') return [];
+    
+    return dd_characters
+        .filter(character => character.name.toLowerCase().includes(query))
+        .slice(0, 5)
+        .map(character => ({
+            name: character.name,
+            sceneCount: character.scenesList ? character.scenesList.length : 0
+        }));
+}
+
+// Display search suggestions
+function displaySearchSuggestions(suggestions, container, input) {
+    if (suggestions.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    container.innerHTML = suggestions.map(suggestion => `
+        <div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;">
+            <strong>${suggestion.name}</strong>
+            <small class="text-muted ml-2">(${suggestion.sceneCount} scenes)</small>
+        </div>
+    `).join('');
+    
+    container.style.display = 'block';
+    
+    // Add click handlers
+    container.querySelectorAll('.suggestion-item').forEach((item, index) => {
+        item.addEventListener('click', function() {
+            input.value = suggestions[index].name;
+            container.style.display = 'none';
+            
+            // Trigger search
+            if (typeof filterCharacters === 'function') {
+                filterCharacters();
+            }
+        });
+        
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+}
+
+// Display character statistics
+function displayCharacterStatistics() {
+    if (typeof CharacterInteractions === 'undefined') return;
+    
+    const stats = CharacterInteractions.getCharacterStatistics();
+    const statsElement = document.getElementById('characterStatistics');
+    
+    if (statsElement) {
+        statsElement.innerHTML = `
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h4>${stats.totalCharacters}</h4>
+                            <p class="mb-0">Total Characters</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h4>${stats.totalConnections}</h4>
+                            <p class="mb-0">Connections</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h4>${stats.averageScenes}</h4>
+                            <p class="mb-0">Avg Scenes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h4>${stats.charactersByType.major}</h4>
+                            <p class="mb-0">Major Characters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Enhanced character filtering with multiple criteria
+function enhancedCharacterFilter() {
+    const nameFilter = document.getElementById('characterFilterInput')?.value.toLowerCase() || '';
+    const typeFilter = document.getElementById('characterTypeFilter')?.value || 'all';
+    const sceneFilter = document.getElementById('sceneCountFilter')?.value || 'all';
+    
+    if (typeof allCharacters === 'undefined') return;
+    
+    let filtered = allCharacters.filter(character => {
+        // Name filter
+        if (nameFilter && !character.name.toLowerCase().includes(nameFilter)) {
+            return false;
+        }
+        
+        // Type filter (major, supporting, minor, background)
+        if (typeFilter !== 'all') {
+            const sceneCount = character.scenesList ? character.scenesList.length : 0;
+            let characterType = 'background';
+            if (sceneCount >= 15) characterType = 'major';
+            else if (sceneCount >= 8) characterType = 'supporting';
+            else if (sceneCount >= 3) characterType = 'minor';
+            
+            if (characterType !== typeFilter) return false;
+        }
+        
+        // Scene count filter
+        if (sceneFilter !== 'all') {
+            const sceneCount = character.scenesList ? character.scenesList.length : 0;
+            switch (sceneFilter) {
+                case 'high': return sceneCount >= 10;
+                case 'medium': return sceneCount >= 5 && sceneCount < 10;
+                case 'low': return sceneCount < 5;
+                default: return true;
+            }
+        }
+        
+        return true;
+    });
+    
+    // Update filtered characters and re-render
+    if (typeof filteredCharacters !== 'undefined' && typeof renderCharacterCards === 'function') {
+        window.filteredCharacters = filtered;
+        renderCharacterCards();
+    }
+}
+
+// Add enhanced filtering controls if they don't exist
+function addEnhancedFilters() {
+    const filterContainer = document.querySelector('.character-filter-container');
+    if (!filterContainer) return;
+    
+    const enhancedFilters = document.createElement('div');
+    enhancedFilters.className = 'row mt-2';
+    enhancedFilters.innerHTML = `
+        <div class="col-md-4">
+            <select class="form-select form-select-sm" id="characterTypeFilter">
+                <option value="all">All Character Types</option>
+                <option value="major">Major Characters</option>
+                <option value="supporting">Supporting Characters</option>
+                <option value="minor">Minor Characters</option>
+                <option value="background">Background Characters</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select form-select-sm" id="sceneCountFilter">
+                <option value="all">All Scene Counts</option>
+                <option value="high">High (10+ scenes)</option>
+                <option value="medium">Medium (5-9 scenes)</option>
+                <option value="low">Low (1-4 scenes)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-outline-primary btn-sm" onclick="enhancedCharacterFilter()">
+                Apply Filters
+            </button>
+        </div>
+    `;
+    
+    filterContainer.appendChild(enhancedFilters);
+    
+    // Add event listeners for immediate filtering
+    enhancedFilters.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', enhancedCharacterFilter);
+    });
+}
+
+// Initialize enhanced filters when character cards are loaded
+setTimeout(() => {
+    if (document.getElementById('characterCards')) {
+        addEnhancedFilters();
+    }
+}, 1000);
+</script>

@@ -1,0 +1,18 @@
+<script>
+// Character CSV data loaded from Jekyll
+window.characterCSVData = [];
+
+// Check if Jekyll data exists and load it
+{% if site.data.characters %}
+{% for character in site.data.characters %}
+window.characterCSVData.push({
+    character: "{{ character.character | escape }}",
+    description: "{{ character.description | escape }}",
+    image: "{{ character.image | escape }}",
+    notes: "{{ character.notes | escape }}"
+});
+{% endfor %}
+{% endif %}
+
+console.log('Loaded ' + window.characterCSVData.length + ' characters from Jekyll data');
+</script>
