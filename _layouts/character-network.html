@@ -6,11 +6,14 @@ custom-foot: js/character-network-js.html
 {{ content }}
 
 <div id="characterNetworkContainer" class="mt-4">
-    <div class="row mb-3">
+    <div class="row">
         <div class="col-12">
             <h3>Character Network Visualization</h3>
-            <p class="text-muted">Interactive network showing character relationships based on shared scenes and
+            <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
                 dialogue.</p>
+                <div id="networkStats">
+                    <p><strong>Characters:</strong> <span class="me-3" id="characterCount">0</span><strong>Connections:</strong> <span class="me-3" id="connectionCount">0</span><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
+                </div>
         </div>
     </div>
 
@@ -48,18 +51,6 @@ custom-foot: js/character-network-js.html
     </div>
 
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Network Statistics</h5>
-            </div>
-            <div class="card-body">
-                <div id="networkStats">
-                    <p><strong>Characters:</strong> <span id="characterCount">0</span></p>
-                    <p><strong>Connections:</strong> <span id="connectionCount">0</span></p>
-                    <p><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
-                </div>
-            </div>
-        </div>
         <div class="card">
             <div class="card-header">
                 <h5>Selected Character</h5>

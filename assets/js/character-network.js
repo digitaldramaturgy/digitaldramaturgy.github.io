@@ -332,11 +332,11 @@ class CharacterNetworkD3 {
     onNodeClick(event, d) {
         event.stopPropagation();
         this.selectNode(d);
-        
+        /*
         // Show character detail modal
         if (typeof openCharacterModal === 'function') {
             openCharacterModal(d.name);
-        }
+        }*/
     }
     
     onNodeHover(event, d) {
@@ -402,7 +402,12 @@ class CharacterNetworkD3 {
         const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
         if (selectedCharacterInfo) {
             selectedCharacterInfo.innerHTML = `
-                <h6>${d.name}</h6>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <p class="h4 mb-0">${d.name}</p>
+                    <button class="btn btn-primary btn-sm" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
+                        View More Details
+                    </button>
+                </div>
                 <p><strong>Type:</strong> ${this.getGroupName(d.group)}</p>
                 <p><strong>Scenes:</strong> ${d.sceneCount}</p>
                 <p><strong>Lines:</strong> ${d.lineCount} (${linePercentage}% of dialogue)</p>
