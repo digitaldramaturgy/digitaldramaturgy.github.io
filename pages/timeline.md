@@ -1,6 +1,6 @@
 ---
 title: Timeline
-layout: timeline
+layout: production-timeline
 permalink: /timeline.html
 ---
 
