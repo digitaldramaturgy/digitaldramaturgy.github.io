@@ -1,0 +1,12 @@
+objectid,title,description,date,media,link,adaptor-translator,key-personnel,
+First One,this is a test,1630,/objects/angelos_house.jpg
+Second One,this is a description for a seoncd one,1640,,,demo_001
+
+
+date of production 
+author/adaptor/translator 
+Key personnel 
+Information gathered from reviews
+Why it is important for this specific production context
+Accompanying media (if any, it could be image, video, or audio)
+In terms of how the page looks, I think we could go with two approaches: a text based approach that uses md for formatting; or a table-based organization model. Using a table would be most efficient for collaborators on the production, whereas a narrative text-based page (just like the interpretive essay above) may be more effective for audiences reading the site. 

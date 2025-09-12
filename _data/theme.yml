@@ -8,6 +8,11 @@
 # cover-style determins how the cover page looks for the site
 cover-style: minimal # choose from 'dramatists', 'cyberpunk', 'minimal', 'minimal-movement', 'notebook', '2010'
 
+# Timeline Option
+timeline-title: "" # Leave blank if you just want the name of the play pulled in
+timeline-featured-img: /assets/img/Shakespeare_Droeshout_1623.jpg
+timeline-featured-img-caption: "Droeshout's portrait of Willy from First Folio"
+
 
 ##########
 # CollectionBuilder Theme Customization

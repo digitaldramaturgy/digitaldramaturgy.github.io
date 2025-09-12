@@ -1,0 +1,9 @@
+event,description,start-line,end-line,characters,type-of-action
+balcony meeting,romeo and juliet meet at capulet party and fall in love,1.5.93,1.5.110,Romeo;Juliet,rising-action
+balcony scene,romeo and juliet declare love and plan to marry,2.2.1,2.2.190,Romeo;Juliet,rising-action
+secret marriage,friar lawrence marries romeo and juliet in secret,2.6.1,2.6.37,Romeo;Juliet;Friar Lawrence,rising-action
+tybalt kills mercutio,tybalt and mercutio fight resulting in mercutio's death,3.1.59,3.1.93,Tybalt;Mercutio;Romeo,rising-action
+romeo kills tybalt,romeo kills tybalt in revenge for mercutio's death,3.1.94,3.1.142,Romeo;Tybalt,climax
+romeo banished,prince escalus banishes romeo from verona,3.1.185,3.1.195,Prince Escalus;Romeo,falling-action
+juliet takes potion,juliet drinks friar's potion to fake her death,4.3.14,4.3.58,Juliet,falling-action
+double suicide,romeo and juliet both die in capulet tomb,5.3.88,5.3.170,Romeo;Juliet,resolution
