@@ -20,7 +20,7 @@
     "events": [
       {% for item in items %}{%- if item.objectid -%}{%- assign collection-item = site.data[site.metadata] | where: 'objectid', item.objectid | first -%}{%- endif -%}{
         "media": {
-          "url": "{% if item.image %}{{ item.image | relative_url }}{% elsif collection-item %}{{ collection-item.image_small | default: collection-item.image_thumb | default: collection-item.object_location | relative_url }}{% endif %}",
+          "url": "{% if item.media %}{{ item.media | relative_url }}{% elsif collection-item %}{{ collection-item.image_small | default: collection-item.image_thumb | default: collection-item.object_location | relative_url }}{% endif %}",
           "caption": {{ item.title | jsonify }},
           "link": "{% if item.link %}{{ item.link }}{% elsif collection-item %}{{ '/items/' | relative_url }}{% if collection-item.parentid %}{{ collection-item.parentid }}.html#{{ collection-item.objectid }}{% else %}{{ collection-item.objectid }}.html{% endif %}{% endif %}"
         },
