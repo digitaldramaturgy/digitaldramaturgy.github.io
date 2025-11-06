@@ -1,0 +1,284 @@
+{% comment %}
+Character Connections Feature
+Displays character relationships and connections in list format
+{% endcomment %}
+
+<div id="characterConnectionsContainer" class="mt-4" style="position: relative; clear: both;">
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Character Connections</h3>
+            <p class="text-muted">Characters connected by shared scenes and acts.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <select class="form-select" id="connectionTypeFilter" onchange="filterConnections()">
+                    <option value="all">All Connections</option>
+                    <option value="strong">Strong Connections (3+ scenes)</option>
+                    <option value="medium">Medium Connections (2 scenes)</option>
+                    <option value="weak">Weak Connections (1 scene)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div id="connectionsLoadingIcon" class="text-center my-4">
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden">Loading connections...</span>
+        </div>
+    </div>
+    
+    <div id="connectionsList" class="row">
+        <!-- Connections will be populated here -->
+    </div>
+    
+    <div id="connectionsStats" class="mt-4" style="display: none;">
+        <div class="alert alert-info">
+            <strong>Connection Statistics:</strong>
+            <span id="totalConnections">0</span> total connections found.
+        </div>
+    </div>
+</div>
+
+<script>
+// Character connections functionality
+let allConnections = [];
+let filteredConnections = [];
+
+// Initialize connections when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof dd_characters !== 'undefined' && dd_characters.length > 0) {
+        loadCharacterConnections();
+    } else {
+        // Wait for session data to load
+        setTimeout(loadCharacterConnections, 1000);
+    }
+});
+
+function loadCharacterConnections() {
+    if (typeof dd_characters === 'undefined' || dd_characters.length === 0) {
+        const loadingIcon = document.getElementById('connectionsLoadingIcon');
+        if (loadingIcon) {
+            loadingIcon.innerHTML = 
+                '<p class="text-muted">No character data available</p>';
+        }
+        return;
+    }
+
+    calculateAllConnections();
+    filteredConnections = [...allConnections];
+    renderConnections();
+    updateConnectionsStats();
+    
+    // Hide loading indicator
+    const loadingIcon = document.getElementById('connectionsLoadingIcon');
+    if (loadingIcon) {
+        loadingIcon.style.display = 'none';
+    }
+    
+    const statsEl = document.getElementById('connectionsStats');
+    if (statsEl) {
+        statsEl.style.display = 'block';
+    }
+}
+
+function calculateAllConnections() {
+    allConnections = [];
+    
+    for (let i = 0; i < dd_characters.length; i++) {
+        for (let j = i + 1; j < dd_characters.length; j++) {
+            const charA = dd_characters[i];
+            const charB = dd_characters[j];
+            
+            const scenesA = charA.scenesList || [];
+            const scenesB = charB.scenesList || [];
+            
+            const sharedScenes = scenesA.filter(scene => scenesB.includes(scene));
+            
+            if (sharedScenes.length > 0) {
+                allConnections.push({
+                    characterA: charA.name,
+                    characterB: charB.name,
+                    sharedScenes: sharedScenes,
+                    connectionStrength: sharedScenes.length,
+                    connectionType: getConnectionType(sharedScenes.length)
+                });
+            }
+        }
+    }
+    
+    // Sort by connection strength (most connected first)
+    allConnections.sort((a, b) => b.connectionStrength - a.connectionStrength);
+}
+
+function getConnectionType(sceneCount) {
+    if (sceneCount >= 3) return 'strong';
+    if (sceneCount === 2) return 'medium';
+    return 'weak';
+}
+
+function renderConnections() {
+    const connectionsList = document.getElementById('connectionsList');
+    connectionsList.innerHTML = '';
+    
+    if (filteredConnections.length === 0) {
+        connectionsList.innerHTML = '<div class="col-12"><p class="text-muted text-center">No connections found with current filter.</p></div>';
+        return;
+    }
+    
+    filteredConnections.forEach((connection, index) => {
+        const connectionCard = createConnectionCard(connection, index);
+        connectionsList.appendChild(connectionCard);
+    });
+}
+
+function createConnectionCard(connection, index) {
+    const col = document.createElement('div');
+    col.className = 'col-md-6 col-lg-4 mb-3';
+    
+    const strengthBadge = getStrengthBadge(connection.connectionType);
+    const scenesList = connection.sharedScenes.map(scene => `<span class="badge bg-light text-dark me-1">${scene}</span>`).join('');
+    
+    col.innerHTML = `
+        <div class="card h-100 connection-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <small class="text-muted">Connection ${index + 1}</small>
+                ${strengthBadge}
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-5 text-center">
+                        <div class="character-name">
+                            <strong>${connection.characterA}</strong>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-1" onclick="showCharacterDetail('${connection.characterA}')">
+                            View Details
+                        </button>
+                    </div>
+                    <div class="col-2 text-center">
+                        <i class="fas fa-arrows-alt-h text-muted"></i>
+                    </div>
+                    <div class="col-5 text-center">
+                        <div class="character-name">
+                            <strong>${connection.characterB}</strong>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-1" onclick="showCharacterDetail('${connection.characterB}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <small class="text-muted">
+                    <strong>Shared scenes:</strong><br>
+                    ${scenesList}
+                </small>
+            </div>
+        </div>
+    `;
+    
+    return col;
+}
+
+function getStrengthBadge(connectionType) {
+    switch (connectionType) {
+        case 'strong':
+            return '<span class="badge bg-success">Strong</span>';
+        case 'medium':
+            return '<span class="badge bg-warning text-dark">Medium</span>';
+        case 'weak':
+            return '<span class="badge bg-secondary">Weak</span>';
+        default:
+            return '<span class="badge bg-light">Unknown</span>';
+    }
+}
+
+function filterConnections() {
+    const filterValue = document.getElementById('connectionTypeFilter').value;
+    
+    if (filterValue === 'all') {
+        filteredConnections = [...allConnections];
+    } else {
+        filteredConnections = allConnections.filter(connection => 
+            connection.connectionType === filterValue
+        );
+    }
+    
+    renderConnections();
+    updateConnectionsStats();
+}
+
+function updateConnectionsStats() {
+    const total = filteredConnections.length;
+    const totalConnectionsEl = document.getElementById('totalConnections');
+    if (totalConnectionsEl) {
+        totalConnectionsEl.textContent = total;
+    }
+}
+
+function showCharacterDetail(characterName) {
+    // This function will be implemented in the character-detail.html include
+    if (typeof openCharacterModal === 'function') {
+        openCharacterModal(characterName);
+    }
+}
+
+// Character analysis functions
+function getMostConnectedCharacters(limit = 5) {
+    const characterConnections = {};
+    
+    allConnections.forEach(connection => {
+        if (!characterConnections[connection.characterA]) {
+            characterConnections[connection.characterA] = 0;
+        }
+        if (!characterConnections[connection.characterB]) {
+            characterConnections[connection.characterB] = 0;
+        }
+        
+        characterConnections[connection.characterA]++;
+        characterConnections[connection.characterB]++;
+    });
+    
+    return Object.entries(characterConnections)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([name, count]) => ({ name, connections: count }));
+}
+
+function getConnectionsByScene() {
+    const sceneConnections = {};
+    
+    allConnections.forEach(connection => {
+        connection.sharedScenes.forEach(scene => {
+            if (!sceneConnections[scene]) {
+                sceneConnections[scene] = [];
+            }
+            sceneConnections[scene].push({
+                characterA: connection.characterA,
+                characterB: connection.characterB
+            });
+        });
+    });
+    
+    return sceneConnections;
+}
+</script>
+
+<style>
+.connection-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.connection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.character-name {
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.badge {
+    font-size: 0.7em;
+}
+</style>

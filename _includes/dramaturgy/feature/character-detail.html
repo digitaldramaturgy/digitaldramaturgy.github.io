@@ -1,0 +1,501 @@
+{% comment %}
+Character Detail Modal
+Shows detailed information about a character when clicked
+{% endcomment %}
+
+<script>
+// Character detail modal functionality
+let characterModal = null; // Store modal instance globally
+
+function openCharacterModal(characterName) {
+    const character = dd_characters.find(c => c.name === characterName);
+    if (!character) {
+        console.error('Character not found:', characterName);
+        return;
+    }
+    
+    // Get additional character data from CSV if available
+    const csvData = getCharacterCSVData(characterName);
+    
+    // Calculate character connections
+    const connections = calculateCharacterConnections(character);
+    const connectionsByStrength = categorizeConnections(connections);
+    
+    // Get scene analysis
+    const sceneAnalysis = analyzeCharacterScenes(character);
+    
+    // Populate modal content
+    const modalContent = document.getElementById('characterDetailContent');
+    if (modalContent) {
+        modalContent.innerHTML = generateCharacterDetailHTML(character, csvData, connections, connectionsByStrength, sceneAnalysis);
+    }
+    
+    // Update modal title
+    const modalTitle = document.getElementById('characterDetailModalLabel');
+    if (modalTitle) {
+        modalTitle.textContent = characterName;
+    }
+    
+    // Show modal
+    const modalElement = document.getElementById('characterDetailModal');
+    if (modalElement && typeof bootstrap !== 'undefined') {
+        // Dispose of existing modal instance if it exists
+        if (characterModal) {
+            characterModal.dispose();
+        }
+        
+        // Create new modal instance
+        characterModal = new bootstrap.Modal(modalElement, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        
+        // Add event listener to clean up when modal is hidden
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            if (characterModal) {
+                characterModal.dispose();
+                characterModal = null;
+            }
+        }, { once: true }); // Use once: true so the listener is removed after firing
+        
+        characterModal.show();
+        
+        // Set up character lines loading when accordion is expanded
+        setupCharacterLinesLoading(character.name);
+    }
+}
+
+// Also add a function to ensure modal cleanup on page unload
+document.addEventListener('DOMContentLoaded', function() {
+    // Clean up modal on page unload
+    window.addEventListener('beforeunload', function() {
+        if (characterModal) {
+            characterModal.dispose();
+            characterModal = null;
+        }
+    });
+    
+    // Also add a fallback cleanup function that can be called manually
+    window.cleanupCharacterModal = function() {
+        const modalElement = document.getElementById('characterDetailModal');
+        if (modalElement) {
+            // Remove any lingering backdrop
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            
+            // Remove modal-open class from body
+            document.body.classList.remove('modal-open');
+            
+            // Reset body styles
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+        
+        if (characterModal) {
+            characterModal.dispose();
+            characterModal = null;
+        }
+    };
+})
+
+function generateCharacterDetailHTML(character, csvData, connections, connectionsByStrength, sceneAnalysis) {
+    const hasImage = csvData && csvData.image && csvData.image.trim() !== '';
+    const hasDescription = csvData && csvData.description && csvData.description.trim() !== '';
+    const hasNotes = csvData && csvData.notes && csvData.notes.trim() !== '';
+    
+    // Fix image path - remove duplicate 'objects/' if present
+    const imagePath = hasImage ? csvData.image.replace(/^objects\//, '') : '';
+    
+    return `
+        <div class="row">
+            <div class="col-md-4">
+                ${hasImage ? `
+                    <img src="{{ site.baseurl }}/objects/${imagePath}" class="img-fluid rounded mb-3" alt="${character.name}">
+                ` : `
+                    <div class="bg-light rounded p-4 text-center mb-3">
+                        <i class="fas fa-user fa-4x text-muted"></i>
+                        <p class="mt-2 text-muted">No image available</p>
+                    </div>
+                `}
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Character Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total Scenes:</strong> ${character.scenesList ? character.scenesList.length : 0}</p>
+                        <p><strong>Total Connections:</strong> ${connections.length}</p>
+                        <p><strong>Acts Appeared:</strong> ${sceneAnalysis.acts.join(', ')}</p>
+                        <p><strong>Scene Range:</strong> ${sceneAnalysis.sceneRange}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                ${hasDescription ? `
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6>Description</h6>
+                        </div>
+                        <div class="card-body">
+                            <p>${csvData.description}</p>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Scene Appearances</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            ${generateSceneGrid(character.scenesList || [])}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>Character Connections</h6>
+                    </div>
+                    <div class="card-body">
+                        ${generateConnectionsHTML(connectionsByStrength)}
+                    </div>
+                </div>
+                
+                ${hasNotes ? `
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6>Notes</h6>
+                        </div>
+                        <div class="card-body">
+                            <p>${csvData.notes}</p>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- Character Lines Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6>
+                            <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#characterLines${character.name.replace(/\s+/g, '')}" aria-expanded="false" aria-controls="characterLines${character.name.replace(/\s+/g, '')}">
+                                <i class="fas fa-quote-left me-2"></i>Character Lines
+                                <i class="fas fa-chevron-down ms-2"></i>
+                            </button>
+                        </h6>
+                    </div>
+                    <div class="collapse" id="characterLines${character.name.replace(/\s+/g, '')}">
+                        <div class="card-body">
+                            <div id="characterLinesContent${character.name.replace(/\s+/g, '')}">
+                                <p class="text-muted">Loading character lines...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateSceneGrid(scenes) {
+    if (!scenes || scenes.length === 0) {
+        return '<div class="col-12"><p class="text-muted">No scenes found</p></div>';
+    }
+    
+    return scenes.map(scene => 
+        `<div class="col-auto mb-2">
+            <span class="badge bg-primary">${scene}</span>
+        </div>`
+    ).join('');
+}
+
+function generateConnectionsHTML(connectionsByStrength) {
+    let html = '';
+    
+    if (connectionsByStrength.strong.length > 0) {
+        html += `
+            <div class="mb-3">
+                <h6 class="text-success">Strong Connections (3+ scenes)</h6>
+                <div class="row">
+                    ${connectionsByStrength.strong.map(conn => 
+                        `<div class="col-md-6 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><strong>${conn.character}</strong></span>
+                                <span class="badge bg-success">${conn.connectionStrength}</span>
+                            </div>
+                            <small class="text-muted">Scenes: ${conn.sharedScenes.join(', ')}</small>
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    if (connectionsByStrength.medium.length > 0) {
+        html += `
+            <div class="mb-3">
+                <h6 class="text-warning">Medium Connections (2 scenes)</h6>
+                <div class="row">
+                    ${connectionsByStrength.medium.map(conn => 
+                        `<div class="col-md-6 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><strong>${conn.character}</strong></span>
+                                <span class="badge bg-warning">${conn.connectionStrength}</span>
+                            </div>
+                            <small class="text-muted">Scenes: ${conn.sharedScenes.join(', ')}</small>
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    if (connectionsByStrength.weak.length > 0) {
+        html += `
+            <div class="mb-3">
+                <h6 class="text-secondary">Weak Connections (1 scene)</h6>
+                <div class="row">
+                    ${connectionsByStrength.weak.map(conn => 
+                        `<div class="col-md-6 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><strong>${conn.character}</strong></span>
+                                <span class="badge bg-secondary">${conn.connectionStrength}</span>
+                            </div>
+                            <small class="text-muted">Scenes: ${conn.sharedScenes.join(', ')}</small>
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    if (html === '') {
+        html = '<p class="text-muted">No connections found</p>';
+    }
+    
+    return html;
+}
+
+function calculateCharacterConnections(character) {
+    const connections = [];
+    const characterScenes = character.scenesList || [];
+    
+    dd_characters.forEach(otherCharacter => {
+        if (otherCharacter.name === character.name) return;
+        
+        const otherScenes = otherCharacter.scenesList || [];
+        const sharedScenes = characterScenes.filter(scene => otherScenes.includes(scene));
+        
+        if (sharedScenes.length > 0) {
+            connections.push({
+                character: otherCharacter.name,
+                sharedScenes: sharedScenes,
+                connectionStrength: sharedScenes.length
+            });
+        }
+    });
+    
+    // Sort by connection strength
+    return connections.sort((a, b) => b.connectionStrength - a.connectionStrength);
+}
+
+function categorizeConnections(connections) {
+    return {
+        strong: connections.filter(c => c.connectionStrength >= 3),
+        medium: connections.filter(c => c.connectionStrength === 2),
+        weak: connections.filter(c => c.connectionStrength === 1)
+    };
+}
+
+function analyzeCharacterScenes(character) {
+    const scenes = character.scenesList || [];
+    const acts = [...new Set(scenes.map(scene => scene.split('.')[0]))].sort();
+    
+    let sceneRange = 'N/A';
+    if (scenes.length > 0) {
+        const sortedScenes = scenes.sort((a, b) => {
+            const [actA, sceneA] = a.split('.').map(Number);
+            const [actB, sceneB] = b.split('.').map(Number);
+            if (actA !== actB) return actA - actB;
+            return sceneA - sceneB;
+        });
+        
+        if (sortedScenes.length === 1) {
+            sceneRange = sortedScenes[0];
+        } else {
+            sceneRange = `${sortedScenes[0]} - ${sortedScenes[sortedScenes.length - 1]}`;
+        }
+    }
+    
+    return {
+        acts: acts,
+        sceneRange: sceneRange,
+        totalScenes: scenes.length
+    };
+}
+
+function getCharacterCSVData(characterName) {
+    // Use global character CSV data loaded from Jekyll
+    if (typeof window.characterCSVData !== 'undefined') {
+        const characterData = window.characterCSVData.find(char => 
+            char.character && char.character.toLowerCase() === characterName.toLowerCase()
+        );
+        
+        if (characterData) {
+            return {
+                description: characterData.description || '',
+                image: characterData.image || '',
+                notes: characterData.notes || ''
+            };
+        }
+    }
+    
+    return null;
+}
+
+// Export for use in other components
+window.openCharacterModal = openCharacterModal;
+
+// Setup character lines loading when accordion is expanded
+function setupCharacterLinesLoading(characterName) {
+    const collapseId = `characterLines${characterName.replace(/\s+/g, '')}`;
+    const collapseElement = document.getElementById(collapseId);
+    
+    if (collapseElement) {
+        collapseElement.addEventListener('show.bs.collapse', function() {
+            loadCharacterLines(characterName);
+        });
+    }
+}
+
+// Load and display character lines
+function loadCharacterLines(characterName) {
+    const contentId = `characterLinesContent${characterName.replace(/\s+/g, '')}`;
+    const contentElement = document.getElementById(contentId);
+    
+    if (!contentElement) return;
+    
+    // Search for character lines in the metadata
+    const characterLines = extractCharacterLines(characterName);
+    
+    if (characterLines.length === 0) {
+        contentElement.innerHTML = '<p class="text-muted">No recorded lines found for this character.</p>';
+        return;
+    }
+    
+    // Display the lines
+    const linesHTML = characterLines.map((line, index) => `
+        <div class="character-line mb-3 p-3 border-start border-primary border-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <strong class="text-primary">${characterName}</strong>
+                ${line.scene ? `<small class="text-muted">Scene: ${line.scene}</small>` : ''}
+            </div>
+            <blockquote class="mb-0">
+                <p class="mb-0">${line.text}</p>
+            </blockquote>
+        </div>
+    `).join('');
+    
+    contentElement.innerHTML = `
+        <div class="mb-3">
+            <small class="text-muted">${characterLines.length} line(s) found</small>
+        </div>
+        ${linesHTML}
+    `;
+}
+
+// Extract character lines from metadata and transcripts
+function extractCharacterLines(characterName) {
+    const lines = [];
+    
+    // Search through CollectionBuilder metadata if available
+    if (typeof cb_items !== 'undefined' && Array.isArray(cb_items)) {
+        cb_items.forEach(item => {
+            if (item.object_transcript) {
+                const transcript = item.object_transcript.toString();
+                const characterLines = findCharacterLinesInText(transcript, characterName, item.title);
+                lines.push(...characterLines);
+            }
+        });
+    }
+    
+    return lines;
+}
+
+// Find character lines in text using various patterns
+function findCharacterLinesInText(text, characterName, source) {
+    const lines = [];
+    const patterns = [
+        // Pattern: CHARACTER: line text
+        new RegExp(`^\\s*${escapeRegExp(characterName)}\\s*[:.]\\s*(.+)$`, 'gmi'),
+        // Pattern: CHARACTER\n line text
+        new RegExp(`^\\s*${escapeRegExp(characterName)}\\s*\\n\\s*(.+)$`, 'gmi'),
+        // Pattern: [CHARACTER] line text
+        new RegExp(`^\\s*\\[\\s*${escapeRegExp(characterName)}\\s*\\]\\s*(.+)$`, 'gmi')
+    ];
+    
+    patterns.forEach(pattern => {
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+            const lineText = match[1].trim();
+            if (lineText && lineText.length > 0) {
+                lines.push({
+                    text: lineText,
+                    source: source,
+                    scene: extractSceneFromContext(text, match.index)
+                });
+            }
+        }
+    });
+    
+    return lines;
+}
+
+// Extract scene information from surrounding context
+function extractSceneFromContext(text, position) {
+    // Look for scene markers in the surrounding text
+    const beforeText = text.substring(Math.max(0, position - 200), position);
+    const scenePatterns = [
+        /Scene\s+(\d+(?:\.\d+)?)/i,
+        /Act\s+(\d+)[\s,]*Scene\s+(\d+)/i,
+        /(\d+\.\d+)/
+    ];
+    
+    for (const pattern of scenePatterns) {
+        const match = beforeText.match(pattern);
+        if (match) {
+            if (match[2]) {
+                return `${match[1]}.${match[2]}`;
+            }
+            return match[1];
+        }
+    }
+    
+    return null;
+}
+
+// Escape special regex characters
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+</script>
+
+<style>
+.character-detail-modal .modal-dialog {
+    max-width: 900px;
+}
+
+.character-detail-modal .badge {
+    font-size: 0.8em;
+}
+
+.character-detail-modal .card {
+    border: 1px solid #dee2e6;
+}
+
+.character-detail-modal .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+</style>

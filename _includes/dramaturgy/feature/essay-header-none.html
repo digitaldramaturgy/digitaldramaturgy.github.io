@@ -1,0 +1,38 @@
+{%- comment -%}
+Text-only header for essays
+Clean typography-focused header inspired by minimal design principles
+{%- endcomment -%}
+
+{% assign header_title = page.header-title | default: page.title %}
+{% assign header_subtitle = page.header-subtitle %}
+
+<div class="essay-header-none position-relative">
+  <!-- Crop marks for design aesthetic -->
+  <div class="essay-crop-marks">
+    <div class="crop-mark crop-top-left-h"></div>
+    <div class="crop-mark crop-top-left-v"></div>
+    <div class="crop-mark crop-top-right-h"></div>
+    <div class="crop-mark crop-top-right-v"></div>
+  </div>
+  
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-xl-7 text-center">
+        <div class="essay-header-text position-relative">
+          <div class="essay-publication-label">{{site.title}}</div>
+          {% if header_title %}
+            <h1 class="essay-header-title display-4 mb-3">
+              {{ header_title }}
+            </h1>
+            <div class="essay-divider-line"></div>
+          {% endif %}
+          {% if header_subtitle %}
+            <h2 class="essay-header-subtitle h5 text-muted mb-0 fw-normal">
+              {{ header_subtitle }}
+            </h2>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

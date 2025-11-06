@@ -1,0 +1,29 @@
+---
+# Essay layout with flexible header options
+layout: default
+---
+
+{%- comment -%}
+Essay layout with configurable header types:
+- full: Full-width image header with overlay
+- half: Split image/text header
+- none: Text-only header (default)
+{%- endcomment -%}
+
+{% if page.header-image-type == "full" %}
+  {% include dramaturgy/feature/essay-header-full.html %}
+{% elsif page.header-image-type == "half" %}
+  {% include dramaturgy/feature/essay-header-half.html %}
+{% else %}
+  {% include dramaturgy/feature/essay-header-none.html %}
+{% endif %}
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+      <article class="essay-content">
+        {{ content }}
+      </article>
+    </div>
+  </div>
+</div>

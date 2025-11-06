@@ -1,0 +1,133 @@
+---
+layout: page
+custom-foot: dramaturgy/js/character-network-js.html
+---
+
+{{ content }}
+
+<div id="characterNetworkContainer" class="mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h3>Character Network Visualization</h3>
+            <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
+                dialogue.</p>
+                <div id="networkStats">
+                    <p><strong>Characters:</strong> <span class="me-3" id="characterCount">0</span><strong>Connections:</strong> <span class="me-3" id="connectionCount">0</span><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
+                </div>
+        </div>
+    </div>
+
+    <!-- Network Controls Button Group -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <div class="btn-group" role="group" aria-label="Network Controls">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleLabels()">
+                    <i class="fas fa-tags"></i> Toggle Labels
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="adjustNodeSize()">
+                    <i class="fas fa-expand-arrows-alt"></i> Adjust Size
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                data-bs-target="#networkHelpModal">
+                <i class="fas fa-question-circle"></i> How to Read/Use
+            </button>
+            </div>
+    
+        </div>
+       
+   
+
+
+
+    <div class="col-lg-8">
+        <div id="networkVisualization" style="width: 100%; height: 600px; min-height: 600px;">
+            <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading network...</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Selected Character</h5>
+            </div>
+            <div class="card-body">
+                <div id="selectedCharacterInfo">
+                    <p class="text-muted">Click on a character node to see details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Character Connections Section - positioned after network visualization -->
+<div class="mt-5 mb-5">
+    <h2>Character Connections</h2>
+    <p class="text-muted">Explore detailed character relationships and shared scenes.</p>
+    {% include dramaturgy/feature/character-connections.html %}
+</div>
+
+<!-- Character Detail Modal -->
+<div class="modal fade" id="characterDetailModal" tabindex="-1" aria-labelledby="characterDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="characterDetailModalLabel">Character Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="characterDetailContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Help Modal -->
+<div class="modal fade" id="networkHelpModal" tabindex="-1" aria-labelledby="networkHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="networkHelpModalLabel">
+                    <i class="fas fa-network-wired"></i> Character Network Visualization
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This interactive network visualization shows character relationships based on shared scenes and acts.
+                    Node size represents scene appearances, while connections indicate shared scenes.</p>
+
+                <h6 class="mt-4">Character Classifications</h6>
+                <ul>
+                    <li><strong>Major Characters</strong> (Red): Top 15% by combined scene presence and dialogue share
+                    </li>
+                    <li><strong>Supporting Characters</strong> (Orange): 8-15% range - important secondary roles</li>
+                    <li><strong>Minor Characters</strong> (Green): 2-8% range - moderate presence in the play</li>
+                    <li><strong>Background Characters</strong> (Blue): Under 2% - minimal speaking roles</li>
+                </ul>
+
+                <h6 class="mt-4">How to Use</h6>
+                <ul>
+                    <li><strong>Click and drag</strong> nodes to rearrange the network</li>
+                    <li><strong>Click on a character</strong> to see detailed information</li>
+                    <li><strong>Use the zoom controls</strong> or mouse wheel to zoom in/out</li>
+                    <li><strong>Hover over connections</strong> to see shared scene information</li>
+                    <li><strong>Use the control panel</strong> to adjust visualization settings</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

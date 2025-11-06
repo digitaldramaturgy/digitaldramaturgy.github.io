@@ -1,0 +1,18 @@
+<!-- Character Network JavaScript includes -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="{{ '/assets/js/character-network.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/character-interactions.js' | relative_url }}"></script>
+
+<script>
+// Additional initialization for character network page
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any additional network-specific functionality here
+    console.log('Character network page loaded');
+    
+    // Check if character data is available
+    if (typeof dd_characters === 'undefined' || dd_characters.length === 0) {
+        console.warn('Character data not available - waiting for session constants to load');
+    }
+    
+});
+</script>
