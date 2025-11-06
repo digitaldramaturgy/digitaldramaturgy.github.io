@@ -37,11 +37,8 @@ $theme-link-color: {{ site.data.theme.link-color | default: '""' }};
 );
 {% endif %}
 
-/* pull in annotation/digital-dramaturgy styles  */
-@use "annotate";
-
-/* pull in essay header styles */
-@use "essay-headers";
+/* pull in dramturgy/digital-dramaturgy styles  */
+@use "dramaturgy";
 
 /* pull in custom styles to override everything else */
 @use "custom";
