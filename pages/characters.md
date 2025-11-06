@@ -3,16 +3,16 @@ title: Characters
 layout: page
 permalink: /characters.html
 # add custom CSS for characters page
-custom-foot: annotate/js/character-interactions-js.html
+custom-foot: dramaturgy/js/character-interactions-js.html
 ---
 
 ## Characters
 
 Explore the characters in this dramatic work through interactive cards and detailed character information.
 
-{% include annotate/js/character-csv-data.html %}
-{% include annotate/feature/character-cards.html %}
-{% include annotate/feature/character-detail.html %}
+{% include dramaturgy/js/character-csv-data.html %}
+{% include dramaturgy/feature/character-cards.html %}
+{% include dramaturgy/feature/character-detail.html %}
 
 
 <!-- Character Detail Modal -->

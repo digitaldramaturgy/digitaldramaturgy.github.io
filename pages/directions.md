@@ -30,7 +30,7 @@ At minimum, one can set up and publish a _Digital Dramaturgy_ with a published g
 
  We have starter sheets prepared for all of Shakespeare's plays that anyone can use simply by making a copy of them. These are based on [a dataset found on Kaggle.com](https://www.kaggle.com/datasets/kingburrito666/shakespeare-plays); we are still investigating the provenance of the textual versions of these plays. 
 
-{% include annotate/setup/startershakespeare.html %}
+{% include dramaturgy/setup/startershakespeare.html %}
 
 #### Option B: Prepare Your Own Script
 
@@ -54,7 +54,7 @@ The simplest way to publish your playscript spreadsheet on Digital Dramaturgy is
 
 - Paste the link you copied in Step 2 into the form below and click Submit 
 
-{% include annotate/setup/sheets.html %}
+{% include dramaturgy/setup/sheets.html %}
  
 - Click around and check your play -- any edits you make to your Google Sheet will now update your site. 
 - If you make edits to your spreadsheet, click the "Refresh Playscript Data" button via the side-nav menu to refresh the website

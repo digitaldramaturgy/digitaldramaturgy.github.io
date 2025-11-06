@@ -62,7 +62,7 @@ theme_002,Nature vs Nurture,Caliban's character and education,"Act 1 Scene 2, Ac
 
 **Description:** Build character pages and network visualization extending CollectionBuilder's visualization and card systems.
 
-Use existing papa-parse structures and local session storage as defined in _includes/annotate/js/session-constants-js.html
+Use existing papa-parse structures and local session storage as defined in _includes/dramaturgy/js/session-constants-js.html
  
 The visualization should be based solely on whether a character appears in the same scene or act with another character. 
 

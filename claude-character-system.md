@@ -4,7 +4,7 @@
 
 **Description:** Build character pages and network visualization extending CollectionBuilder's visualization and card systems.
 
-Use existing papa-parse structures and local session storage as defined in _includes/annotate/js/session-constants-js.html -- specifically the dd_characters_store array 
+Use existing papa-parse structures and local session storage as defined in _includes/dramaturgy/js/session-constants-js.html -- specifically the dd_characters_store array 
  
 The visualization should be based solely on whether a character appears in the same scene or act with another character. 
 

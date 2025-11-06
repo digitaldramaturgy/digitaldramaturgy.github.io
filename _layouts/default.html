@@ -1,18 +1,18 @@
 <!doctype html>
 <html lang="en" class="h-100">
   <head prefix="og: http://ogp.me/ns#">
-    {% include annotate/head/head.html %}
+    {% include dramaturgy/head/head.html %}
   </head>
   <body class="d-flex flex-column h-100">
     <div id="skip-to-content"><a href="#maincontent">Skip to main content</a></div>
-    {% include annotate/collection-banner.html %}
-    {% include annotate/collection-nav.html %}
-    {% if site.development-mode %}{% include annotate/setup/modal-body.html %}{% endif %}
+    {% include dramaturgy/collection-banner.html %}
+    {% include dramaturgy/collection-nav.html %}
+    {% if site.development-mode %}{% include dramaturgy/setup/modal-body.html %}{% endif %}
     <main id="maincontent" role="main" class="flex-shrink-0">
       {{ content }}
     </main>
     {% include footer.html %}
-    {% include annotate/foot.html %}
+    {% include dramaturgy/foot.html %}
     {% include foot.html %}
     {% include scroll-to-top.html %}
   </body>
