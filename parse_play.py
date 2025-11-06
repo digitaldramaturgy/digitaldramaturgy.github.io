@@ -31,9 +31,16 @@ Date: 2025
 import re
 import csv
 import sys
+import os
 
 def parse_play_markdown(input_file, output_file):
     """Parse a Shakespeare play markdown file and convert to CSV format."""
+    
+    # Check if input file exists
+    if not os.path.exists(input_file):
+        print(f"Error: Input file '{input_file}' not found.", file=sys.stderr)
+        print(f"Please ensure the file exists in the current directory.", file=sys.stderr)
+        sys.exit(1)
     
     # Initialize variables
     current_act = ""
@@ -47,8 +54,12 @@ def parse_play_markdown(input_file, output_file):
     character_pattern = r'^\*\*([A-Z][A-Z\s\(\)]+)\*\*\s*$'
     stage_direction_pattern = r'^\*([^*].+?)\*\s*$'
     
-    with open(input_file, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except IOError as e:
+        print(f"Error: Unable to read file '{input_file}': {e}", file=sys.stderr)
+        sys.exit(1)
     
     for line in lines:
         line = line.strip()
@@ -87,10 +98,19 @@ def parse_play_markdown(input_file, output_file):
             rows.append([current_act, current_scene, current_player, line])
     
     # Write to CSV
-    with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['act', 'scene', 'player', 'text'])
-        writer.writerows(rows)
+    try:
+        # Ensure output directory exists
+        output_dir = os.path.dirname(output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['act', 'scene', 'player', 'text'])
+            writer.writerows(rows)
+    except IOError as e:
+        print(f"Error: Unable to write to file '{output_file}': {e}", file=sys.stderr)
+        sys.exit(1)
     
     print(f"Processed {len(rows)} entries from {input_file}")
     print(f"Output written to {output_file}")
