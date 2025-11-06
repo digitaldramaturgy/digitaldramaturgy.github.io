@@ -16,14 +16,14 @@
 #       -- e.g., /assets/data/play_example.csv
 #    - or a link to a CSV file stored somewhere accessible on the internet 
 #       -- e.g., https://example.com/play_example.csv)
-play: /assets/data/measureformeasure.csv
+play: 
 # dev mode turns on ability to change metadata; when you're finished with this project, set this to false
 development-mode: true
 
 ##########
 # Site SETTINGS
 # Site
-title: Measure for Measure
+title: Digital Dramaturgy
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
 description: # put something like "a collaborative annotation of "
