@@ -24,7 +24,8 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
 
         <div class="col-md-3">
             <p class="pt-4">
-                <select id="scenes" title="Jump to a year" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
+                <label for="scenes" class="visually-hidden">Filter by Scene</label>
+                <select id="scenes" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
                     <option value="#" class="reset" selected="selected reset">Filter by Scene</option>
 
                 </select>
@@ -32,7 +33,8 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
         </div>
         <div class="col-md-3">
             <p class="pt-4">
-                <select id="players" title="Jump to a year" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
+                <label for="players" class="visually-hidden">Filter by Player</label>
+                <select id="players" class="filteroptions filters px-3 py-2" style="max-width: 100%;">
                     <option value="#" class="reset" selected="selected reset">Filter by Player</option>
 
                 </select>
@@ -43,7 +45,8 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
                 <div class="row pt-4">
                     <div class="col-md-6">
                         <div class="input-group fs-5">
-                            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="goButton" id="quicksearch">
+                            <label for="quicksearch" class="visually-hidden">Search script</label>
+                            <input type="text" class="form-control" placeholder="Search..." aria-describedby="goButton" id="quicksearch">
                             <div class="input-group-append">
                                 <button class="btn btn-primary rounded-right border-light input-group-text" type="submit" title="Search" alt="Search" id="goButton" onclick="filterLines()">Go</button>
                             </div>
@@ -51,7 +54,7 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
                     </div>
                     <div class="col-md-6">
                         <button class="reset btn btn-sm btn-outline-primary mt-1" href="#" data-filter="">Reset Filters</button>
-                        <h5 class="d-none linecount mt-2 small ms-3"><span id="numberof"></span></h5>
+                        <p class="d-none linecount mt-2 small ms-3 h5"><span id="numberof"></span></p>
                     </div>
                 </div>
             </div>
@@ -80,7 +83,8 @@ custom-foot: annotate/lib/markdownit-js.html;annotate/js/playscript-js.html
             </div>
         </div>
         <div class="col-12 d-none filter-search mt-2 small">
-            <h5 class="d-none linecount small ms-3"><span id="numberoflines"></span></h5>
+            <p class="linecount small ms-3 h5"><span id="numberoflines"></span></p>
+            <label for="searchResults" class="visually-hidden">Search results - select to jump to line</label>
             <select class="mb-2 form-select" id="searchResults" onchange="scrollToLine();">
     
             </select>
