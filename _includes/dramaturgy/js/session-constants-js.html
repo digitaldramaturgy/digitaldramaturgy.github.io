@@ -294,8 +294,8 @@ function buildScenesNavigation() {
     const sceneClass = 'act' + act + 'scene' + sceneNum;
     
     scenesNav.push(
-      `<li class="dropdown-item">
-        <a class="link-dark rounded" href="${ref_url}${sceneClass}">
+      `<li class="border">
+        <a class="dropdown-item" href="${ref_url}${sceneClass}">
           Act ${act}, Scene ${sceneNum}
         </a>
       </li>`
@@ -307,10 +307,6 @@ function buildScenesNavigation() {
     scenesNavDropdown.innerHTML = scenesNav.join('');
   }
   
-  // Only update if element exists
-  if (offcanvasScenesNavDropdown) {
-    offcanvasScenesNavDropdown.innerHTML = scenesNav.join('');
-  }
 }
 
 /**
