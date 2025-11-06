@@ -11,11 +11,11 @@ Essay layout with configurable header types:
 {%- endcomment -%}
 
 {% if page.header-image-type == "full" %}
-  {% include feature/essay-header-full.html %}
+  {% include annotate/feature/essay-header-full.html %}
 {% elsif page.header-image-type == "half" %}
-  {% include feature/essay-header-half.html %}
+  {% include annotate/feature/essay-header-half.html %}
 {% else %}
-  {% include feature/essay-header-none.html %}
+  {% include annotate/feature/essay-header-none.html %}
 {% endif %}
 
 <div class="container my-4">

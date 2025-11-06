@@ -3,16 +3,17 @@ title: Characters
 layout: page
 permalink: /characters.html
 # add custom CSS for characters page
-custom-foot: js/character-interactions-js.html
+custom-foot: annotate/js/character-interactions-js.html
 ---
 
 ## Characters
 
 Explore the characters in this dramatic work through interactive cards and detailed character information.
 
-{% include js/character-csv-data.html %}
-{% include feature/character-cards.html %}
-{% include feature/character-detail.html %}
+{% include annotate/js/character-csv-data.html %}
+{% include annotate/feature/character-cards.html %}
+{% include annotate/feature/character-detail.html %}
+
 
 <!-- Character Detail Modal -->
 <div class="modal fade" id="characterDetailModal" tabindex="-1" aria-labelledby="characterDetailModalLabel" aria-hidden="true">

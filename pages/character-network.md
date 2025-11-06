@@ -4,9 +4,10 @@ layout: character-network
 permalink: /character-network.html
 ---
 
-{% include js/character-csv-data.html %}
-{% include feature/character-network.html %}
-{% include feature/character-detail.html %}
+{% include annotate/js/character-csv-data.html %}
+{% include annotate/feature/character-network.html %}
+{% include annotate/feature/character-detail.html %}
+
 
 
 
