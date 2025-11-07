@@ -10,11 +10,11 @@ permalink: /about.html
 
 This is the Digital Dramaturgy (OHD) template/demo site. It features several options for loading demo playscripts or loading your own! 
 
-If you'd like to copy an Digital Dramaturgy template and get started, go to this site's repo--[the OHD GitHub Template repository](https://github.com/digitaldramaturgy/digitaldramaturgy.github.io){:target="_blank"}--and click the green "Use This Template" button at the right. 
-
-***To create your own About page for your project, just delete everything here and use Markdown to write your content.***
+If you'd like to copy an Digital Dramaturgy template and get started, go to this [site's repo--[https://github.com/digitaldramaturgy/digitaldramaturgy.github.io](https://github.com/digitaldramaturgy/digitaldramaturgy.github.io){:target="_blank"}--and click the green "Use This Template" button at the right. 
 
 For more instruction, [see our directions](https://digitaldramaturgy.github.io/directions.html) 
+
+{% include feature/alert.html color="info" text="To create your own About page for your project, just delete everything here and use Markdown to write your content." %}
 
 ## About Digital Dramaturgy
 
