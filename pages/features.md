@@ -194,30 +194,36 @@ permalink: /features.html
 
 <h3>Multi-Collection Support</h3>
 
-Digital Dramaturgy supports the use of multiple collections within a single site. This means you can:
+<p>Digital Dramaturgy supports the use of multiple collections within a single site. This means you can:</p>
 
-- **Reference supplementary materials** in your annotations (images, documents, videos)
-- **Create linked interpretive pages** that connect to specific collection items
-- **Build comprehensive digital archives** around a single play or production
-- **Integrate production photos, programs, and ephemera** alongside your playscript
+<ul>
+<li><strong>Reference supplementary materials</strong> in your annotations (images, documents, videos)</li>
+<li><strong>Create linked interpretive pages</strong> that connect to specific collection items</li>
+<li><strong>Build comprehensive digital archives</strong> around a single play or production</li>
+<li><strong>Integrate production photos, programs, and ephemera</strong> alongside your playscript</li>
+</ul>
 
 <h3>Google Sheets Integration</h3>
 
-Start quickly without any technical setup:
+<p>Start quickly without any technical setup:</p>
 
-- **Edit your playscript in Google Sheets** - no coding required
-- **Publish instantly** - changes appear on your site immediately
-- **Share temporary links** - perfect for classroom use or collaboration
-- **Export to GitHub** when you're ready for a permanent site
+<ul>
+<li><strong>Edit your playscript in Google Sheets</strong> - no coding required</li>
+<li><strong>Publish instantly</strong> - changes appear on your site immediately</li>
+<li><strong>Share temporary links</strong> - perfect for classroom use or collaboration</li>
+<li><strong>Export to GitHub</strong> when you're ready for a permanent site</li>
+</ul>
 
 <h3>Flexible Data Structure</h3>
 
-Work with your data your way:
+<p>Work with your data your way:</p>
 
-- **CSV-based** - edit in spreadsheets or text editors
-- **Customizable fields** - add any metadata you need
-- **Version tracking** - compare cuts, drafts, or editions
-- **Extensible** - build on the framework to add your own features
+<ul>
+<li><strong>CSV-based</strong> - edit in spreadsheets or text editors</li>
+<li><strong>Customizable fields</strong> - add any metadata you need</li>
+<li><strong>Version tracking</strong> - compare cuts, drafts, or editions</li>
+<li><strong>Extensible</strong> - build on the framework to add your own features</li>
+</ul>
 
 </div>
 
