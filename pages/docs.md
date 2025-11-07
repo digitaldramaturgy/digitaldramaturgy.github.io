@@ -2,6 +2,7 @@
 layout: docs
 title: Digital Dramaturgy Documentation
 permalink: /docs.html
+modal: false
 ---
 
 # Digital Dramaturgy Documentation
@@ -26,50 +27,6 @@ Welcome to the comprehensive reference guide for Digital Dramaturgy features. Th
 
 ---
 
-## Cover Pages {#cover-pages}
-
-Digital Dramaturgy offers **six unique cover page styles** to make a striking first impression for your project.
-
-### Available Styles
-
-Configure your cover page style in `_data/theme.yml`:
-
-```yaml
-cover-style: minimal
-```
-
-**Available Options:**
-
-| Style | Description | Best For |
-|-------|-------------|----------|
-| `minimal` | Clean, centered text design | Modern, professional projects |
-| `minimal-movement` | Minimal with subtle animations | Adding visual interest |
-| `dramatists` | Theater-focused aesthetic | Classical or theatrical productions |
-| `cyberpunk` | Bold, stylized design | Contemporary or experimental work |
-| `notebook` | Handwritten notebook aesthetic | Educational or collaborative projects |
-| `2010` | Retro-styled design | Period-appropriate presentations |
-
-### Customizing Cover Content
-
-Edit `pages/index.md` to customize your cover page text:
-
-```markdown
----
-layout: home-cover
-title: Your Play Title
----
-
-# Your Play Title
-
-By Your Name
-
-Additional subtitle or description text...
-```
-
-**Accessibility Note:** All cover styles include proper heading hierarchy and semantic HTML for screen readers.
-
----
-
 ## Annotated Playscripts {#playscripts}
 
 The annotated playscript feature is the core of Digital Dramaturgy, allowing you to publish line-by-line annotated scripts with powerful filtering and search capabilities.
@@ -80,8 +37,8 @@ Your playscript CSV/Google Sheet **must include** these four core fields:
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `act` | Act number (Roman numeral recommended) | `I`, `II`, `III` |
-| `scene` | Scene number (Roman numeral recommended) | `I`, `II`, `III` |
+| `act` | Act number | `1`, `2`, `3` |
+| `scene` | Scene number | `1`, `2`, `3` |
 | `player` | Character speaking the line (or `StageDirection`) | `HAMLET`, `OPHELIA`, `StageDirection` |
 | `text` | The actual line text or stage direction | `To be, or not to be, that is the question` |
 
@@ -90,9 +47,9 @@ Your playscript CSV/Google Sheet **must include** these four core fields:
 | Field | Description | Example |
 |-------|-------------|---------|
 | `annotation` | Line-by-line annotation text | `Hamlet's famous soliloquy on mortality` |
-| `highlight` | Highlighting/emphasis marker | `yes` or custom value |
-| `cutting` | Track cuts in production | `cut`, `original` |
-| `revision` | Track revisions or versions | `first`, `second`, `final` |
+| `highlight` | Highlighting/emphasis marker | the word or phrase to highlight in the script (must match with string in `text` field) |
+| `cutting` | Cut the line | enter `True` if you'd like to cut the line |
+| `revision` | Revise the line | `this will replace the original line with a revised line` |
 
 ### Optional Metadata Fields (First Row)
 
@@ -106,25 +63,43 @@ You can include metadata about the play in the first row:
 
 ### Playscript Features
 
-**Filtering:**
-- **By Scene:** Dropdown menu to view specific acts/scenes
-- **By Character:** Filter to show only lines from selected characters
-- **By Version:** Compare original vs. cut text, or multiple editions
-
-**Search:**
-- Full-text search across all lines
-- Instant highlighting of search results
-- Navigate between search results with arrow buttons
-
-**Annotations:**
+#### Annotations:
 - Hover over highlighted text to view annotations
 - Annotations appear in tooltips or sidebar (depending on theme)
 - Link to collection items or external resources from annotations
 
-**Navigation:**
+#### Navigation
 - Scene navigation sidebar (desktop)
 - Previous/Next scene buttons
 - Jump to specific line numbers
+
+#### Filters
+
+Filters can be seen by clicking the `Filters` button at the top right of the playscript. 
+
+**Dropdown:**
+- **By Scene:** Dropdown menu to view specific acts/scenes
+- **By Character:** Dropdown menu to view only lines from selected characters
+
+**Search:**
+- Full-text search across all lines
+- Instant highlighting of search results
+
+**Versions/Cuttings Buttons:** 
+- Buttons to help compare play versions 
+- These only appears if:
+  - you've added a `True` value in `cutting`
+  - put a revision value in the `revision` column
+  - added a new line by
+    - adding a line to the CSV/spreadsheet 
+    - entering a value in `revsion` but not having a value in `text`
+- Cut/Revised button: 
+  - The default. 
+  - when selected will show the main version appearing on the site
+- Original: 
+  - When selected, shows the original version without any cuttings or revisions
+- Compare Both: 
+  - When selected, this will show the cut (red highlight), revised (yellow highlight), and added lines (green highlight)
 
 ### Configuration
 
@@ -172,6 +147,51 @@ Hamlet,William Shakespeare,"Annotated by Professor Smith's class",,,,
 - ARIA labels for filter controls
 - Keyboard navigation support
 - Screen reader announcements for filter changes
+
+---
+
+
+## Cover Pages {#cover-pages}
+
+Digital Dramaturgy offers **six unique cover page styles** to make a striking first impression for your project.
+
+### Available Styles
+
+Configure your cover page style in `_data/theme.yml`:
+
+```yaml
+cover-style: minimal
+```
+
+**Available Options:**
+
+| Style | Description | Best For |
+|-------|-------------|----------|
+| `minimal` | Clean, centered text design | Modern, professional projects |
+| `minimal-movement` | Minimal with subtle animations | Adding visual interest |
+| `dramatists` | Theater-focused aesthetic | Classical or theatrical productions |
+| `cyberpunk` | Bold, stylized design | Contemporary or experimental work |
+| `notebook` | Handwritten notebook aesthetic | Educational or collaborative projects |
+| `2010` | Retro-styled design | Period-appropriate presentations |
+
+### Customizing Cover Content
+
+Edit `pages/index.md` to customize your cover page text:
+
+```markdown
+---
+layout: home-cover
+title: Your Play Title
+---
+
+# Your Play Title
+
+By Your Name
+
+Additional subtitle or description text...
+```
+
+**Accessibility Note:** All cover styles include proper heading hierarchy and semantic HTML for screen readers.
 
 ---
 
