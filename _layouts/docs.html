@@ -7,8 +7,9 @@ layout: default
     <!-- Sidebar Navigation -->
     <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar" id="docs-sidebar" aria-label="Documentation navigation">
       <div class="position-sticky pt-3">
-        <div class="mb-3">
-          <input type="text" class="form-control form-control-sm" id="docs-search" placeholder="Search documentation..." aria-label="Search documentation">
+        <div class="mb-3 search-container">
+          <input type="text" class="form-control form-control-sm" id="docs-search" placeholder="Search documentation..." aria-label="Search documentation" aria-autocomplete="list" aria-controls="search-results" autocomplete="off">
+          <div id="search-results" class="search-results" role="listbox" aria-label="Search results"></div>
         </div>
         <ul class="nav flex-column" id="docs-nav">
           <li class="nav-item">
@@ -122,107 +123,341 @@ layout: default
   }
 }
 
-/* Highlight search results */
-.search-highlight {
-  background-color: yellow;
+/* Search autocomplete styles */
+.search-container {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-results.show {
+  display: block;
+}
+
+.search-result-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.15s ease;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item:focus,
+.search-result-item.selected {
+  background-color: #f8f9fa;
+  outline: none;
+}
+
+.search-result-item.selected {
+  background-color: #e9ecef;
+}
+
+.search-result-title {
+  font-weight: 600;
+  color: var(--bs-primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.search-result-breadcrumb {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.search-result-preview {
+  font-size: 0.8rem;
+  color: #495057;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-match {
+  background-color: #fff3cd;
+  font-weight: 600;
   padding: 0 0.2rem;
+}
+
+.search-no-results {
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.85rem;
 }
 </style>
 
 <script>
-// Smooth scrolling for anchor links
-document.querySelectorAll('#docs-nav a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+// Documentation Search with Section Indexing
+(function() {
+  const searchInput = document.getElementById('docs-search');
+  const searchResults = document.getElementById('search-results');
+  const docsContent = document.querySelector('.docs-content');
+  let searchIndex = [];
+  let selectedIndex = -1;
 
-      // Update active state
-      document.querySelectorAll('#docs-nav .nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      this.classList.add('active');
-    }
-  });
-});
+  // Build search index from all h2 and h3 headings
+  function buildSearchIndex() {
+    const sections = [];
+    const headings = docsContent.querySelectorAll('h2[id], h3[id]');
 
-// Simple search functionality
-const searchInput = document.getElementById('docs-search');
-const docsContent = document.querySelector('.docs-content');
+    headings.forEach((heading, index) => {
+      const id = heading.getAttribute('id');
+      const title = heading.textContent.trim();
+      const level = heading.tagName.toLowerCase();
 
-searchInput.addEventListener('input', function(e) {
-  const searchTerm = e.target.value.toLowerCase();
-
-  // Remove previous highlights
-  const highlighted = docsContent.querySelectorAll('.search-highlight');
-  highlighted.forEach(el => {
-    const parent = el.parentNode;
-    parent.replaceChild(document.createTextNode(el.textContent), el);
-    parent.normalize();
-  });
-
-  if (searchTerm.length < 3) return;
-
-  // Simple text search and highlight
-  const walker = document.createTreeWalker(
-    docsContent,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-
-  const nodesToReplace = [];
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
-    if (node.nodeValue.toLowerCase().includes(searchTerm)) {
-      nodesToReplace.push(node);
-    }
-  }
-
-  nodesToReplace.forEach(node => {
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    const parent = node.parentNode;
-    const fragment = document.createDocumentFragment();
-    const parts = node.nodeValue.split(regex);
-
-    parts.forEach(part => {
-      if (part.toLowerCase() === searchTerm.toLowerCase()) {
-        const span = document.createElement('span');
-        span.className = 'search-highlight';
-        span.textContent = part;
-        fragment.appendChild(span);
-      } else {
-        fragment.appendChild(document.createTextNode(part));
+      // Get parent section for breadcrumb
+      let parentSection = '';
+      if (level === 'h3') {
+        let prevH2 = heading;
+        while (prevH2 && prevH2.tagName !== 'H2') {
+          prevH2 = prevH2.previousElementSibling;
+        }
+        if (prevH2) {
+          parentSection = prevH2.textContent.trim();
+        }
       }
+
+      // Get preview text (next paragraph or list)
+      let preview = '';
+      let nextEl = heading.nextElementSibling;
+      while (nextEl && !preview) {
+        if (nextEl.tagName === 'P') {
+          preview = nextEl.textContent.trim().substring(0, 150);
+          break;
+        } else if (nextEl.tagName === 'UL' || nextEl.tagName === 'OL') {
+          const firstLi = nextEl.querySelector('li');
+          if (firstLi) {
+            preview = firstLi.textContent.trim().substring(0, 150);
+          }
+          break;
+        }
+        nextEl = nextEl.nextElementSibling;
+      }
+
+      sections.push({
+        id,
+        title,
+        level,
+        parentSection,
+        preview,
+        element: heading
+      });
     });
 
-    parent.replaceChild(fragment, node);
-  });
-});
+    return sections;
+  }
 
-// Update active nav on scroll
-const observerOptions = {
-  threshold: 0.5,
-  rootMargin: '-100px 0px -66%'
-};
+  // Search through index
+  function searchSections(query) {
+    const lowerQuery = query.toLowerCase();
+    return searchIndex.filter(section => {
+      const titleMatch = section.title.toLowerCase().includes(lowerQuery);
+      const previewMatch = section.preview.toLowerCase().includes(lowerQuery);
+      return titleMatch || previewMatch;
+    });
+  }
 
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.getAttribute('id');
+  // Highlight matching text
+  function highlightMatch(text, query) {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="search-match">$1</span>');
+  }
+
+  // Render search results
+  function renderResults(results, query) {
+    if (results.length === 0) {
+      searchResults.innerHTML = '<div class="search-no-results">No results found</div>';
+      searchResults.classList.add('show');
+      return;
+    }
+
+    const html = results.map((result, index) => {
+      const breadcrumb = result.parentSection
+        ? `${result.parentSection} › ${result.title}`
+        : result.title;
+
+      return `
+        <div class="search-result-item" role="option" data-index="${index}" data-id="${result.id}" tabindex="-1">
+          <div class="search-result-title">${highlightMatch(result.title, query)}</div>
+          ${result.parentSection ? `<div class="search-result-breadcrumb">${breadcrumb}</div>` : ''}
+          ${result.preview ? `<div class="search-result-preview">${highlightMatch(result.preview.substring(0, 120) + '...', query)}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    searchResults.innerHTML = html;
+    searchResults.classList.add('show');
+    selectedIndex = -1;
+  }
+
+  // Navigate to section
+  function navigateToSection(id) {
+    const target = document.getElementById(id);
+    if (target) {
+      // Smooth scroll to section
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Update sidebar nav active state
       document.querySelectorAll('#docs-nav .nav-link').forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${id}`) {
           link.classList.add('active');
         }
       });
-    }
-  });
-}, observerOptions);
 
-// Observe all section headings
-document.querySelectorAll('.docs-content h2[id]').forEach(heading => {
-  observer.observe(heading);
-});
+      // Close search results
+      searchResults.classList.remove('show');
+      searchInput.value = '';
+      selectedIndex = -1;
+    }
+  }
+
+  // Handle keyboard navigation
+  function handleKeyboard(e) {
+    const items = searchResults.querySelectorAll('.search-result-item');
+
+    if (!items.length) return;
+
+    switch(e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        updateSelection(items);
+        break;
+
+      case 'ArrowUp':
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, -1);
+        updateSelection(items);
+        break;
+
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          const selectedItem = items[selectedIndex];
+          const id = selectedItem.getAttribute('data-id');
+          navigateToSection(id);
+        }
+        break;
+
+      case 'Escape':
+        searchResults.classList.remove('show');
+        selectedIndex = -1;
+        break;
+    }
+  }
+
+  // Update visual selection
+  function updateSelection(items) {
+    items.forEach((item, index) => {
+      if (index === selectedIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  }
+
+  // Initialize search
+  function init() {
+    // Build index
+    searchIndex = buildSearchIndex();
+
+    // Search input handler
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.trim();
+
+      if (query.length < 2) {
+        searchResults.classList.remove('show');
+        return;
+      }
+
+      const results = searchSections(query);
+      renderResults(results, query);
+    });
+
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', handleKeyboard);
+
+    // Click handler for results
+    searchResults.addEventListener('click', function(e) {
+      const item = e.target.closest('.search-result-item');
+      if (item) {
+        const id = item.getAttribute('data-id');
+        navigateToSection(id);
+      }
+    });
+
+    // Close results when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.search-container')) {
+        searchResults.classList.remove('show');
+        selectedIndex = -1;
+      }
+    });
+  }
+
+  // Smooth scrolling for sidebar nav links
+  document.querySelectorAll('#docs-nav a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const id = this.getAttribute('href').substring(1);
+      navigateToSection(id);
+    });
+  });
+
+  // Update active nav on scroll
+  const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '-100px 0px -66%'
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        document.querySelectorAll('#docs-nav .nav-link').forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  // Observe all section headings
+  document.querySelectorAll('.docs-content h2[id]').forEach(heading => {
+    observer.observe(heading);
+  });
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
