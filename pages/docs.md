@@ -437,11 +437,18 @@ Digital Dramaturgy is built on CollectionBuilder, which allows you to create a c
 Create a CSV file in `_data/` directory (e.g., `_data/hamlet-collection.csv`):
 
 ```csv
-objectid,filename,title,description,date,format,subject
-photo001,hamlet-01.jpg,Act 1 Opening Scene,The ghost appears to Hamlet,2024-03-15,image/jpeg,production photos; act 1
-photo002,hamlet-02.jpg,Ophelia's Mad Scene,Ophelia in Act 4 Scene 5,2024-03-20,image/jpeg,production photos; act 4
-program01,hamlet-program.pdf,Opening Night Program,Program from March 15 performance,2024-03-15,application/pdf,programs
+objectid,title,description,date,format,subject,object_location,image_small,image_thumb
+photo001,Act 1 Opening Scene,The ghost appears to Hamlet,2024-03-15,image/jpeg,production photos; act 1,/objects/hamlet-01.jpg,/objects/small/hamlet-01_sm.jpg,/objects/thumbs/hamlet-01_th.jpg
+photo002,Ophelia's Mad Scene,Ophelia in Act 4 Scene 5,2024-03-20,image/jpeg,production photos; act 4,/objects/hamlet-02.jpg,/objects/small/hamlet-02_sm.jpg,/objects/thumbs/hamlet-02_th.jpg
+program01,Opening Night Program,Program from March 15 performance,2024-03-15,application/pdf,programs,/objects/hamlet-program.pdf,/objects/small/hamlet-program_sm.jpg,/objects/thumbs/hamlet-program_th.jpg
 ```
+
+**Important Notes:**
+- Paths start with `/` and are relative to your repository root
+- `object_location` = full-size downloadable file
+- `image_small` = small image for display on item pages
+- `image_thumb` = thumbnail for Browse, Map, Timeline pages
+- For PDFs and audio/video, you still need image derivatives for thumbnails
 
 **2. Configure the collection in `_config.yml`:**
 
@@ -453,12 +460,20 @@ metadata: hamlet-collection
 
 **3. Add your object files:**
 
-Place your actual files (images, PDFs, etc.) in the `/objects/` directory:
+Place your files in the `/objects/` directory with derivatives:
 ```
 /objects/
-  hamlet-01.jpg
+  hamlet-01.jpg              (original full-size)
   hamlet-02.jpg
   hamlet-program.pdf
+  small/                     (small versions for item pages)
+    hamlet-01_sm.jpg
+    hamlet-02_sm.jpg
+    hamlet-program_sm.jpg    (preview image for PDF)
+  thumbs/                    (thumbnails for browse/map)
+    hamlet-01_th.jpg
+    hamlet-02_th.jpg
+    hamlet-program_th.jpg
 ```
 
 ### Referencing Collection Items in Annotations
@@ -504,23 +519,44 @@ Hamlet's famous soliloquy...
 
 **See the [CollectionBuilder Includes documentation](https://collectionbuilder.github.io/cb-docs/docs/theme/features/){:target="_blank" rel="noopener"} for complete details.**
 
-### Required Collection Metadata Fields
+### Collection Metadata Fields Reference
 
-For CollectionBuilder to work properly, your collection CSV should include:
+**Required Fields:**
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `objectid` | Yes | Unique identifier (no spaces, use hyphens) |
-| `filename` | Yes | Name of file in /objects/ directory |
-| `title` | Yes | Display title for the item |
-| `format` | Yes | MIME type (e.g., `image/jpeg`, `application/pdf`) |
-| `description` | Recommended | Description of the item |
-| `date` | Recommended | Date (YYYY-MM-DD format) |
-| `subject` | Optional | Semicolon-separated subjects |
-| `location` | Optional | Place name |
-| `creator` | Optional | Creator/photographer/author |
+| Field | Description |
+|-------|-------------|
+| `objectid` | Unique identifier - lowercase, no spaces, use hyphens/underscores only |
+| `title` | Display title for the item |
 
-See the [CollectionBuilder metadata documentation](https://collectionbuilder.github.io/cb-docs/docs/metadata/){:target="_blank" rel="noopener"} for complete field options.
+**Object Location Fields (for displaying items):**
+
+| Field | Description |
+|-------|-------------|
+| `object_location` | Full URL or relative path to the full-size object file |
+| `image_small` | Path to small image (for item page display) |
+| `image_thumb` | Path to thumbnail image (for Browse, Map, Timeline) |
+| `image_alt_text` | Descriptive alt text for accessibility |
+| `format` | MIME type (e.g., `image/jpeg`, `application/pdf`) - used to select icons if no thumbnails |
+
+**Recommended Fields:**
+
+| Field | Description |
+|-------|-------------|
+| `description` | Description of the item |
+| `date` | Date in YYYY-MM-DD format |
+| `subject` | Semicolon-separated subjects (e.g., `theater; production; Act 1`) |
+| `creator` | Creator/photographer/author |
+| `location` | Place name |
+| `source` | Source institution or collection |
+
+**Notes:**
+- Items without `objectid` will not be displayed
+- Items without `object_location` become metadata-only records (no download)
+- If `image_thumb` is blank, icons are used based on `format` field
+- Paths starting with `/` are relative to repository root (e.g., `/objects/photo.jpg`)
+- Full URLs work for externally hosted objects
+
+See the [CollectionBuilder metadata documentation](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/){:target="_blank" rel="noopener"} for complete field options and examples.
 
 ### Use Cases for Collections
 
