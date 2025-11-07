@@ -237,20 +237,34 @@ layout: default
         }
       }
 
-      // Get preview text (next paragraph or list)
+      // Collect all content in this section (until next heading)
+      let fullContent = '';
       let preview = '';
       let nextEl = heading.nextElementSibling;
-      while (nextEl && !preview) {
-        if (nextEl.tagName === 'P') {
-          preview = nextEl.textContent.trim().substring(0, 150);
-          break;
-        } else if (nextEl.tagName === 'UL' || nextEl.tagName === 'OL') {
-          const firstLi = nextEl.querySelector('li');
-          if (firstLi) {
-            preview = firstLi.textContent.trim().substring(0, 150);
-          }
+
+      while (nextEl) {
+        // Stop at next heading of same or higher level
+        if (nextEl.tagName === 'H2' ||
+            (level === 'h3' && nextEl.tagName === 'H3')) {
           break;
         }
+
+        // Collect text from various elements
+        if (nextEl.tagName === 'P' ||
+            nextEl.tagName === 'UL' ||
+            nextEl.tagName === 'OL' ||
+            nextEl.tagName === 'TABLE' ||
+            nextEl.tagName === 'DIV' ||
+            nextEl.tagName === 'BLOCKQUOTE') {
+          const text = nextEl.textContent.trim();
+          fullContent += ' ' + text;
+
+          // Get first substantial text as preview
+          if (!preview && text.length > 20) {
+            preview = text.substring(0, 150);
+          }
+        }
+
         nextEl = nextEl.nextElementSibling;
       }
 
@@ -259,7 +273,8 @@ layout: default
         title,
         level,
         parentSection,
-        preview,
+        preview: preview || '',
+        fullContent: fullContent.trim(),
         element: heading
       });
     });
@@ -272,8 +287,27 @@ layout: default
     const lowerQuery = query.toLowerCase();
     return searchIndex.filter(section => {
       const titleMatch = section.title.toLowerCase().includes(lowerQuery);
-      const previewMatch = section.preview.toLowerCase().includes(lowerQuery);
-      return titleMatch || previewMatch;
+      const contentMatch = section.fullContent.toLowerCase().includes(lowerQuery);
+      return titleMatch || contentMatch;
+    }).map(section => {
+      // Find matching context for preview
+      const lowerContent = section.fullContent.toLowerCase();
+      const queryIndex = lowerContent.indexOf(lowerQuery);
+
+      let contextPreview = section.preview;
+      if (queryIndex !== -1) {
+        // Show context around the match
+        const start = Math.max(0, queryIndex - 60);
+        const end = Math.min(section.fullContent.length, queryIndex + lowerQuery.length + 60);
+        contextPreview = (start > 0 ? '...' : '') +
+                        section.fullContent.substring(start, end).trim() +
+                        (end < section.fullContent.length ? '...' : '');
+      }
+
+      return {
+        ...section,
+        contextPreview
+      };
     });
   }
 
@@ -301,7 +335,7 @@ layout: default
         <div class="search-result-item" role="option" data-index="${index}" data-id="${result.id}" tabindex="-1">
           <div class="search-result-title">${highlightMatch(result.title, query)}</div>
           ${result.parentSection ? `<div class="search-result-breadcrumb">${breadcrumb}</div>` : ''}
-          ${result.preview ? `<div class="search-result-preview">${highlightMatch(result.preview.substring(0, 120) + '...', query)}</div>` : ''}
+          ${result.contextPreview ? `<div class="search-result-preview">${highlightMatch(result.contextPreview, query)}</div>` : ''}
         </div>
       `;
     }).join('');
