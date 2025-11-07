@@ -1,0 +1,228 @@
+---
+# Documentation layout with side navigation
+layout: default
+---
+<div class="container-fluid my-4">
+  <div class="row">
+    <!-- Sidebar Navigation -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar" id="docs-sidebar" aria-label="Documentation navigation">
+      <div class="position-sticky pt-3">
+        <div class="mb-3">
+          <input type="text" class="form-control form-control-sm" id="docs-search" placeholder="Search documentation..." aria-label="Search documentation">
+        </div>
+        <ul class="nav flex-column" id="docs-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#quick-reference">Quick Reference</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#cover-pages">Cover Pages</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#playscripts">Annotated Playscripts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#characters">Character System</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#character-network">Character Network</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#essays">Essay Pages</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#timeline">Production Timeline</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#collections">Collections & References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#data-structure">Data Structure</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#troubleshooting">Troubleshooting</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#external-resources">External Resources</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" role="main">
+      <div class="docs-content">
+        {{ content }}
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  border-right: 1px solid #dee2e6;
+}
+
+.sidebar .nav-link {
+  color: #333;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link:focus {
+  color: var(--bs-primary);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+  border-left: 3px solid var(--bs-primary);
+}
+
+.docs-content {
+  max-width: 900px;
+}
+
+.docs-content h2 {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.docs-content h2:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+.docs-content code {
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.docs-content pre {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--bs-primary);
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
+/* Highlight search results */
+.search-highlight {
+  background-color: yellow;
+  padding: 0 0.2rem;
+}
+</style>
+
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('#docs-nav a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Update active state
+      document.querySelectorAll('#docs-nav .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      this.classList.add('active');
+    }
+  });
+});
+
+// Simple search functionality
+const searchInput = document.getElementById('docs-search');
+const docsContent = document.querySelector('.docs-content');
+
+searchInput.addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+
+  // Remove previous highlights
+  const highlighted = docsContent.querySelectorAll('.search-highlight');
+  highlighted.forEach(el => {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+
+  if (searchTerm.length < 3) return;
+
+  // Simple text search and highlight
+  const walker = document.createTreeWalker(
+    docsContent,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+
+  const nodesToReplace = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node.nodeValue.toLowerCase().includes(searchTerm)) {
+      nodesToReplace.push(node);
+    }
+  }
+
+  nodesToReplace.forEach(node => {
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parent = node.parentNode;
+    const fragment = document.createDocumentFragment();
+    const parts = node.nodeValue.split(regex);
+
+    parts.forEach(part => {
+      if (part.toLowerCase() === searchTerm.toLowerCase()) {
+        const span = document.createElement('span');
+        span.className = 'search-highlight';
+        span.textContent = part;
+        fragment.appendChild(span);
+      } else {
+        fragment.appendChild(document.createTextNode(part));
+      }
+    });
+
+    parent.replaceChild(fragment, node);
+  });
+});
+
+// Update active nav on scroll
+const observerOptions = {
+  threshold: 0.5,
+  rootMargin: '-100px 0px -66%'
+};
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      document.querySelectorAll('#docs-nav .nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${id}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, observerOptions);
+
+// Observe all section headings
+document.querySelectorAll('.docs-content h2[id]').forEach(heading => {
+  observer.observe(heading);
+});
+</script>

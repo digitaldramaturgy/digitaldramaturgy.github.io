@@ -1,4 +1,289 @@
-/* 
-    Put your custom SCSS here! 
+/*
+    Put your custom SCSS here!
     This allows you to override any CollectionBuilder or Bootstrap CSS without modifying the base theme files directly.
 */
+
+/* ========================================
+   Features Page Styles
+   ======================================== */
+
+// Card enhancements for features page
+.features-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Responsive text scaling
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2rem;
+  }
+
+  .lead {
+    font-size: 1.1rem;
+  }
+}
+
+// Feature cards grid improvements
+.row.g-4 {
+  @media (max-width: 576px) {
+    .col-md-6,
+    .col-lg-4 {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Border accent color for callout boxes
+.border-primary {
+  border-color: var(--bs-primary) !important;
+}
+
+// Enhanced focus states for accessibility
+a:focus,
+button:focus,
+.btn:focus {
+  outline: 3px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+// Skip to content link (accessibility)
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--bs-primary);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/* ========================================
+   Documentation Page Styles
+   ======================================== */
+
+// Enhanced sidebar for mobile
+@media (max-width: 767.98px) {
+  .sidebar {
+    max-height: 300px;
+    margin-bottom: 2rem;
+
+    .position-sticky {
+      position: static !important;
+    }
+  }
+
+  #docs-nav {
+    display: flex;
+    flex-wrap: wrap;
+
+    .nav-item {
+      flex: 0 0 50%;
+    }
+  }
+}
+
+// Improved keyboard navigation for docs sidebar
+.sidebar .nav-link {
+  &:focus {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  // Active state improvements
+  &.active {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background-color: var(--bs-primary);
+    }
+  }
+}
+
+// Documentation content improvements
+.docs-content {
+  // Better spacing for readability
+  line-height: 1.7;
+
+  h2,
+  h3,
+  h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    scroll-margin-top: 1rem; // Account for sticky elements
+  }
+
+  // Table improvements
+  table {
+    display: block;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+
+    @media (max-width: 768px) {
+      font-size: 0.875rem;
+    }
+  }
+
+  // Code block improvements
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+
+    code {
+      display: block;
+      padding: 0;
+      background: transparent;
+    }
+  }
+
+  // Alert/callout boxes
+  .alert {
+    border-left-width: 4px;
+  }
+}
+
+// Search input improvements
+#docs-search {
+  border: 2px solid #dee2e6;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+}
+
+// Search highlight accessibility
+.search-highlight {
+  background-color: #fff3cd;
+  border-bottom: 2px solid #ffc107;
+  padding: 0.1rem 0.2rem;
+  color: #000;
+  font-weight: 500;
+}
+
+/* ========================================
+   General Accessibility Improvements
+   ======================================== */
+
+// Ensure sufficient color contrast
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+
+  &:hover,
+  &:focus {
+    text-decoration-thickness: 2px;
+  }
+}
+
+// Improve button states
+.btn {
+  transition: all 0.2s ease-in-out;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// Card accessibility
+.card {
+  // Ensure cards are keyboard accessible if they contain links
+  &:has(a:focus) {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Responsive images
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// High contrast mode improvements
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+
+  .sidebar .nav-link.active {
+    border-left-width: 4px;
+  }
+
+  .search-highlight {
+    border-bottom-width: 3px;
+  }
+}
+
+// Reduced motion for users who prefer it
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .features-card:hover {
+    transform: none;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+// Print styles
+@media print {
+  .sidebar,
+  nav,
+  .btn,
+  #docs-search {
+    display: none;
+  }
+
+  .docs-content,
+  main {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  // Print URLs after links
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+}
