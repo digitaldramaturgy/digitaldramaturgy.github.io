@@ -240,9 +240,35 @@
       (mode === 'both' && oldMode !== 'both'); // We need to add original versions
 
     if (needsRebuild) {
+      // Capture current filter state before rebuilding
+      let url = new URL(window.location);
+      let params = url.searchParams;
+      var activeSceneFilter = params.get('scene');
+      var activePlayerFilter = params.get('player');
+      var activeSearchFilter = params.get('q');
+      
       // Get data from session storage as dd_items is now local
       const dd_items = JSON.parse(sessionStorage.getItem("dd_items_store") || "[]");
       filterItems(dd_items, "");
+      
+      // Reapply filters after DOM rebuild
+      const quicksearchInput = document.getElementById('quicksearch');
+      const goButton = document.getElementById('goButton');
+      const playersSelect = document.getElementById('players');
+      const scenesSelect = document.getElementById('scenes');
+      
+      if (activeSearchFilter && quicksearchInput && goButton) {
+        quicksearchInput.value = activeSearchFilter;
+        goButton.click();
+      } else if (activePlayerFilter && playersSelect) {
+        playersSelect.value = activePlayerFilter;
+        const changeEvent = new Event('change', { bubbles: true });
+        playersSelect.dispatchEvent(changeEvent);
+      } else if (activeSceneFilter && scenesSelect) {
+        scenesSelect.value = activeSceneFilter;
+        const changeEvent = new Event('change', { bubbles: true });
+        scenesSelect.dispatchEvent(changeEvent);
+      }
     } else {
       // More efficient switching using existing DOM
       // For example when switching between 'original' and revised versions
@@ -838,6 +864,7 @@ function selectPlayers(arr) {
       scenesSelect.value = sceneFilter;
       const changeEvent = new Event('change', { bubbles: true });
       scenesSelect.dispatchEvent(changeEvent);
+      if (filtersButton) filtersButton.click();
       if (sideSceneScroll) sideSceneScroll.classList.add('d-none');
     } else if (hashfilter) {
       params.delete('q');
