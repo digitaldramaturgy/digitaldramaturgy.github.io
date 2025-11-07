@@ -76,23 +76,33 @@ The annotated playscript feature is the core of Digital Dramaturgy, allowing you
 
 ### Required Data Fields
 
-Your playscript CSV/Google Sheet **must include** these fields:
+Your playscript CSV/Google Sheet **must include** these four core fields:
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `player` | Character speaking the line | `HAMLET` |
-| `playerline` | The actual line text | `To be, or not to be` |
-| `actscene` | Act and scene identifier | `3.1` or `Act 3, Scene 1` |
-| `linenumber` | Line number within the scene | `56` |
+| `act` | Act number (Roman numeral recommended) | `I`, `II`, `III` |
+| `scene` | Scene number (Roman numeral recommended) | `I`, `II`, `III` |
+| `player` | Character speaking the line (or `StageDirection`) | `HAMLET`, `OPHELIA`, `StageDirection` |
+| `text` | The actual line text or stage direction | `To be, or not to be, that is the question` |
 
 ### Optional Enhancement Fields
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `annotation` | Line-by-line annotation | `Hamlet's famous soliloquy on mortality` |
-| `version` | Track cuts or variants | `original`, `cut`, `director's` |
-| `stage_direction` | Stage directions | `Enter HAMLET` |
-| `notes` | Additional scholarly notes | Reference to source text |
+| `annotation` | Line-by-line annotation text | `Hamlet's famous soliloquy on mortality` |
+| `highlight` | Highlighting/emphasis marker | `yes` or custom value |
+| `cutting` | Track cuts in production | `cut`, `original` |
+| `revision` | Track revisions or versions | `first`, `second`, `final` |
+
+### Optional Metadata Fields (First Row)
+
+You can include metadata about the play in the first row:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `play` | Play title | `A Midsummer Night's Dream` |
+| `author` | Playwright name | `William Shakespeare` |
+| `description` | Brief description | `An annotated playscript created by...` |
 
 ### Playscript Features
 
@@ -133,11 +143,28 @@ play: https://example.com/my-play.csv
 
 ### Example Playscript Structure
 
+**Basic Example:**
 ```csv
-player,playerline,actscene,linenumber,annotation,version
-HAMLET,"To be, or not to be",3.1,56,"Famous soliloquy on existence",original
-HAMLET,That is the question,3.1,57,"Contemplating life vs death",original
-OPHELIA,"Good my lord",3.1,88,"Ophelia interrupts his meditation",original
+act,scene,player,text
+III,I,HAMLET,"To be, or not to be, that is the question"
+III,I,HAMLET,"Whether 'tis nobler in the mind to suffer"
+III,I,OPHELIA,"Good my lord, how does your honour for this many a day?"
+```
+
+**With Annotations:**
+```csv
+act,scene,player,text,annotation
+III,I,HAMLET,"To be, or not to be, that is the question","Hamlet's famous soliloquy on existence and mortality"
+III,I,HAMLET,"Whether 'tis nobler in the mind to suffer","Contemplating passive vs active response to suffering"
+III,I,OPHELIA,"Good my lord, how does your honour for this many a day?","Ophelia interrupts his meditation"
+```
+
+**With Full Metadata (first row contains play info):**
+```csv
+play,author,description,act,scene,player,text,annotation
+Hamlet,William Shakespeare,"Annotated by Professor Smith's class",,,,
+,,,I,I,StageDirection,"Enter HAMLET"
+,,,I,I,HAMLET,"O, that this too too solid flesh would melt"
 ```
 
 **Accessibility:** The playscript viewer includes:
@@ -394,55 +421,60 @@ For more advanced timelines with TimelineJS features, see the [CollectionBuilder
 
 ## Collections & References {#collections}
 
-One of Digital Dramaturgy's most powerful **advanced features** is the ability to add supplementary collections and reference them in annotations and interpretive pages.
+Digital Dramaturgy is built on CollectionBuilder, which allows you to create a collection of digital objects (images, PDFs, videos, etc.) alongside your playscript. You can then reference these collection items in your annotations and essays.
 
-### Multi-Collection Support
+### How Collections Work
 
-You can create multiple collections within a single Digital Dramaturgy site:
+**Collection = Playscript + Digital Objects**
 
-1. **Primary Collection:** Your playscript
-2. **Supplementary Collections:** Production photos, programs, historical documents, videos, etc.
+1. **Playscript:** Your play script data (defined by the `play:` setting in `_config.yml`)
+2. **Collection Items:** Supplementary materials like photos, programs, documents, videos (defined by the `metadata:` setting in `_config.yml`)
 
-### Adding Collections
+### Setting Up Your Collection
 
 **1. Create collection metadata CSV:**
 
-Create `/assets/data/production-photos.csv`:
+Create a CSV file in `_data/` directory (e.g., `_data/hamlet-collection.csv`):
 
 ```csv
-objectid,filename,title,description,date,photographer
-photo001,hamlet-01.jpg,Act 1 Opening,The ghost appears to Hamlet,2024-03-15,Jane Smith
-photo002,hamlet-02.jpg,Ophelia's Madness,Ophelia in Act 4,2024-03-20,Jane Smith
+objectid,filename,title,description,date,format,subject
+photo001,hamlet-01.jpg,Act 1 Opening Scene,The ghost appears to Hamlet,2024-03-15,image/jpeg,production photos; act 1
+photo002,hamlet-02.jpg,Ophelia's Mad Scene,Ophelia in Act 4 Scene 5,2024-03-20,image/jpeg,production photos; act 4
+program01,hamlet-program.pdf,Opening Night Program,Program from March 15 performance,2024-03-15,application/pdf,programs
 ```
 
-**2. Configure the collection:**
-
-Add to `_config.yml`:
+**2. Configure the collection in `_config.yml`:**
 
 ```yaml
-collections:
-  - name: production-photos
-    metadata: /assets/data/production-photos.csv
-    objects: /objects/production-photos/
+# Set the metadata for your collection
+# Use the filename of your CSV without the .csv extension
+metadata: hamlet-collection
 ```
 
-### Referencing in Annotations
+**3. Add your object files:**
 
-**In your playscript CSV, reference collection items:**
+Place your actual files (images, PDFs, etc.) in the `/objects/` directory:
+```
+/objects/
+  hamlet-01.jpg
+  hamlet-02.jpg
+  hamlet-program.pdf
+```
+
+### Referencing Collection Items in Annotations
+
+You can link to collection items from your playscript annotations using HTML links:
 
 ```csv
-player,playerline,actscene,linenumber,annotation
-HAMLET,"To be, or not to be",3.1,56,"See our <a href='/items/photo001.html'>production photo</a> of this scene"
+act,scene,player,text,annotation
+III,I,HAMLET,"To be, or not to be","Hamlet's famous soliloquy. <a href='/items/photo001.html'>See our production photo</a> of this moment."
+III,I,OPHELIA,"Good my lord","Ophelia's tentative approach. View the <a href='/items/program01.html'>opening night program</a> for director's notes on this scene."
 ```
 
-**Or use objectid syntax (if configured):**
-
-{% raw %}
-```csv
-player,playerline,actscene,linenumber,annotation
-HAMLET,"To be, or not to be",3.1,56,"{% include feature/item-figure.html objectid='photo001' %}"
-```
-{% endraw %}
+**How it works:**
+- Each collection item gets its own page at `/items/[objectid].html`
+- Link to these pages from your annotations using standard HTML `<a>` tags
+- The annotation text supports HTML formatting (links, bold, italics, etc.)
 
 ### Referencing in Essay Pages
 
@@ -472,13 +504,31 @@ Hamlet's famous soliloquy...
 
 **See the [CollectionBuilder Includes documentation](https://collectionbuilder.github.io/cb-docs/docs/theme/features/){:target="_blank" rel="noopener"} for complete details.**
 
-### Use Cases
+### Required Collection Metadata Fields
 
-- **Production documentation:** Link rehearsal photos to specific lines
-- **Historical context:** Reference historical documents in annotations
-- **Multimedia essays:** Embed videos and images in interpretive pages
-- **Scholarly apparatus:** Link critical sources to annotated lines
-- **Educational resources:** Create supplementary learning materials
+For CollectionBuilder to work properly, your collection CSV should include:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `objectid` | Yes | Unique identifier (no spaces, use hyphens) |
+| `filename` | Yes | Name of file in /objects/ directory |
+| `title` | Yes | Display title for the item |
+| `format` | Yes | MIME type (e.g., `image/jpeg`, `application/pdf`) |
+| `description` | Recommended | Description of the item |
+| `date` | Recommended | Date (YYYY-MM-DD format) |
+| `subject` | Optional | Semicolon-separated subjects |
+| `location` | Optional | Place name |
+| `creator` | Optional | Creator/photographer/author |
+
+See the [CollectionBuilder metadata documentation](https://collectionbuilder.github.io/cb-docs/docs/metadata/){:target="_blank" rel="noopener"} for complete field options.
+
+### Use Cases for Collections
+
+- **Production documentation:** Photos from rehearsals and performances
+- **Historical context:** Programs, reviews, historical documents
+- **Multimedia essays:** Videos, audio recordings, interviews
+- **Scholarly apparatus:** Critical sources, manuscript images
+- **Educational resources:** Supplementary learning materials
 
 ---
 
@@ -494,16 +544,18 @@ your-project/
 ├── _data/
 │   ├── config-nav.csv          # Navigation menu
 │   ├── theme.yml               # Theme settings
-│   ├── characters.csv          # Character data
+│   ├── characters.csv          # Character data (optional)
+│   ├── your-collection.csv     # Collection metadata
 │   └── config-theme-colors.csv # Color scheme
-├── assets/
-│   └── data/
-│       ├── play.csv            # Your playscript data
-│       └── collection-*.csv    # Supplementary collections
 ├── objects/                    # Media files (images, PDFs, etc.)
 ├── pages/                      # Page content (.md files)
 └── _layouts/                   # Page templates (.html files)
 ```
+
+**Note:** Your playscript CSV can be:
+- Hosted on Google Sheets (published as CSV)
+- Stored locally in `/assets/data/` or `/_data/`
+- Hosted externally on any accessible URL
 
 ### Key Configuration Files
 
@@ -511,13 +563,22 @@ your-project/
 
 ```yaml
 # Site Settings
-title: Your Play Title
-author: Your Name
+title: Digital Dramaturgy
+description: An annotated edition of [Play Name]
+author: your-name
 
-# Playscript Source
-play: https://docs.google.com/.../export?format=csv
+# Playscript Source (choose one option)
+# Option 1: Google Sheets published CSV
+play: https://docs.google.com/spreadsheets/d/.../pub?output=csv
+# Option 2: Local file
+# play: /assets/data/hamlet.csv
+# Option 3: External URL
+# play: https://example.com/hamlet.csv
 
-# Development Mode (for testing)
+# Collection metadata (CSV filename without .csv extension)
+metadata: your-collection
+
+# Development Mode (enables testing with different play URLs)
 development-mode: true
 ```
 

@@ -13,7 +13,7 @@ permalink: /features.html
 
 <hr class="my-5">
 
-## Core Features
+<h2 class="text-center mb-4">Core Features</h2>
 
 <div class="row g-4 mb-5">
 <div class="col-md-6 col-lg-4">
@@ -109,7 +109,7 @@ permalink: /features.html
 
 <hr class="my-5">
 
-## Powered by CollectionBuilder
+<h2 class="text-center mb-4">Powered by CollectionBuilder</h2>
 
 <div class="row align-items-center mb-5">
 <div class="col-lg-6">
@@ -130,7 +130,7 @@ permalink: /features.html
 
 <hr class="my-5">
 
-## How You Can Use Digital Dramaturgy
+<h2 class="text-center mb-4">How You Can Use Digital Dramaturgy</h2>
 
 <div class="row g-4 mb-5">
 <div class="col-md-6">
@@ -188,11 +188,11 @@ permalink: /features.html
 
 <hr class="my-5">
 
-## Advanced Features
+<h2 class="text-center mb-4">Advanced Features</h2>
 
 <div class="mb-5">
 
-### Multi-Collection Support
+<h3>Multi-Collection Support</h3>
 
 Digital Dramaturgy supports the use of multiple collections within a single site. This means you can:
 
@@ -201,7 +201,7 @@ Digital Dramaturgy supports the use of multiple collections within a single site
 - **Build comprehensive digital archives** around a single play or production
 - **Integrate production photos, programs, and ephemera** alongside your playscript
 
-### Google Sheets Integration
+<h3>Google Sheets Integration</h3>
 
 Start quickly without any technical setup:
 
@@ -210,7 +210,7 @@ Start quickly without any technical setup:
 - **Share temporary links** - perfect for classroom use or collaboration
 - **Export to GitHub** when you're ready for a permanent site
 
-### Flexible Data Structure
+<h3>Flexible Data Structure</h3>
 
 Work with your data your way:
 
