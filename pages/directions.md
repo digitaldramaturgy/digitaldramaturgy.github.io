@@ -2,6 +2,7 @@
 title: Quick Start Directions for Using Digital Dramaturgy
 layout: page-narrow
 permalink: /directions.html
+modal: false
 ---
 
 # {{page.title}}

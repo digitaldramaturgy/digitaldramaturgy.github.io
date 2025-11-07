@@ -2,6 +2,7 @@
 layout: page-full-width
 title: Features & Capabilities
 permalink: /features.html
+modal: false
 ---
 
 <div class="container py-5">
