@@ -437,15 +437,18 @@ HAMLET,"To be, or not to be",3.1,56,"See our <a href='/items/photo001.html'>prod
 
 **Or use objectid syntax (if configured):**
 
+{% raw %}
 ```csv
 player,playerline,actscene,linenumber,annotation
 HAMLET,"To be, or not to be",3.1,56,"{% include feature/item-figure.html objectid='photo001' %}"
 ```
+{% endraw %}
 
 ### Referencing in Essay Pages
 
 In your essay Markdown files, you can embed collection items:
 
+{% raw %}
 ```markdown
 ## Analysis of Act 3, Scene 1
 
@@ -455,14 +458,17 @@ Hamlet's famous soliloquy...
 
 {% include feature/card.html objectid="photo002" %}
 ```
+{% endraw %}
 
 ### Available Includes for Collections
 
+{% raw %}
 - `{% include feature/image.html objectid="..." %}` - Embed image
 - `{% include feature/card.html objectid="..." %}` - Display item card
 - `{% include feature/item-figure.html objectid="..." %}` - Figure with caption
 - `{% include feature/pdf.html objectid="..." %}` - Embed PDF viewer
 - `{% include feature/video.html objectid="..." %}` - Embed video
+{% endraw %}
 
 **See the [CollectionBuilder Includes documentation](https://collectionbuilder.github.io/cb-docs/docs/theme/features/){:target="_blank" rel="noopener"} for complete details.**
 
