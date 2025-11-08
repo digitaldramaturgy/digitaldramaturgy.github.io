@@ -5,106 +5,66 @@ custom-foot: dramaturgy/js/character-network-js.html
 
 <div class="container-fluid my-4">
 <style>
-/* First Folio color palette */
-:root {
-    --folio-dark: #2c1810;
-    --folio-brown: #8b4513;
-    --folio-parchment: #faf8f3;
-    --folio-cream: #f0ebe0;
-    --folio-ink: #1a1a1a;
-}
-
-/* Dramatis Personae header - First Folio title page style */
+/* Dramatis Personae styling inspired by historical playbills */
 .dramatis-personae-header {
     text-align: center;
-    border-top: 4px double var(--folio-dark);
-    border-bottom: 4px double var(--folio-dark);
-    padding: 1.5rem 0;
-    margin-bottom: 2rem;
-    background: var(--folio-parchment);
-    position: relative;
-}
-
-.dramatis-personae-header::before,
-.dramatis-personae-header::after {
-    content: "✦";
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--folio-brown);
-    font-size: 1.5rem;
-}
-
-.dramatis-personae-header::before {
-    left: 1rem;
-}
-
-.dramatis-personae-header::after {
-    right: 1rem;
+    border-bottom: 2px solid #333;
+    border-top: 2px solid #333;
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .dramatis-personae-header h2 {
-    font-family: 'Playfair Display', 'EB Garamond', 'Crimson Text', Georgia, serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
+    font-size: 1.75rem;
+    font-weight: normal;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     margin: 0;
-    color: var(--folio-dark);
+    font-variant: small-caps;
 }
 
-/* Character list blocks - ornate folio style */
+/* Character list blocks styled like nav menu */
 .character-list-block {
-    background: var(--folio-parchment);
-    border: 2px solid var(--folio-dark);
-    border-left: 4px solid var(--folio-brown);
+    background: #f8f9fa;
+    border-left: 3px solid #6c757d;
     padding: 0.75rem 1rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: 'EB Garamond', 'Crimson Text', Georgia, serif;
-    box-shadow: 2px 2px 0 rgba(44, 24, 16, 0.1);
 }
 
 .character-list-block:hover {
-    background: var(--folio-cream);
-    border-left-color: var(--folio-dark);
+    background: #e9ecef;
+    border-left-color: #495057;
     transform: translateX(3px);
-    box-shadow: 3px 3px 0 rgba(44, 24, 16, 0.2);
 }
 
 .character-list-block.active {
-    background: var(--folio-cream);
-    border: 2px solid var(--folio-dark);
-    border-left: 4px solid var(--folio-dark);
-    box-shadow: inset 0 0 0 1px var(--folio-brown);
+    background: #dee2e6;
+    border-left-color: #212529;
+    font-weight: 600;
 }
 
 .character-list-block .character-name {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 700;
-    color: var(--folio-dark);
-    margin-bottom: 0.35rem;
-    font-size: 1.05rem;
-    letter-spacing: 0.03em;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
 }
 
 .character-list-block .character-meta {
-    font-size: 0.9rem;
-    color: #5a4a3a;
+    font-size: 0.85rem;
+    color: #6c757d;
     margin: 0;
-    line-height: 1.5;
 }
 
 .character-list-block .character-image {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
-    border-radius: 0;
-    border: 2px solid var(--folio-dark);
+    border-radius: 4px;
     margin-right: 0.75rem;
     float: left;
-    box-shadow: 2px 2px 0 rgba(44, 24, 16, 0.15);
 }
 
 .character-list-container {
@@ -114,104 +74,61 @@ custom-foot: dramaturgy/js/character-network-js.html
 }
 
 .character-list-container::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 .character-list-container::-webkit-scrollbar-track {
-    background: var(--folio-cream);
-    border: 1px solid var(--folio-dark);
+    background: #f1f1f1;
 }
 
 .character-list-container::-webkit-scrollbar-thumb {
-    background: var(--folio-brown);
-    border: 1px solid var(--folio-dark);
+    background: #888;
+    border-radius: 4px;
 }
 
 .character-list-container::-webkit-scrollbar-thumb:hover {
-    background: var(--folio-dark);
+    background: #555;
 }
 
-/* Selected character bar - First Folio ornamental style */
+/* Selected character quick stats bar */
 #selectedCharacterBar {
-    background: linear-gradient(to bottom, var(--folio-parchment) 0%, var(--folio-cream) 100%);
-    color: var(--folio-dark);
-    padding: 1.25rem 1.5rem;
-    border: 3px double var(--folio-dark);
-    margin-bottom: 1.5rem;
-    box-shadow: 4px 4px 0 rgba(44, 24, 16, 0.1);
-    font-family: 'EB Garamond', 'Crimson Text', Georgia, serif;
-    position: relative;
-}
-
-#selectedCharacterBar::before {
-    content: "❦";
-    position: absolute;
-    top: -0.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--folio-parchment);
-    padding: 0 1rem;
-    color: var(--folio-brown);
-    font-size: 1.3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 #selectedCharacterBar .character-quick-image {
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
-    border-radius: 0;
-    border: 3px solid var(--folio-dark);
+    border-radius: 4px;
+    border: 2px solid white;
     margin-right: 1rem;
-    box-shadow: 3px 3px 0 rgba(44, 24, 16, 0.15);
 }
 
 #selectedCharacterBar h4 {
-    font-family: 'Playfair Display', Georgia, serif;
     margin: 0;
-    font-weight: 700;
-    color: var(--folio-dark);
-    letter-spacing: 0.05em;
-    font-size: 1.4rem;
+    font-weight: 600;
 }
 
 #selectedCharacterBar .quick-stats {
-    font-size: 0.95rem;
-    color: #5a4a3a;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    opacity: 0.95;
 }
 
 #selectedCharacterBar .btn-light {
-    background: var(--folio-brown);
-    color: var(--folio-parchment);
-    border: 2px solid var(--folio-dark);
-    border-radius: 0;
-    font-family: 'Playfair Display', Georgia, serif;
+    background: white;
+    color: #667eea;
+    border: none;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    padding: 0.5rem 1.25rem;
-    text-transform: uppercase;
-    font-size: 0.85rem;
 }
 
 #selectedCharacterBar .btn-light:hover {
-    background: var(--folio-dark);
-    color: var(--folio-parchment);
-    border-color: var(--folio-dark);
-}
-
-/* Network controls - subtle First Folio style */
-.btn-outline-secondary,
-.btn-outline-primary {
-    border-radius: 0;
-    font-family: 'EB Garamond', Georgia, serif;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    border-width: 2px;
-}
-
-#networkStats {
-    font-family: 'EB Garamond', Georgia, serif;
-    color: var(--folio-dark);
+    background: #f8f9fa;
+    color: #764ba2;
 }
 </style>
 
@@ -241,7 +158,7 @@ custom-foot: dramaturgy/js/character-network-js.html
             <div id="selectedCharacterBar">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center flex-grow-1" id="selectedCharacterQuickInfo">
-                        <p class="mb-0 opacity-50" style="color: var(--folio-dark);">Select a character to see details</p>
+                        <p class="text-white mb-0 opacity-50">Select a character to see details</p>
                     </div>
                     <button class="btn btn-light btn-sm" id="viewDetailsBtn" style="display: none;" onclick="openCharacterModal(window.selectedCharacterNameGlobal)">
                         <i class="fas fa-info-circle"></i> View Full Details
