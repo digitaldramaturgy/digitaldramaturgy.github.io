@@ -36,6 +36,7 @@ class CharacterNetworkD3 {
         this.createSVG();
         this.createTooltip();
         this.loadAndProcessData();
+        this.selectedCharacterName = null;
     }
     
     createSVG() {
@@ -101,7 +102,8 @@ class CharacterNetworkD3 {
         this.createForceSimulation();
         this.createNetworkElements();
         this.updateStatistics();
-        
+        this.populateCharacterList();
+
         // Hide loading indicator
         const loadingIndicator = document.getElementById('loadingIndicator');
         if (loadingIndicator) {
@@ -394,26 +396,77 @@ class CharacterNetworkD3 {
     }
     
     selectNode(d) {
+        this.selectedCharacterName = d.name;
         const connections = this.getNodeConnections(d);
         const connectedNames = connections.map(c => c.name).join(', ') || 'None';
         const totalLines = this.getTotalSpeakingLines();
         const linePercentage = totalLines > 0 ? ((d.lineCount / totalLines) * 100).toFixed(1) : 0;
-        
+
+        // Get CSV data if available
+        const csvData = this.getCharacterCSVData(d.name);
+
+        // Show selected character card
+        const selectedCharacterCard = document.getElementById('selectedCharacterCard');
+        if (selectedCharacterCard) {
+            selectedCharacterCard.classList.remove('d-none');
+        }
+
+        // Update character list selection
+        document.querySelectorAll('.character-list-block').forEach(block => {
+            block.classList.remove('active');
+        });
+        const selectedBlock = document.querySelector(`[data-character-name="${d.name}"]`);
+        if (selectedBlock) {
+            selectedBlock.classList.add('active');
+            // Scroll the selected block into view in the list
+            selectedBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
         if (selectedCharacterInfo) {
-            selectedCharacterInfo.innerHTML = `
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <p class="h4 mb-0">${d.name}</p>
-                    <button class="btn btn-primary btn-sm" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
-                        View More Details
-                    </button>
+            let content = `<div class="d-flex align-items-start mb-3">`;
+
+            // Add image if available from CSV
+            if (csvData && csvData.image && csvData.image.trim() !== '') {
+                content += `
+                    <img src="${csvData.image}" alt="${d.name}"
+                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">
+                `;
+            }
+
+            content += `<div class="flex-grow-1">
+                    <h4 class="mb-2">${d.name}</h4>
+                    <p class="mb-1"><strong>Type:</strong> ${this.getGroupName(d.group)}</p>
                 </div>
-                <p><strong>Type:</strong> ${this.getGroupName(d.group)}</p>
-                <p><strong>Scenes:</strong> ${d.sceneCount}</p>
-                <p><strong>Lines:</strong> ${d.lineCount} (${linePercentage}% of dialogue)</p>
-                <p><strong>Connections:</strong> ${connections.length}</p>
-                <p><strong>Connected to:</strong> ${connectedNames}</p>
+            </div>`;
+
+            // Add custom description if available
+            if (csvData && csvData.description && csvData.description.trim() !== '') {
+                content += `<p class="mb-3"><em>${csvData.description}</em></p>`;
+            }
+
+            content += `
+                <p class="mb-1"><strong>Scenes:</strong> ${d.sceneCount}</p>
+                <p class="mb-1"><strong>Lines:</strong> ${d.lineCount} (${linePercentage}% of dialogue)</p>
+                <p class="mb-1"><strong>Connections:</strong> ${connections.length}</p>
+                <p class="mb-3"><strong>Connected to:</strong> ${connectedNames}</p>
             `;
+
+            // Add notes if available
+            if (csvData && csvData.notes && csvData.notes.trim() !== '') {
+                content += `<p class="text-muted small"><strong>Notes:</strong> ${csvData.notes}</p>`;
+            }
+
+            // Add view more details button if modal is available
+            if (typeof openCharacterModal === 'function') {
+                content += `
+                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-info-circle"></i> View Full Details
+                    </button>
+                `;
+            }
+
+            selectedCharacterInfo.innerHTML = content;
         }
     }
     
@@ -483,11 +536,24 @@ class CharacterNetworkD3 {
     }
     
     clearSelection() {
+        this.selectedCharacterName = null;
         this.clearHighlight();
+
+        // Hide selected character card
+        const selectedCharacterCard = document.getElementById('selectedCharacterCard');
+        if (selectedCharacterCard) {
+            selectedCharacterCard.classList.add('d-none');
+        }
+
+        // Clear character list selection
+        document.querySelectorAll('.character-list-block').forEach(block => {
+            block.classList.remove('active');
+        });
+
         const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
         if (selectedCharacterInfo) {
-            selectedCharacterInfo.innerHTML = 
-                '<p class="text-muted">Click on a character node to see details</p>';
+            selectedCharacterInfo.innerHTML =
+                '<p class="text-muted">Click on a character to see details</p>';
         }
     }
     
@@ -525,16 +591,152 @@ class CharacterNetworkD3 {
         const characterCountEl = document.getElementById('characterCount');
         const connectionCountEl = document.getElementById('connectionCount');
         const sceneCountEl = document.getElementById('sceneCount');
-        
+
         if (characterCountEl) characterCountEl.textContent = this.nodes.length;
         if (connectionCountEl) connectionCountEl.textContent = this.links.length;
-        
+
         // Calculate unique scenes
         const allScenes = new Set();
         this.nodes.forEach(node => {
             node.scenes.forEach(scene => allScenes.add(scene));
         });
         if (sceneCountEl) sceneCountEl.textContent = allScenes.size;
+    }
+
+    populateCharacterList() {
+        const container = document.getElementById('characterListContainer');
+        if (!container) return;
+
+        // Sort characters by importance (group, then line count)
+        const sortedNodes = [...this.nodes].sort((a, b) => {
+            if (a.group !== b.group) return a.group - b.group;
+            return b.lineCount - a.lineCount;
+        });
+
+        // Clear container
+        container.innerHTML = '';
+
+        // Create character list blocks
+        sortedNodes.forEach(node => {
+            const characterBlock = this.createCharacterBlock(node);
+            container.appendChild(characterBlock);
+        });
+    }
+
+    createCharacterBlock(node) {
+        const block = document.createElement('div');
+        block.className = 'character-list-block';
+        block.dataset.characterName = node.name;
+
+        // Get CSV data if available
+        const csvData = this.getCharacterCSVData(node.name);
+
+        // Build content
+        let content = '';
+
+        // Add image if available from CSV
+        if (csvData && csvData.image && csvData.image.trim() !== '') {
+            content += `<img src="${csvData.image}" class="character-image" alt="${node.name}">`;
+        }
+
+        content += `<div class="character-name">${node.name}</div>`;
+
+        // Add description from CSV or auto-generate
+        const description = this.getCharacterDescription(node, csvData);
+        if (description) {
+            content += `<p class="character-meta">${description}</p>`;
+        }
+
+        block.innerHTML = content;
+
+        // Add click handler
+        block.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.selectCharacterFromList(node.name);
+        });
+
+        return block;
+    }
+
+    getCharacterCSVData(characterName) {
+        if (typeof window.characterCSVData === 'undefined' || !window.characterCSVData.length) {
+            return null;
+        }
+
+        // Find matching character (case-insensitive, flexible matching)
+        const match = window.characterCSVData.find(csv => {
+            const csvName = csv.character.trim().toLowerCase();
+            const nodeName = characterName.trim().toLowerCase();
+            return csvName === nodeName || csvName.startsWith(nodeName) || nodeName.startsWith(csvName);
+        });
+
+        return match || null;
+    }
+
+    getCharacterDescription(node, csvData) {
+        // Use CSV description if available
+        if (csvData && csvData.description && csvData.description.trim() !== '') {
+            return csvData.description;
+        }
+
+        // Otherwise, generate data-driven description
+        const totalLines = this.getTotalSpeakingLines();
+        const linePercentage = totalLines > 0 ? ((node.lineCount / totalLines) * 100).toFixed(1) : 0;
+        const connections = this.getNodeConnections(node);
+
+        let desc = `${this.getGroupName(node.group)}`;
+
+        if (node.lineCount > 0) {
+            desc += ` · ${node.lineCount} lines (${linePercentage}%)`;
+        }
+
+        if (node.sceneCount > 0) {
+            desc += ` · ${node.sceneCount} scene${node.sceneCount !== 1 ? 's' : ''}`;
+        }
+
+        if (connections.length > 0) {
+            desc += ` · ${connections.length} connection${connections.length !== 1 ? 's' : ''}`;
+        }
+
+        return desc;
+    }
+
+    selectCharacterFromList(characterName) {
+        // Find the node
+        const node = this.nodes.find(n => n.name === characterName);
+        if (!node) return;
+
+        // Update visual selection in list
+        document.querySelectorAll('.character-list-block').forEach(block => {
+            block.classList.remove('active');
+        });
+        const selectedBlock = document.querySelector(`[data-character-name="${characterName}"]`);
+        if (selectedBlock) {
+            selectedBlock.classList.add('active');
+        }
+
+        // Select in network
+        this.selectNode(node);
+
+        // Highlight in network visualization
+        this.highlightConnectedNodes(node);
+
+        // Scroll character into view in network
+        this.scrollToNode(node);
+    }
+
+    scrollToNode(node) {
+        // Calculate transform to center the node
+        const scale = 1.5;
+        const translateX = this.options.width / 2 - node.x * scale;
+        const translateY = this.options.height / 2 - node.y * scale;
+
+        if (this.svg && this.zoom) {
+            this.svg.transition().duration(750)
+                .call(this.zoom.transform, d3.zoomIdentity
+                    .translate(translateX, translateY)
+                    .scale(scale));
+        }
     }
 }
 

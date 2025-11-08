@@ -3,89 +3,159 @@ layout: page
 custom-foot: dramaturgy/js/character-network-js.html
 ---
 
+<style>
+/* Dramatis Personae styling inspired by historical playbills */
+.dramatis-personae-header {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    border-top: 2px solid #333;
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.dramatis-personae-header h2 {
+    font-size: 1.75rem;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0;
+    font-variant: small-caps;
+}
+
+/* Character list blocks styled like nav menu */
+.character-list-block {
+    background: #f8f9fa;
+    border-left: 3px solid #6c757d;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.character-list-block:hover {
+    background: #e9ecef;
+    border-left-color: #495057;
+    transform: translateX(3px);
+}
+
+.character-list-block.active {
+    background: #dee2e6;
+    border-left-color: #212529;
+    font-weight: 600;
+}
+
+.character-list-block .character-name {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.character-list-block .character-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.character-list-block .character-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    float: left;
+}
+
+.character-list-container {
+    max-height: 800px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.character-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.character-list-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.character-list-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.character-list-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#selectedCharacterCard {
+    margin-top: 1rem;
+}
+</style>
+
 {{ content }}
 
 <div id="characterNetworkContainer" class="mt-4">
     <div class="row">
-        <div class="col-12">
-            <h3>Character Network Visualization</h3>
-            <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
-                dialogue.</p>
+        <!-- Left Column: Dramatis Personae List -->
+        <div class="col-lg-4">
+            <div class="dramatis-personae-header">
+                <h2>Dramatis Personæ</h2>
+            </div>
+
+            <div class="character-list-container" id="characterListContainer">
+                <!-- Character list will be populated by JavaScript -->
+                <div class="text-center text-muted py-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading characters...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Network Visualization and Selected Character -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <div id="networkStats">
-                    <p><strong>Characters:</strong> <span class="me-3" id="characterCount">0</span><strong>Connections:</strong> <span class="me-3" id="connectionCount">0</span><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
+                    <small class="text-muted">
+                        <strong>Characters:</strong> <span id="characterCount">0</span> ·
+                        <strong>Connections:</strong> <span id="connectionCount">0</span> ·
+                        <strong>Scenes:</strong> <span id="sceneCount">0</span>
+                    </small>
                 </div>
-        </div>
-    </div>
-
-    <!-- Network Controls Button Group -->
-    <div class="row mb-2">
-        <div class="col-12">
-            <div class="btn-group" role="group" aria-label="Network Controls">
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleLabels()">
-                    <i class="fas fa-tags"></i> Toggle Labels
-                </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="adjustNodeSize()">
-                    <i class="fas fa-expand-arrows-alt"></i> Adjust Size
-                </button>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                data-bs-target="#networkHelpModal">
-                <i class="fas fa-question-circle"></i> How to Read/Use
-            </button>
-            </div>
-    
-        </div>
-       
-   
-
-
-
-    <div class="col-lg-8">
-        <div id="networkVisualization" style="width: 100%; height: 600px; min-height: 600px;">
-            <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading network...</span>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Network Controls">
+                    <button type="button" class="btn btn-outline-secondary" onclick="toggleLabels()" title="Toggle character labels">
+                        <i class="fas fa-tags"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="adjustNodeSize()" title="Adjust node size">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#networkHelpModal" title="Help">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
                 </div>
             </div>
-        </div>
 
-    </div>
-
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Selected Character</h5>
-            </div>
-            <div class="card-body">
-                <div id="selectedCharacterInfo">
-                    <p class="text-muted">Click on a character node to see details</p>
+            <div id="networkVisualization" style="width: 100%; height: 500px; min-height: 500px;">
+                <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading network...</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-</div>
 
-<!-- Character Connections Section - positioned after network visualization -->
-<div class="mt-5 mb-5">
-    <h2>Character Connections</h2>
-    <p class="text-muted">Explore detailed character relationships and shared scenes.</p>
-    {% include dramaturgy/feature/character-connections.html %}
-</div>
-
-<!-- Character Detail Modal -->
-<div class="modal fade" id="characterDetailModal" tabindex="-1" aria-labelledby="characterDetailModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="characterDetailModalLabel">Character Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="characterDetailContent">
-                <!-- Content will be populated by JavaScript -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <!-- Selected Character Card (appears below network) -->
+            <div class="card d-none" id="selectedCharacterCard">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Selected Character</h5>
+                </div>
+                <div class="card-body">
+                    <div id="selectedCharacterInfo">
+                        <p class="text-muted">Click on a character to see details</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -117,7 +187,7 @@ custom-foot: dramaturgy/js/character-network-js.html
                 <h6 class="mt-4">How to Use</h6>
                 <ul>
                     <li><strong>Click and drag</strong> nodes to rearrange the network</li>
-                    <li><strong>Click on a character</strong> to see detailed information</li>
+                    <li><strong>Click on a character</strong> in the list or network to see detailed information</li>
                     <li><strong>Use the zoom controls</strong> or mouse wheel to zoom in/out</li>
                     <li><strong>Hover over connections</strong> to see shared scene information</li>
                     <li><strong>Use the control panel</strong> to adjust visualization settings</li>
