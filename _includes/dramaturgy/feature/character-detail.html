@@ -103,11 +103,21 @@ function generateCharacterDetailHTML(character, csvData, connections, connection
     const hasImage = csvData && csvData.image && csvData.image.trim() !== '';
     const hasDescription = csvData && csvData.description && csvData.description.trim() !== '';
     const hasNotes = csvData && csvData.notes && csvData.notes.trim() !== '';
-    
+
     // Fix image path - remove duplicate 'objects/' if present
     const imagePath = hasImage ? csvData.image.replace(/^objects\//, '') : '';
-    
+
+    // Encode character name for URL
+    const encodedCharacter = encodeURIComponent(character.name);
+
     return `
+        <!-- View All Lines Button -->
+        <div class="text-center mb-4 pb-3 border-bottom border-2">
+            <a href="{{ site.baseurl }}/script.html?player=${encodedCharacter}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book-open"></i> View All Lines in Playscript
+            </a>
+        </div>
+    `+`
         <div class="row">
             <div class="col-md-4">
                 ${hasImage ? `
@@ -202,12 +212,17 @@ function generateSceneGrid(scenes) {
     if (!scenes || scenes.length === 0) {
         return '<div class="col-12"><p class="text-muted">No scenes found</p></div>';
     }
-    
-    return scenes.map(scene => 
-        `<div class="col-auto mb-2">
-            <span class="badge bg-primary">${scene}</span>
-        </div>`
-    ).join('');
+
+    return scenes.map(scene => {
+        // Parse scene to create filter URL
+        const [act, sceneNum] = scene.split('.');
+        const sceneFilter = `${act}.${sceneNum}`;
+        return `<div class="col-auto mb-2">
+            <a href="{{ site.baseurl }}/script.html?scene=${encodeURIComponent(sceneFilter)}"
+               class="badge bg-primary text-decoration-none"
+               title="View scene ${scene} in playscript">${scene}</a>
+        </div>`;
+    }).join('');
 }
 
 function generateConnectionsHTML(connectionsByStrength) {
@@ -482,20 +497,60 @@ function escapeRegExp(string) {
 </script>
 
 <style>
-.character-detail-modal .modal-dialog {
+/* Historical dramatis personae modal styling */
+#characterDetailModal .modal-dialog {
     max-width: 900px;
 }
 
-.character-detail-modal .badge {
-    font-size: 0.8em;
+#characterDetailModal .modal-header {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    border-bottom: 3px double #333;
+    font-family: 'Georgia', 'Times New Roman', serif;
 }
 
-.character-detail-modal .card {
-    border: 1px solid #dee2e6;
+#characterDetailModal .modal-title {
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
-.character-detail-modal .card-header {
+#characterDetailModal .modal-body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+#characterDetailModal .card {
+    border: 2px solid #dee2e6;
+    border-radius: 0;
+}
+
+#characterDetailModal .card-header {
     background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+#characterDetailModal .badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+#characterDetailModal .badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#characterDetailModal h6 {
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+}
+
+/* Historical decorative border for description */
+#characterDetailModal .card-body p:first-child {
+    text-align: justify;
+    hyphens: auto;
 }
 </style>

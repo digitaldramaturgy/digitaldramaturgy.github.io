@@ -406,12 +406,6 @@ class CharacterNetworkD3 {
         // Get CSV data if available
         const csvData = this.getCharacterCSVData(d.name);
 
-        // Show selected character bar
-        const selectedCharacterBar = document.getElementById('selectedCharacterBar');
-        if (selectedCharacterBar) {
-            selectedCharacterBar.classList.remove('d-none');
-        }
-
         // Show view details button
         const viewDetailsBtn = document.getElementById('viewDetailsBtn');
         if (viewDetailsBtn) {
@@ -456,6 +450,9 @@ class CharacterNetworkD3 {
             content += `</div></div>`;
 
             selectedCharacterQuickInfo.innerHTML = content;
+
+            // Remove opacity from placeholder text
+            selectedCharacterQuickInfo.querySelector('p')?.classList.remove('opacity-50');
         }
     }
     
@@ -529,12 +526,6 @@ class CharacterNetworkD3 {
         window.selectedCharacterNameGlobal = null;
         this.clearHighlight();
 
-        // Hide selected character bar
-        const selectedCharacterBar = document.getElementById('selectedCharacterBar');
-        if (selectedCharacterBar) {
-            selectedCharacterBar.classList.add('d-none');
-        }
-
         // Hide view details button
         const viewDetailsBtn = document.getElementById('viewDetailsBtn');
         if (viewDetailsBtn) {
@@ -546,11 +537,11 @@ class CharacterNetworkD3 {
             block.classList.remove('active');
         });
 
-        // Reset quick info content
+        // Reset quick info content to placeholder with muted appearance
         const selectedCharacterQuickInfo = document.getElementById('selectedCharacterQuickInfo');
         if (selectedCharacterQuickInfo) {
             selectedCharacterQuickInfo.innerHTML =
-                '<p class="text-white mb-0">Select a character to see details</p>';
+                '<p class="text-white mb-0 opacity-50">Select a character to see details</p>';
         }
     }
     
