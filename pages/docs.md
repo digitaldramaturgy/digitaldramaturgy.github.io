@@ -92,7 +92,7 @@ Filters can be seen by clicking the `Filters` button at the top right of the pla
   - put a revision value in the `revision` column
   - added a new line by
     - adding a line to the CSV/spreadsheet 
-    - entering a value in `revsion` but not having a value in `text`
+    - entering a value in `revision` but not having a value in `text`
 - Cut/Revised button: 
   - The default. 
   - when selected will show the main version appearing on the site
