@@ -541,7 +541,7 @@ class CharacterNetworkD3 {
         const selectedCharacterQuickInfo = document.getElementById('selectedCharacterQuickInfo');
         if (selectedCharacterQuickInfo) {
             selectedCharacterQuickInfo.innerHTML =
-                '<p class="text-white mb-0 opacity-50">Select a character to see details</p>';
+                '<p class="mb-0 opacity-50" style="color: var(--folio-dark, #2c1810);">Select a character to see details</p>';
         }
     }
     

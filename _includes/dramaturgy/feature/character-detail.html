@@ -497,60 +497,224 @@ function escapeRegExp(string) {
 </script>
 
 <style>
-/* Historical dramatis personae modal styling */
+/* First Folio inspired styling for character modal */
 #characterDetailModal .modal-dialog {
     max-width: 900px;
 }
 
+#characterDetailModal .modal-content {
+    border: 4px double #2c1810;
+    border-radius: 0;
+    background: #faf8f3;
+    box-shadow: 0 0 40px rgba(0,0,0,0.3);
+}
+
 #characterDetailModal .modal-header {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    border-bottom: 3px double #333;
-    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #faf8f3;
+    border-bottom: 3px double #2c1810;
+    text-align: center;
+    padding: 2rem 1.5rem 1.5rem;
+    display: block;
 }
 
 #characterDetailModal .modal-title {
-    font-variant: small-caps;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+    font-family: 'Playfair Display', 'EB Garamond', 'Crimson Text', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #2c1810;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#characterDetailModal .modal-title::before,
+#characterDetailModal .modal-title::after {
+    content: "❦";
+    display: inline-block;
+    margin: 0 1rem;
+    font-size: 1.2rem;
+    color: #8b4513;
 }
 
 #characterDetailModal .modal-body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: 'EB Garamond', 'Crimson Text', Georgia, serif;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #2c1810;
+    background: #faf8f3;
+    padding: 2rem;
 }
 
-#characterDetailModal .card {
-    border: 2px solid #dee2e6;
+#characterDetailModal .btn-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+/* View All Lines Button - ornate First Folio style */
+#characterDetailModal .btn-primary {
+    background: #8b4513;
+    border: 2px solid #2c1810;
     border-radius: 0;
+    color: #faf8f3;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 0 1px #faf8f3;
+}
+
+#characterDetailModal .btn-primary:hover {
+    background: #6b3410;
+    border-color: #2c1810;
+    color: #fff;
+}
+
+/* Ornamental border for sections */
+#characterDetailModal .border-bottom {
+    border-bottom: 2px solid #2c1810 !important;
+    position: relative;
+}
+
+#characterDetailModal .border-bottom::after {
+    content: "✦";
+    position: absolute;
+    bottom: -0.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #faf8f3;
+    padding: 0 1rem;
+    color: #8b4513;
+}
+
+/* Card styling - remove Bootstrap, add First Folio */
+#characterDetailModal .card {
+    border: 2px solid #2c1810;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: 3px 3px 0 rgba(44, 24, 16, 0.1);
 }
 
 #characterDetailModal .card-header {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    font-variant: small-caps;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+    background: linear-gradient(to bottom, #faf8f3 0%, #f0ebe0 100%);
+    border-bottom: 2px solid #2c1810;
+    font-family: 'Playfair Display', Georgia, serif;
+    text-align: center;
+    padding: 1rem;
 }
 
+#characterDetailModal .card-header h6 {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2c1810;
+    margin: 0;
+}
+
+#characterDetailModal .card-body {
+    padding: 1.5rem;
+    background: #fff;
+}
+
+/* Scene badges - ornate style */
 #characterDetailModal .badge {
-    font-size: 0.9em;
-    padding: 0.5em 0.75em;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.5em 0.9em;
     border-radius: 0;
+    border: 1.5px solid #2c1810;
+    background: #faf8f3;
+    color: #2c1810;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 #characterDetailModal .badge:hover {
+    background: #8b4513;
+    color: #faf8f3;
+    border-color: #8b4513;
     transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 2px 2px 0 rgba(44, 24, 16, 0.3);
 }
 
-#characterDetailModal h6 {
-    font-variant: small-caps;
+/* Text styling */
+#characterDetailModal p {
+    text-align: justify;
+    hyphens: auto;
+    margin-bottom: 1rem;
+}
+
+#characterDetailModal strong {
+    font-weight: 700;
+    color: #2c1810;
+}
+
+/* Image styling - woodcut effect */
+#characterDetailModal img {
+    border: 3px solid #2c1810;
+    border-radius: 0;
+    box-shadow: 5px 5px 0 rgba(44, 24, 16, 0.15);
+}
+
+/* Ornamental dividers */
+#characterDetailModal hr {
+    border: 0;
+    height: 2px;
+    background: #2c1810;
+    margin: 2rem 0;
+    position: relative;
+}
+
+#characterDetailModal hr::after {
+    content: "❦";
+    position: absolute;
+    top: -0.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #faf8f3;
+    padding: 0 1rem;
+    color: #8b4513;
+    font-size: 1.2rem;
+}
+
+/* Connection badges - smaller ornate style */
+#characterDetailModal .text-success,
+#characterDetailModal .text-warning,
+#characterDetailModal .text-secondary {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.9rem;
+}
+
+/* Modal footer */
+#characterDetailModal .modal-footer {
+    border-top: 3px double #2c1810;
+    background: #faf8f3;
+    padding: 1rem 1.5rem;
+}
+
+#characterDetailModal .modal-footer .btn-secondary {
+    background: #6b6b6b;
+    border: 2px solid #2c1810;
+    border-radius: 0;
+    color: #fff;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-weight: 600;
     letter-spacing: 0.05em;
 }
 
-/* Historical decorative border for description */
-#characterDetailModal .card-body p:first-child {
-    text-align: justify;
-    hyphens: auto;
+#characterDetailModal .modal-footer .btn-secondary:hover {
+    background: #4a4a4a;
+}
+
+/* No image placeholder - ornate */
+#characterDetailModal .bg-light {
+    background: #f0ebe0 !important;
+    border: 2px dashed #2c1810;
 }
 </style>
