@@ -195,43 +195,6 @@ Additional subtitle or description text...
 
 ---
 
-## Character System {#characters}
-
-Digital Dramaturgy includes a sophisticated character tracking system using a dedicated `characters.csv` file.
-
-### Creating characters.csv
-
-Create a file at `_data/characters.csv` with these fields:
-
-| Field | Required | Description | Example |
-|-------|----------|-------------|---------|
-| `character` | Yes | Character name (must match `player` in playscript) | `HAMLET` |
-| `full_name` | No | Full character name | `Prince Hamlet of Denmark` |
-| `description` | No | Character description | `Prince of Denmark, son of the late king` |
-| `role` | No | Character role/category | `protagonist`, `antagonist`, `minor` |
-| `actor` | No | Actor name (for production docs) | `John Smith` |
-| `image` | No | Character image (objectid or path) | `/images/hamlet.jpg` |
-
-### Example characters.csv
-
-```csv
-character,full_name,description,role,image
-HAMLET,Prince Hamlet,Prince of Denmark seeking revenge,protagonist,hamlet-portrait
-CLAUDIUS,King Claudius,Current king and Hamlet's uncle,antagonist,claudius-portrait
-OPHELIA,Ophelia,Daughter of Polonius,supporting,ophelia-portrait
-HORATIO,Horatio,Hamlet's loyal friend,supporting,
-```
-
-### Using Character Data
-
-Character data automatically powers:
-- Character network visualizations
-- Character card displays
-- Character filtering in playscript viewer
-- Character relationship tracking
-
----
-
 ## Character Network {#character-network}
 
 The character network feature creates an **interactive D3.js visualization** showing relationships between characters based on shared scenes.
@@ -290,6 +253,45 @@ Optional description text about the network visualization...
 - Keyboard navigation between character cards
 - Text descriptions of relationships
 - ARIA labels on interactive elements
+
+
+
+---
+
+## Character System {#characters}
+
+Digital Dramaturgy also includes an optional character search 
+
+### Creating characters.csv
+
+Create a file at `_data/characters.csv` with these fields:
+
+| Field | Required | Description | Example |
+|-------|----------|-------------|---------|
+| `character` | Yes | Character name (must match `player` in playscript) | `HAMLET` |
+| `full_name` | No | Full character name | `Prince Hamlet of Denmark` |
+| `description` | No | Character description | `Prince of Denmark, son of the late king` |
+| `role` | No | Character role/category | `protagonist`, `antagonist`, `minor` |
+| `actor` | No | Actor name (for production docs) | `John Smith` |
+| `image` | No | Character image (objectid or path) | `/images/hamlet.jpg` |
+
+### Example characters.csv
+
+```csv
+character,full_name,description,role,image
+HAMLET,Prince Hamlet,Prince of Denmark seeking revenge,protagonist,hamlet-portrait
+CLAUDIUS,King Claudius,Current king and Hamlet's uncle,antagonist,claudius-portrait
+OPHELIA,Ophelia,Daughter of Polonius,supporting,ophelia-portrait
+HORATIO,Horatio,Hamlet's loyal friend,supporting,
+```
+
+### Using Character Data
+
+Character data automatically powers:
+- Character network visualizations
+- Character card displays
+- Character filtering in playscript viewer
+- Character relationship tracking
 
 ---
 

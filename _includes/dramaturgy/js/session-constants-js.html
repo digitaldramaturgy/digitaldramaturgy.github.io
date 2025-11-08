@@ -261,7 +261,7 @@ function updateUIWithMetadata(title, author, description) {
   // Update offcanvas elements
   const offcanvasLabel = document.getElementById("offcanvasLabel");
   if (offcanvasLabel) {
-    offcanvasLabel.innerHTML = title;
+    offcanvasLabel.innerHTML = '<a class="text-dark" href="{{ '/' | relative_url }}">' + title + '</a>';
   }
   
   const offcanvasAuthor = document.getElementById("offcanvas_author");

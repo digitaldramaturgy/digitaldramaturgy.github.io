@@ -17,7 +17,7 @@ modal: false
 <h2 class="text-center mb-4">Core Features</h2>
 
 <div class="row g-4 mb-5">
-<div class="col-md-6 col-lg-4">
+<div class="col-md-6">
 <div class="card h-100 border-0 shadow-sm">
 <div class="card-body">
 <h3 class="card-title h5 text-primary">📖 Annotated Playscripts</h3>
@@ -32,7 +32,7 @@ modal: false
 </div>
 </div>
 
-<div class="col-md-6 col-lg-4">
+<div class="col-md-6">
 <div class="card h-100 border-0 shadow-sm">
 <div class="card-body">
 <h3 class="card-title h5 text-primary">👥 Character Network Visualization</h3>
@@ -47,22 +47,8 @@ modal: false
 </div>
 </div>
 
-<div class="col-md-6 col-lg-4">
-<div class="card h-100 border-0 shadow-sm">
-<div class="card-body">
-<h3 class="card-title h5 text-primary">📅 Production Timelines</h3>
-<p class="card-text">Document the production history of a play with beautiful, interactive timelines. Perfect for tracking rehearsals, performances, critical reception, or historical context.</p>
-<ul class="small">
-<li>TimelineJS integration</li>
-<li>Year-based navigation</li>
-<li>Rich media support (images, videos)</li>
-<li>Responsive timeline views</li>
-</ul>
-</div>
-</div>
-</div>
 
-<div class="col-md-6 col-lg-4">
+<div class="col-md-6">
 <div class="card h-100 border-0 shadow-sm">
 <div class="card-body">
 <h3 class="card-title h5 text-primary">✍️ Interpretive Essays</h3>
@@ -77,22 +63,7 @@ modal: false
 </div>
 </div>
 
-<div class="col-md-6 col-lg-4">
-<div class="card h-100 border-0 shadow-sm">
-<div class="card-body">
-<h3 class="card-title h5 text-primary">🎭 Character Cards & Profiles</h3>
-<p class="card-text">Create detailed character profiles with custom metadata. Track character appearances, relationships, and development throughout the play.</p>
-<ul class="small">
-<li>Custom character metadata (characters.csv)</li>
-<li>Character card displays</li>
-<li>Scene appearance tracking</li>
-<li>Relationship mapping</li>
-</ul>
-</div>
-</div>
-</div>
-
-<div class="col-md-6 col-lg-4">
+<div class="col-md-6">
 <div class="card h-100 border-0 shadow-sm">
 <div class="card-body">
 <h3 class="card-title h5 text-primary">🎨 Customizable Cover Pages</h3>
