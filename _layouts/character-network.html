@@ -166,24 +166,24 @@ custom-foot: dramaturgy/js/character-network-js.html
 
         <!-- Right Column: Network Visualization -->
         <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <div id="networkStats">
-                    <small class="text-muted">
+                    <span class="text-muted">
                         <strong>Characters:</strong> <span id="characterCount">0</span> ·
                         <strong>Connections:</strong> <span id="connectionCount">0</span> ·
                         <strong>Scenes:</strong> <span id="sceneCount">0</span>
-                    </small>
+                    </span>
                 </div>
-                <div class="btn-group btn-group-sm" role="group" aria-label="Network Controls">
+                <div class="btn-group" role="group" aria-label="Network Controls">
                     <button type="button" class="btn btn-outline-secondary" onclick="toggleLabels()" title="Toggle character labels">
-                        <i class="fas fa-tags"></i>
+                        <i class="fas fa-tags"></i> Labels
                     </button>
                     <button type="button" class="btn btn-outline-secondary" onclick="adjustNodeSize()" title="Adjust node size">
-                        <i class="fas fa-expand-arrows-alt"></i>
+                        <i class="fas fa-expand-arrows-alt"></i> Size
                     </button>
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                         data-bs-target="#networkHelpModal" title="Help">
-                        <i class="fas fa-question-circle"></i>
+                        <i class="fas fa-question-circle"></i> Help
                     </button>
                 </div>
             </div>
