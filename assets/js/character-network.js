@@ -397,18 +397,25 @@ class CharacterNetworkD3 {
     
     selectNode(d) {
         this.selectedCharacterName = d.name;
+        window.selectedCharacterNameGlobal = d.name;  // Store globally for modal button
+
         const connections = this.getNodeConnections(d);
-        const connectedNames = connections.map(c => c.name).join(', ') || 'None';
         const totalLines = this.getTotalSpeakingLines();
         const linePercentage = totalLines > 0 ? ((d.lineCount / totalLines) * 100).toFixed(1) : 0;
 
         // Get CSV data if available
         const csvData = this.getCharacterCSVData(d.name);
 
-        // Show selected character card
-        const selectedCharacterCard = document.getElementById('selectedCharacterCard');
-        if (selectedCharacterCard) {
-            selectedCharacterCard.classList.remove('d-none');
+        // Show selected character bar
+        const selectedCharacterBar = document.getElementById('selectedCharacterBar');
+        if (selectedCharacterBar) {
+            selectedCharacterBar.classList.remove('d-none');
+        }
+
+        // Show view details button
+        const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+        if (viewDetailsBtn) {
+            viewDetailsBtn.style.display = 'inline-block';
         }
 
         // Update character list selection
@@ -422,51 +429,33 @@ class CharacterNetworkD3 {
             selectedBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
-        if (selectedCharacterInfo) {
-            let content = `<div class="d-flex align-items-start mb-3">`;
+        // Build quick stats content
+        const selectedCharacterQuickInfo = document.getElementById('selectedCharacterQuickInfo');
+        if (selectedCharacterQuickInfo) {
+            let content = '';
 
             // Add image if available from CSV
             if (csvData && csvData.image && csvData.image.trim() !== '') {
-                content += `
-                    <img src="${csvData.image}" alt="${d.name}"
-                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">
-                `;
+                content += `<img src="${csvData.image}" alt="${d.name}" class="character-quick-image">`;
             }
 
-            content += `<div class="flex-grow-1">
-                    <h4 class="mb-2">${d.name}</h4>
-                    <p class="mb-1"><strong>Type:</strong> ${this.getGroupName(d.group)}</p>
-                </div>
-            </div>`;
+            content += `<div>
+                    <h4 class="mb-1">${d.name}</h4>
+                    <div class="quick-stats">`;
 
-            // Add custom description if available
+            // Add description or stats
             if (csvData && csvData.description && csvData.description.trim() !== '') {
-                content += `<p class="mb-3"><em>${csvData.description}</em></p>`;
+                content += `<em>${csvData.description}</em> • `;
             }
 
-            content += `
-                <p class="mb-1"><strong>Scenes:</strong> ${d.sceneCount}</p>
-                <p class="mb-1"><strong>Lines:</strong> ${d.lineCount} (${linePercentage}% of dialogue)</p>
-                <p class="mb-1"><strong>Connections:</strong> ${connections.length}</p>
-                <p class="mb-3"><strong>Connected to:</strong> ${connectedNames}</p>
-            `;
+            content += `${this.getGroupName(d.group)} •
+                        ${d.lineCount} lines (${linePercentage}%) •
+                        ${d.sceneCount} scenes •
+                        ${connections.length} connections`;
 
-            // Add notes if available
-            if (csvData && csvData.notes && csvData.notes.trim() !== '') {
-                content += `<p class="text-muted small"><strong>Notes:</strong> ${csvData.notes}</p>`;
-            }
+            content += `</div></div>`;
 
-            // Add view more details button if modal is available
-            if (typeof openCharacterModal === 'function') {
-                content += `
-                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
-                        <i class="fas fa-info-circle"></i> View Full Details
-                    </button>
-                `;
-            }
-
-            selectedCharacterInfo.innerHTML = content;
+            selectedCharacterQuickInfo.innerHTML = content;
         }
     }
     
@@ -537,12 +526,19 @@ class CharacterNetworkD3 {
     
     clearSelection() {
         this.selectedCharacterName = null;
+        window.selectedCharacterNameGlobal = null;
         this.clearHighlight();
 
-        // Hide selected character card
-        const selectedCharacterCard = document.getElementById('selectedCharacterCard');
-        if (selectedCharacterCard) {
-            selectedCharacterCard.classList.add('d-none');
+        // Hide selected character bar
+        const selectedCharacterBar = document.getElementById('selectedCharacterBar');
+        if (selectedCharacterBar) {
+            selectedCharacterBar.classList.add('d-none');
+        }
+
+        // Hide view details button
+        const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+        if (viewDetailsBtn) {
+            viewDetailsBtn.style.display = 'none';
         }
 
         // Clear character list selection
@@ -550,10 +546,11 @@ class CharacterNetworkD3 {
             block.classList.remove('active');
         });
 
-        const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
-        if (selectedCharacterInfo) {
-            selectedCharacterInfo.innerHTML =
-                '<p class="text-muted">Click on a character to see details</p>';
+        // Reset quick info content
+        const selectedCharacterQuickInfo = document.getElementById('selectedCharacterQuickInfo');
+        if (selectedCharacterQuickInfo) {
+            selectedCharacterQuickInfo.innerHTML =
+                '<p class="text-white mb-0">Select a character to see details</p>';
         }
     }
     

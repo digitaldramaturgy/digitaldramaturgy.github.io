@@ -1,8 +1,9 @@
 ---
-layout: page
+layout: default
 custom-foot: dramaturgy/js/character-network-js.html
 ---
 
+<div class="container-fluid my-4">
 <style>
 /* Dramatis Personae styling inspired by historical playbills */
 .dramatis-personae-header {
@@ -89,17 +90,66 @@ custom-foot: dramaturgy/js/character-network-js.html
     background: #555;
 }
 
-#selectedCharacterCard {
-    margin-top: 1rem;
+/* Selected character quick stats bar */
+#selectedCharacterBar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#selectedCharacterBar .character-quick-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid white;
+    margin-right: 1rem;
+}
+
+#selectedCharacterBar h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+#selectedCharacterBar .quick-stats {
+    font-size: 0.9rem;
+    opacity: 0.95;
+}
+
+#selectedCharacterBar .btn-light {
+    background: white;
+    color: #667eea;
+    border: none;
+    font-weight: 600;
+}
+
+#selectedCharacterBar .btn-light:hover {
+    background: #f8f9fa;
+    color: #764ba2;
 }
 </style>
 
 {{ content }}
 
-<div id="characterNetworkContainer" class="mt-4">
+<!-- Selected Character Quick Stats Bar (appears at top when character selected) -->
+<div class="d-none" id="selectedCharacterBar">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center flex-grow-1" id="selectedCharacterQuickInfo">
+            <p class="text-white mb-0">Select a character to see details</p>
+        </div>
+        <button class="btn btn-light btn-sm" id="viewDetailsBtn" style="display: none;" onclick="openCharacterModal(window.selectedCharacterNameGlobal)">
+            <i class="fas fa-info-circle"></i> View Full Details
+        </button>
+    </div>
+</div>
+
+<div id="characterNetworkContainer">
     <div class="row">
         <!-- Left Column: Dramatis Personae List -->
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="dramatis-personae-header">
                 <h2>Dramatis Personæ</h2>
             </div>
@@ -114,8 +164,8 @@ custom-foot: dramaturgy/js/character-network-js.html
             </div>
         </div>
 
-        <!-- Right Column: Network Visualization and Selected Character -->
-        <div class="col-lg-8">
+        <!-- Right Column: Network Visualization -->
+        <div class="col-lg-9">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div id="networkStats">
                     <small class="text-muted">
@@ -138,24 +188,30 @@ custom-foot: dramaturgy/js/character-network-js.html
                 </div>
             </div>
 
-            <div id="networkVisualization" style="width: 100%; height: 500px; min-height: 500px;">
+            <div id="networkVisualization" style="width: 100%; height: 700px; min-height: 700px;">
                 <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading network...</span>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <!-- Selected Character Card (appears below network) -->
-            <div class="card d-none" id="selectedCharacterCard">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Selected Character</h5>
-                </div>
-                <div class="card-body">
-                    <div id="selectedCharacterInfo">
-                        <p class="text-muted">Click on a character to see details</p>
-                    </div>
-                </div>
+<!-- Character Detail Modal -->
+<div class="modal fade" id="characterDetailModal" tabindex="-1" aria-labelledby="characterDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="characterDetailModalLabel">Character Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="cleanupCharacterModal()"></button>
+            </div>
+            <div class="modal-body" id="characterDetailContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cleanupCharacterModal()">Close</button>
             </div>
         </div>
     </div>
@@ -201,3 +257,5 @@ custom-foot: dramaturgy/js/character-network-js.html
         </div>
     </div>
 </div>
+
+</div><!-- Close container-fluid -->
