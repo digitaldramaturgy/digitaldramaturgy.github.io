@@ -96,9 +96,10 @@ if (queryString.has('csv') && queryString.get('csv').trim().length > 0) {
     cbGetMetadata(config_metadata);
 } else {
     // if no CSV is configured, show the setup modal
+    {% unless page.modal == false %}
     const setUpModal = new bootstrap.Modal(document.getElementById('cbSetUpModal')); 
     setUpModal.show();
+    {% endunless %}
 }
 
 </script>
-    

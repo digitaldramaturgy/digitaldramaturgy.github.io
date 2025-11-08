@@ -31,8 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const suppressModal = urlParams.get('modal') === 'false';
   
   // Check if default_csv_url is empty and open setup modal if needed
-  // Only show modal if suppressModal is false
-  {% unless page.url contains 'directions' %}if (!suppressModal && 
+  // Only show modal if suppressModal is false and page.modal is not false
+  {% unless page.modal == false %}
+  if (!suppressModal && 
       (!dd_metadata_csv || dd_metadata_csv.trim() === "") && 
       (!default_csv_url || default_csv_url.trim() === "")) {
     // Check if the modal exists
@@ -42,7 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const bsModal = new bootstrap.Modal(setupModal);
       bsModal.show();
     }
-  }{% endunless %}
+  }
+  {% endunless %}
 });
 
 /**
@@ -259,7 +261,7 @@ function updateUIWithMetadata(title, author, description) {
   // Update offcanvas elements
   const offcanvasLabel = document.getElementById("offcanvasLabel");
   if (offcanvasLabel) {
-    offcanvasLabel.innerHTML = title;
+    offcanvasLabel.innerHTML = '<a class="text-dark" href="{{ '/' | relative_url }}">' + title + '</a>';
   }
   
   const offcanvasAuthor = document.getElementById("offcanvas_author");

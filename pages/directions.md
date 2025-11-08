@@ -2,6 +2,7 @@
 title: Quick Start Directions for Using Digital Dramaturgy
 layout: page-narrow
 permalink: /directions.html
+modal: false
 ---
 
 # {{page.title}}
@@ -91,6 +92,8 @@ Your site will be deployed to: `https://[your-username].github.io/[repository-na
 
 ### Further Steps and Future Development
 
+For more information on special features and customization, [check out our full documentation](docs.html)
+
 Digital Dramaturgy is built on top of  [CollectionBuilder](https://collectionbuilder.github.io/), a digital exhibit framework that's in use around the world. As such, the tool also allows for the publishing of interpretive essays, interactive visualizations (maps, word clouds, etc.), production timelines, and other features. This also allows for the (robust!) documentation from CollectionBuilder to be repurposed or referenced for many features of the tool. 
 
-[See the CollectionBuilder Documentation]([CollectionBuilder](https://collectionbuilder.github.io/))
+[See the CollectionBuilder Documentation](https://collectionbuilder.github.io/)
