@@ -701,7 +701,7 @@ Essay 2,/essay-2.html,Essays
 **Solutions:**
 1. Check `_config.yml` - is the `play` URL correct?
 2. If using Google Sheets, ensure it's published as CSV (not just "shared")
-3. Verify required fields: `player`, `playerline`, `actscene`, `linenumber`
+3. Verify required fields: `act`, `scene`, `player`, `text`
 4. Check CSV encoding (must be UTF-8)
 5. Try the "Refresh Playscript Data" button in development mode
 
