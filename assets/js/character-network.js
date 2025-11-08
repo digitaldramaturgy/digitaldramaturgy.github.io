@@ -395,24 +395,48 @@ class CharacterNetworkD3 {
     
     selectNode(d) {
         const connections = this.getNodeConnections(d);
-        const connectedNames = connections.map(c => c.name).join(', ') || 'None';
+        const connectedNames = connections.slice(0, 5).map(c => c.name).join(', ') || 'None';
+        const moreConnections = connections.length > 5 ? ` and ${connections.length - 5} more` : '';
         const totalLines = this.getTotalSpeakingLines();
         const linePercentage = totalLines > 0 ? ((d.lineCount / totalLines) * 100).toFixed(1) : 0;
-        
+
         const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
         if (selectedCharacterInfo) {
+            // Add expanding animation class
+            selectedCharacterInfo.className = 'character-detail-expanded';
+
             selectedCharacterInfo.innerHTML = `
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <p class="h4 mb-0">${d.name}</p>
-                    <button class="btn btn-primary btn-sm" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
-                        View More Details
-                    </button>
+                <div class="character-info-header">
+                    <h2>${d.name}</h2>
+                    <p class="character-info-subtitle">${this.getGroupName(d.group)}</p>
                 </div>
-                <p><strong>Type:</strong> ${this.getGroupName(d.group)}</p>
-                <p><strong>Scenes:</strong> ${d.sceneCount}</p>
-                <p><strong>Lines:</strong> ${d.lineCount} (${linePercentage}% of dialogue)</p>
-                <p><strong>Connections:</strong> ${connections.length}</p>
-                <p><strong>Connected to:</strong> ${connectedNames}</p>
+
+                <div class="character-info-section">
+                    <h3>Statistics</h3>
+                    <ul class="character-stat-list">
+                        <li><span class="character-stat-label">Scene Appearances</span> ${d.sceneCount}</li>
+                        <li><span class="character-stat-label">Speaking Lines</span> ${d.lineCount} (${linePercentage}% of dialogue)</li>
+                        <li><span class="character-stat-label">Connections</span> ${connections.length} character${connections.length !== 1 ? 's' : ''}</li>
+                    </ul>
+                </div>
+
+                <div class="character-info-section">
+                    <h3>Connections</h3>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1rem; line-height: 1.6;">
+                        ${connectedNames}${moreConnections}
+                    </p>
+                </div>
+
+                <div class="ornamental-divider">❦</div>
+
+                <div class="action-buttons">
+                    <button class="btn-1600s" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
+                        View Full Details
+                    </button>
+                    <a href="/script.html?player=${d.name.replace(/\s+/g, '')}" class="btn-1600s" style="text-decoration: none;">
+                        View Lines in Script
+                    </a>
+                </div>
             `;
         }
     }
@@ -486,8 +510,9 @@ class CharacterNetworkD3 {
         this.clearHighlight();
         const selectedCharacterInfo = document.getElementById('selectedCharacterInfo');
         if (selectedCharacterInfo) {
-            selectedCharacterInfo.innerHTML = 
-                '<p class="text-muted">Click on a character node to see details</p>';
+            selectedCharacterInfo.className = 'character-detail-placeholder';
+            selectedCharacterInfo.innerHTML =
+                '<p class="text-muted fst-italic">Click on a character node to see details</p>';
         }
     }
     

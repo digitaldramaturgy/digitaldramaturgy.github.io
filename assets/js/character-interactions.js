@@ -191,113 +191,187 @@ const CharacterInteractions = {
         const hasImage = csvData && csvData.image;
         const hasDescription = csvData && csvData.description;
         const hasNotes = csvData && csvData.notes;
-        
+
+        // Calculate line count and percentage
+        const lineCount = this.calculateLineCount(character.name);
+        const totalLines = this.getTotalSpeakingLines();
+        const linePercentage = totalLines > 0 ? ((lineCount / totalLines) * 100).toFixed(1) : 0;
+
         return `
-            <div class="row">
-                <div class="col-md-4">
-                    ${hasImage ? `
-                        <img src="${csvData.image}" class="img-fluid rounded mb-3" alt="${character.name}">
-                    ` : `
-                        <div class="bg-light rounded p-4 text-center mb-3">
-                            <i class="fas fa-user fa-4x text-muted"></i>
-                            <p class="mt-2 text-muted">No image available</p>
-                        </div>
-                    `}
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <h6>Character Statistics</h6>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Total Scenes:</strong> ${character.scenesList ? character.scenesList.length : 0}</p>
-                            <p><strong>Total Connections:</strong> ${connections.length}</p>
-                            <p><strong>Acts Appeared:</strong> ${sceneAnalysis.acts.join(', ') || 'None'}</p>
-                            <p><strong>Scene Range:</strong> ${sceneAnalysis.sceneRange}</p>
-                        </div>
-                    </div>
+            <!-- Title Page Style -->
+            <div class="character-info-header">
+                <h2>${character.name}</h2>
+                <p class="character-info-subtitle">A Character of the Play</p>
+            </div>
+
+            <div class="ornamental-divider">❦</div>
+
+            <!-- Statistics Section -->
+            <div class="character-info-section">
+                <h3>Character Statistics</h3>
+                <ul class="character-stat-list">
+                    <li><span class="character-stat-label">Total Scenes</span> ${character.scenesList ? character.scenesList.length : 0} scene${character.scenesList && character.scenesList.length !== 1 ? 's' : ''}</li>
+                    <li><span class="character-stat-label">Speaking Lines</span> ${lineCount} lines (${linePercentage}% of the play)</li>
+                    <li><span class="character-stat-label">Character Connections</span> ${connections.length} character${connections.length !== 1 ? 's' : ''}</li>
+                    <li><span class="character-stat-label">Acts Appeared</span> ${sceneAnalysis.acts.map(a => 'Act ' + a).join(', ') || 'None'}</li>
+                    <li><span class="character-stat-label">Scene Range</span> ${sceneAnalysis.sceneRange}</li>
+                </ul>
+            </div>
+
+            ${hasDescription ? `
+                <div class="ornamental-divider">❦</div>
+                <div class="character-info-section">
+                    <h3>Description</h3>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1.1rem; line-height: 1.8; text-align: justify;">
+                        ${csvData.description}
+                    </p>
                 </div>
-                
-                <div class="col-md-8">
-                    ${hasDescription ? `
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h6>Description</h6>
-                            </div>
-                            <div class="card-body">
-                                <p>${csvData.description}</p>
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h6>Scene Appearances</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                ${this.generateSceneGrid(character.scenesList || [])}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h6>Character Connections</h6>
-                        </div>
-                        <div class="card-body">
-                            ${this.generateConnectionsHTML(connections)}
-                        </div>
-                    </div>
-                    
-                    ${hasNotes ? `
-                        <div class="card">
-                            <div class="card-header">
-                                <h6>Notes</h6>
-                            </div>
-                            <div class="card-body">
-                                <p>${csvData.notes}</p>
-                            </div>
-                        </div>
-                    ` : ''}
+            ` : ''}
+
+            <div class="ornamental-divider">❦</div>
+
+            <!-- Scene Appearances -->
+            <div class="character-info-section">
+                <h3>Scene Appearances</h3>
+                <div style="line-height: 2;">
+                    ${this.generateSceneLinks(character.scenesList || [])}
                 </div>
+            </div>
+
+            <div class="ornamental-divider">❦</div>
+
+            <!-- Character Connections -->
+            <div class="character-info-section">
+                <h3>Character Connections</h3>
+                ${this.generateConnectionsText(connections)}
+            </div>
+
+            ${hasNotes ? `
+                <div class="ornamental-divider">❦</div>
+                <div class="character-info-section">
+                    <h3>Notes</h3>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1rem; line-height: 1.8; text-align: justify;">
+                        ${csvData.notes}
+                    </p>
+                </div>
+            ` : ''}
+
+            <div class="ornamental-divider">❦</div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/script.html?player=${character.name.replace(/\s+/g, '')}" class="btn-1600s" style="text-decoration: none;">
+                    View Lines in Script
+                </a>
             </div>
         `;
     },
     
-    // Generate scene grid HTML
+    // Generate scene links HTML
+    generateSceneLinks: function(scenes) {
+        if (!scenes || scenes.length === 0) {
+            return '<p style="font-family: \'Garamond\', \'Georgia\', serif; font-style: italic;">No scenes found</p>';
+        }
+
+        return scenes.map(scene => {
+            const [act, sceneNum] = scene.split('.');
+            const sceneClass = `act${act}scene${sceneNum}`;
+            return `<a href="/script.html?scene=${sceneClass}" class="scene-link">Act ${act}, Scene ${sceneNum}</a>`;
+        }).join('\n');
+    },
+
+    // Generate scene grid HTML (kept for backward compatibility)
     generateSceneGrid: function(scenes) {
         if (!scenes || scenes.length === 0) {
             return '<div class="col-12"><p class="text-muted">No scenes found</p></div>';
         }
-        
-        return scenes.map(scene => 
+
+        return scenes.map(scene =>
             `<div class="col-auto mb-2">
                 <span class="badge bg-primary">${scene}</span>
             </div>`
         ).join('');
     },
     
-    // Generate connections HTML
+    // Generate connections text (1600s style)
+    generateConnectionsText: function(connections) {
+        if (!connections || connections.length === 0) {
+            return '<p style="font-family: \'Garamond\', \'Georgia\', serif; font-style: italic;">No connections found</p>';
+        }
+
+        const categorized = this.categorizeConnections(connections);
+        let html = '';
+
+        if (categorized.strong.length > 0) {
+            html += `
+                <div class="mb-4">
+                    <h4 style="font-family: 'Garamond', 'Georgia', serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Strong Connections</h4>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1rem; line-height: 1.8; text-align: justify;">
+                        ${categorized.strong.map(conn =>
+                            `<strong>${conn.character}</strong> (${conn.connectionStrength} shared scene${conn.connectionStrength !== 1 ? 's' : ''}: ${conn.sharedScenes.map(s => {
+                                const [act, sceneNum] = s.split('.');
+                                return `<a href="/script.html?scene=act${act}scene${sceneNum}" class="scene-link" style="font-size: 0.85rem;">${s}</a>`;
+                            }).join(', ')})`
+                        ).join('; ')}
+                    </p>
+                </div>
+            `;
+        }
+
+        if (categorized.medium.length > 0) {
+            html += `
+                <div class="mb-4">
+                    <h4 style="font-family: 'Garamond', 'Georgia', serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Medium Connections</h4>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1rem; line-height: 1.8; text-align: justify;">
+                        ${categorized.medium.map(conn =>
+                            `<strong>${conn.character}</strong> (${conn.sharedScenes.map(s => {
+                                const [act, sceneNum] = s.split('.');
+                                return `<a href="/script.html?scene=act${act}scene${sceneNum}" class="scene-link" style="font-size: 0.85rem;">${s}</a>`;
+                            }).join(', ')})`
+                        ).join('; ')}
+                    </p>
+                </div>
+            `;
+        }
+
+        if (categorized.weak.length > 0) {
+            html += `
+                <div class="mb-4">
+                    <h4 style="font-family: 'Garamond', 'Georgia', serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Weak Connections</h4>
+                    <p style="font-family: 'Garamond', 'Georgia', serif; font-size: 1rem; line-height: 1.8;">
+                        ${categorized.weak.map(conn => {
+                            const [act, sceneNum] = conn.sharedScenes[0].split('.');
+                            return `<strong>${conn.character}</strong> (<a href="/script.html?scene=act${act}scene${sceneNum}" class="scene-link" style="font-size: 0.85rem;">${conn.sharedScenes[0]}</a>)`;
+                        }).join('; ')}
+                    </p>
+                </div>
+            `;
+        }
+
+        return html;
+    },
+
+    // Generate connections HTML (kept for backward compatibility)
     generateConnectionsHTML: function(connections) {
         if (!connections || connections.length === 0) {
             return '<p class="text-muted">No connections found</p>';
         }
-        
+
         const categorized = this.categorizeConnections(connections);
         let html = '';
-        
+
         ['strong', 'medium', 'weak'].forEach(type => {
             if (categorized[type].length > 0) {
                 const badgeClass = type === 'strong' ? 'success' : type === 'medium' ? 'warning' : 'secondary';
-                const label = type === 'strong' ? 'Strong Connections (3+ scenes)' : 
-                             type === 'medium' ? 'Medium Connections (2 scenes)' : 
+                const label = type === 'strong' ? 'Strong Connections (3+ scenes)' :
+                             type === 'medium' ? 'Medium Connections (2 scenes)' :
                              'Weak Connections (1 scene)';
-                
+
                 html += `
                     <div class="mb-3">
                         <h6 class="text-${badgeClass}">${label}</h6>
                         <div class="row">
-                            ${categorized[type].map(conn => 
+                            ${categorized[type].map(conn =>
                                 `<div class="col-md-6 mb-2">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span><strong>${conn.character}</strong></span>
@@ -311,7 +385,7 @@ const CharacterInteractions = {
                 `;
             }
         });
-        
+
         return html;
     },
     
@@ -342,6 +416,33 @@ const CharacterInteractions = {
         }
     },
     
+    // Calculate line count for a character
+    calculateLineCount: function(characterName) {
+        // Check if dd_items is available
+        if (typeof dd_items === 'undefined' || dd_items.length === 0) {
+            return 0;
+        }
+
+        return dd_items.filter(item =>
+            item.player &&
+            item.player.trim() === characterName &&
+            item.player.trim() !== 'StageDirection'
+        ).length;
+    },
+
+    // Get total speaking lines in the play
+    getTotalSpeakingLines: function() {
+        if (typeof dd_items === 'undefined' || dd_items.length === 0) {
+            return 1; // Avoid division by zero
+        }
+
+        return dd_items.filter(item =>
+            item.player &&
+            item.player.trim() !== '' &&
+            item.player.trim() !== 'StageDirection'
+        ).length;
+    },
+
     // Get character statistics
     getCharacterStatistics: function() {
         const stats = {
