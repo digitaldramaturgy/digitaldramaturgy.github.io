@@ -110,102 +110,127 @@ function generateCharacterDetailHTML(character, csvData, connections, connection
     // Encode character name for URL
     const encodedCharacter = encodeURIComponent(character.name);
 
+    // Generate narrative description
+    const sceneCount = character.scenesList ? character.scenesList.length : 0;
+    const actsList = sceneAnalysis.acts.join(', ');
+
+    // Create prose description of appearances
+    let appearanceText = '';
+    if (sceneCount > 0) {
+        const scenes = character.scenesList || [];
+        if (sceneCount === 1) {
+            appearanceText = `appearing in ${generateSceneLink(scenes[0])}`;
+        } else if (sceneCount === 2) {
+            appearanceText = `appearing in ${generateSceneLink(scenes[0])} and ${generateSceneLink(scenes[1])}`;
+        } else {
+            const sceneLinks = scenes.map((s, i) => {
+                if (i === scenes.length - 1) return `and ${generateSceneLink(s)}`;
+                return generateSceneLink(s);
+            });
+            appearanceText = `appearing in ${sceneLinks.join(', ')}`;
+        }
+    }
+
+    // Create prose for connections
+    let connectionText = '';
+    if (connections.length > 0) {
+        const strongConnections = connectionsByStrength.strong || [];
+        if (strongConnections.length > 0) {
+            const names = strongConnections.map(c => c.character).slice(0, 3);
+            if (names.length === 1) {
+                connectionText = `most closely associated with ${names[0]}`;
+            } else if (names.length === 2) {
+                connectionText = `most closely associated with ${names[0]} and ${names[1]}`;
+            } else {
+                const last = names.pop();
+                connectionText = `most closely associated with ${names.join(', ')}, and ${last}`;
+            }
+        } else if (connections.length <= 3) {
+            const names = connections.map(c => c.character);
+            connectionText = `sharing scenes with ${names.join(', ')}`;
+        } else {
+            connectionText = `sharing scenes with ${connections.length} other characters`;
+        }
+    }
+
     return `
-        <!-- View All Lines Button -->
-        <div class="text-center mb-4 pb-3 border-bottom border-2">
-            <a href="{{ site.baseurl }}/script.html?player=${encodedCharacter}" class="btn btn-primary btn-lg">
-                <i class="fas fa-book-open"></i> View All Lines in Playscript
-            </a>
-        </div>
-    `+`
-        <div class="row">
-            <div class="col-md-4">
-                ${hasImage ? `
-                    <img src="{{ site.baseurl }}/objects/${imagePath}" class="img-fluid rounded mb-3" alt="${character.name}">
-                ` : `
-                    <div class="bg-light rounded p-4 text-center mb-3">
-                        <i class="fas fa-user fa-4x text-muted"></i>
-                        <p class="mt-2 text-muted">No image available</p>
-                    </div>
-                `}
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Character Statistics</h6>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Total Scenes:</strong> ${character.scenesList ? character.scenesList.length : 0}</p>
-                        <p><strong>Total Connections:</strong> ${connections.length}</p>
-                        <p><strong>Acts Appeared:</strong> ${sceneAnalysis.acts.join(', ')}</p>
-                        <p><strong>Scene Range:</strong> ${sceneAnalysis.sceneRange}</p>
-                    </div>
+        <div class="folio-character-page">
+            ${hasImage ? `
+                <div class="character-portrait">
+                    <img src="{{ site.baseurl }}/objects/${imagePath}" alt="${character.name}">
                 </div>
-            </div>
-            
-            <div class="col-md-8">
-                ${hasDescription ? `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h6>Description</h6>
-                        </div>
-                        <div class="card-body">
-                            <p>${csvData.description}</p>
-                        </div>
-                    </div>
+            ` : ''}
+
+            <div class="character-description">
+                <p class="character-intro">
+                    <span class="drop-cap">${character.name.charAt(0)}</span><span class="character-name-rest">${character.name.slice(1).toUpperCase()}</span>${hasDescription ? `, ${csvData.description.toLowerCase()}` : ''}${appearanceText ? `, ${appearanceText}` : ''}.${connectionText ? ` This character is ${connectionText}.` : ''}
+                </p>
+
+                ${sceneCount > 0 ? `
+                    <p class="scene-narrative">
+                        Throughout the course of the drama, this character speaks in ${sceneCount} scene${sceneCount !== 1 ? 's' : ''} across Act${sceneAnalysis.acts.length > 1 ? 's' : ''} ${actsList}, encompassing the range from ${sceneAnalysis.sceneRange}.
+                    </p>
                 ` : ''}
-                
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Scene Appearances</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            ${generateSceneGrid(character.scenesList || [])}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h6>Character Connections</h6>
-                    </div>
-                    <div class="card-body">
-                        ${generateConnectionsHTML(connectionsByStrength)}
-                    </div>
-                </div>
-                
+
+                ${connections.length > 0 ? `
+                    <p class="connections-narrative">
+                        <em>Of the character's associations:</em> ${generateConnectionsProse(connectionsByStrength)}
+                    </p>
+                ` : ''}
+
                 ${hasNotes ? `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h6>Notes</h6>
-                        </div>
-                        <div class="card-body">
-                            <p>${csvData.notes}</p>
-                        </div>
-                    </div>
+                    <p class="character-notes">
+                        <em>Further notes:</em> ${csvData.notes}
+                    </p>
                 ` : ''}
-                
-                <!-- Character Lines Section -->
-                <div class="card">
-                    <div class="card-header">
-                        <h6>
-                            <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#characterLines${character.name.replace(/\s+/g, '')}" aria-expanded="false" aria-controls="characterLines${character.name.replace(/\s+/g, '')}">
-                                <i class="fas fa-quote-left me-2"></i>Character Lines
-                                <i class="fas fa-chevron-down ms-2"></i>
-                            </button>
-                        </h6>
-                    </div>
-                    <div class="collapse" id="characterLines${character.name.replace(/\s+/g, '')}">
-                        <div class="card-body">
-                            <div id="characterLinesContent${character.name.replace(/\s+/g, '')}">
-                                <p class="text-muted">Loading character lines...</p>
-                            </div>
-                        </div>
-                    </div>
+
+                <div class="character-actions">
+                    <p class="action-link">
+                        <a href="{{ site.baseurl }}/script.html?player=${encodedCharacter}" class="view-lines-link">
+                            ⚘ View all spoken lines in the playscript
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
     `;
+}
+
+function generateSceneLink(scene) {
+    const [act, sceneNum] = scene.split('.');
+    const sceneFilter = `${act}.${sceneNum}`;
+    return `<a href="{{ site.baseurl }}/script.html?scene=${encodeURIComponent(sceneFilter)}" class="scene-link">Act ${act}, Scene ${sceneNum}</a>`;
+}
+
+function generateConnectionsProse(connectionsByStrength) {
+    let prose = [];
+
+    if (connectionsByStrength.strong && connectionsByStrength.strong.length > 0) {
+        const names = connectionsByStrength.strong.map(c => c.character);
+        if (names.length === 1) {
+            prose.push(`strong bonds with ${names[0]}`);
+        } else {
+            const last = names.pop();
+            prose.push(`strong bonds with ${names.join(', ')}, and ${last}`);
+        }
+    }
+
+    if (connectionsByStrength.medium && connectionsByStrength.medium.length > 0) {
+        const count = connectionsByStrength.medium.length;
+        prose.push(`moderate acquaintance with ${count} other${count !== 1 ? 's' : ''}`);
+    }
+
+    if (connectionsByStrength.weak && connectionsByStrength.weak.length > 0) {
+        const count = connectionsByStrength.weak.length;
+        prose.push(`passing encounters with ${count} additional character${count !== 1 ? 's' : ''}`);
+    }
+
+    if (prose.length === 0) return 'no recorded interactions.';
+    if (prose.length === 1) return prose[0] + '.';
+    if (prose.length === 2) return prose.join('; and ') + '.';
+
+    const last = prose.pop();
+    return prose.join('; ') + '; and ' + last + '.';
 }
 
 function generateSceneGrid(scenes) {
@@ -497,60 +522,143 @@ function escapeRegExp(string) {
 </script>
 
 <style>
-/* Historical dramatis personae modal styling */
+/* 1600s Book Design for Character Modal */
 #characterDetailModal .modal-dialog {
-    max-width: 900px;
+    max-width: 750px;
+}
+
+#characterDetailModal .modal-content {
+    border: 0;
+    border-radius: 0;
 }
 
 #characterDetailModal .modal-header {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    border-bottom: 3px double #333;
-    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #faf8f0;
+    border-bottom: 3px double #2c1810;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    text-align: center;
+    padding: 2rem 1.5rem 1.5rem;
 }
 
 #characterDetailModal .modal-title {
-    font-variant: small-caps;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: normal;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2c1810;
 }
 
 #characterDetailModal .modal-body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #faf8f0;
+    padding: 2.5rem 3rem;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #2c1810;
 }
 
-#characterDetailModal .card {
-    border: 2px solid #dee2e6;
-    border-radius: 0;
+#characterDetailModal .modal-footer {
+    background: #faf8f0;
+    border-top: 3px double #2c1810;
+    padding: 1rem 2rem;
 }
 
-#characterDetailModal .card-header {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
+/* 1600s prose layout styling */
+.folio-character-page {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.character-portrait {
+    float: left;
+    margin: 0 2rem 1rem 0;
+    width: 200px;
+}
+
+.character-portrait img {
+    width: 100%;
+    border: 3px solid #2c1810;
+    box-shadow: 5px 5px 0 rgba(44, 24, 16, 0.15);
+}
+
+.character-description p {
+    text-align: justify;
+    hyphens: auto;
+    margin-bottom: 1.5rem;
+}
+
+/* Drop cap for first letter */
+.drop-cap {
+    float: left;
+    font-size: 4.5rem;
+    line-height: 3.5rem;
+    margin: 0.1rem 0.5rem 0 0;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    font-weight: bold;
+    color: #2c1810;
+}
+
+.character-name-rest {
     font-variant: small-caps;
+    letter-spacing: 0.08em;
+    font-size: 1.1rem;
+}
+
+/* Scene links styled as marginal references */
+.scene-link {
+    color: #8b4513;
+    text-decoration: none;
+    font-style: italic;
+    border-bottom: 1px dotted #8b4513;
+}
+
+.scene-link:hover {
+    color: #2c1810;
+    border-bottom: 1px solid #2c1810;
+}
+
+/* Italics for narrative emphasis */
+.scene-narrative em,
+.connections-narrative em,
+.character-notes em {
+    font-style: italic;
+    color: #5a4a3a;
+}
+
+/* Action link styled as colophon */
+.character-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #2c1810;
+    text-align: center;
+}
+
+.view-lines-link {
+    color: #8b4513;
+    text-decoration: none;
+    font-size: 1.1rem;
     letter-spacing: 0.05em;
     font-weight: 600;
 }
 
-#characterDetailModal .badge {
-    font-size: 0.9em;
-    padding: 0.5em 0.75em;
+.view-lines-link:hover {
+    color: #2c1810;
+    text-decoration: underline;
+}
+
+/* Remove default button styling */
+#characterDetailModal .btn-secondary {
+    background: #6b6b6b;
+    border: 2px solid #2c1810;
     border-radius: 0;
-    transition: all 0.2s ease;
-}
-
-#characterDetailModal .badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-#characterDetailModal h6 {
-    font-variant: small-caps;
+    color: #fff;
+    font-family: 'Garamond', Georgia, serif;
     letter-spacing: 0.05em;
+    padding: 0.5rem 1.5rem;
 }
 
-/* Historical decorative border for description */
-#characterDetailModal .card-body p:first-child {
-    text-align: justify;
-    hyphens: auto;
+#characterDetailModal .btn-close {
+    filter: sepia(100%) saturate(200%) brightness(70%) hue-rotate(10deg);
 }
 </style>

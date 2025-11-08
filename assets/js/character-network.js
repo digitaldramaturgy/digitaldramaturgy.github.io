@@ -437,16 +437,58 @@ class CharacterNetworkD3 {
                     <h4 class="mb-1">${d.name}</h4>
                     <div class="quick-stats">`;
 
-            // Add description or stats
+            // Build prose description
+            let proseDesc = '';
+
+            // Add CSV description if available
             if (csvData && csvData.description && csvData.description.trim() !== '') {
-                content += `<em>${csvData.description}</em> • `;
+                proseDesc += csvData.description.toLowerCase();
+                proseDesc += ', ';
             }
 
-            content += `${this.getGroupName(d.group)} •
-                        ${d.lineCount} lines (${linePercentage}%) •
-                        ${d.sceneCount} scenes •
-                        ${connections.length} connections`;
+            // Add appearance information
+            if (d.sceneCount === 1) {
+                proseDesc += 'appearing in one scene';
+            } else if (d.sceneCount > 1) {
+                proseDesc += `appearing in ${d.sceneCount} scenes`;
+            }
 
+            // Add line count in narrative form
+            if (d.lineCount > 0) {
+                proseDesc += `, speaking ${d.lineCount} line${d.lineCount !== 1 ? 's' : ''}`;
+                if (linePercentage > 0) {
+                    proseDesc += ` (${linePercentage}% of the play)`;
+                }
+            }
+
+            // Add connections in narrative form
+            if (connections.length === 1) {
+                proseDesc += ', with one connection to another character';
+            } else if (connections.length > 1) {
+                // Get strongest connections (top 3)
+                const sortedConnections = this.getNodeConnections(d)
+                    .map(conn => {
+                        const link = this.links.find(l =>
+                            (l.source.id === d.id && l.target.id === conn.id) ||
+                            (l.target.id === d.id && l.source.id === conn.id)
+                        );
+                        return { name: conn.name, strength: link ? link.value : 0 };
+                    })
+                    .sort((a, b) => b.strength - a.strength);
+
+                if (sortedConnections.length <= 3) {
+                    const names = sortedConnections.map(c => c.name).join(', ');
+                    proseDesc += `, associated with ${names}`;
+                } else {
+                    const topNames = sortedConnections.slice(0, 2).map(c => c.name).join(', ');
+                    const remaining = sortedConnections.length - 2;
+                    proseDesc += `, associated with ${topNames}, and ${remaining} other${remaining !== 1 ? 's' : ''}`;
+                }
+            }
+
+            proseDesc += '.';
+
+            content += proseDesc;
             content += `</div></div>`;
 
             selectedCharacterQuickInfo.innerHTML = content;

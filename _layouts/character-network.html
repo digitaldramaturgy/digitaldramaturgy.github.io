@@ -5,130 +5,161 @@ custom-foot: dramaturgy/js/character-network-js.html
 
 <div class="container-fluid my-4">
 <style>
-/* Dramatis Personae styling inspired by historical playbills */
+/* 1600s Book Design - Page Styling */
 .dramatis-personae-header {
     text-align: center;
-    border-bottom: 2px solid #333;
-    border-top: 2px solid #333;
-    padding: 1rem 0;
-    margin-bottom: 1.5rem;
-    font-family: 'Georgia', 'Times New Roman', serif;
+    border-bottom: 3px double #2c1810;
+    border-top: 3px double #2c1810;
+    padding: 1.25rem 0;
+    margin-bottom: 2rem;
+    background: #faf8f0;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
 }
 
 .dramatis-personae-header h2 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: normal;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     margin: 0;
-    font-variant: small-caps;
+    color: #2c1810;
 }
 
-/* Character list blocks styled like nav menu */
+/* Character list styled as period index */
 .character-list-block {
-    background: #f8f9fa;
-    border-left: 3px solid #6c757d;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #d4c4b0;
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
 }
 
 .character-list-block:hover {
-    background: #e9ecef;
-    border-left-color: #495057;
-    transform: translateX(3px);
+    background: #f5f0e8;
 }
 
 .character-list-block.active {
-    background: #dee2e6;
-    border-left-color: #212529;
-    font-weight: 600;
+    background: #ebe4d8;
+    border-left: 3px solid #8b4513;
+    padding-left: calc(0.5rem - 3px);
 }
 
 .character-list-block .character-name {
-    font-weight: 600;
-    color: #212529;
+    font-weight: normal;
+    color: #2c1810;
     margin-bottom: 0.25rem;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    font-size: 1.05rem;
 }
 
 .character-list-block .character-meta {
     font-size: 0.85rem;
-    color: #6c757d;
+    color: #6b5a47;
     margin: 0;
+    line-height: 1.4;
+    font-style: italic;
 }
 
 .character-list-block .character-image {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 0;
+    border: 2px solid #2c1810;
     margin-right: 0.75rem;
     float: left;
+    box-shadow: 2px 2px 0 rgba(44, 24, 16, 0.1);
 }
 
 .character-list-container {
     max-height: 800px;
     overflow-y: auto;
     padding-right: 0.5rem;
+    background: #faf8f0;
+    border: 2px solid #d4c4b0;
+    padding: 1rem;
 }
 
 .character-list-container::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .character-list-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #f5f0e8;
 }
 
 .character-list-container::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: #8b4513;
+    border: 1px solid #2c1810;
 }
 
 .character-list-container::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #6b3410;
 }
 
-/* Selected character quick stats bar */
+/* Selected character info styled as running header */
 #selectedCharacterBar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: #faf8f0;
+    color: #2c1810;
+    padding: 1.25rem 1.5rem;
+    border-top: 3px double #2c1810;
+    border-bottom: 3px double #2c1810;
+    margin-bottom: 1.5rem;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
 }
 
 #selectedCharacterBar .character-quick-image {
     width: 50px;
     height: 50px;
     object-fit: cover;
-    border-radius: 4px;
-    border: 2px solid white;
+    border-radius: 0;
+    border: 2px solid #2c1810;
     margin-right: 1rem;
+    box-shadow: 2px 2px 0 rgba(44, 24, 16, 0.1);
 }
 
 #selectedCharacterBar h4 {
     margin: 0;
-    font-weight: 600;
+    font-weight: normal;
+    font-variant: small-caps;
+    letter-spacing: 0.08em;
+    color: #2c1810;
+    font-size: 1.3rem;
 }
 
 #selectedCharacterBar .quick-stats {
-    font-size: 0.9rem;
-    opacity: 0.95;
+    font-size: 0.95rem;
+    color: #6b5a47;
+    line-height: 1.6;
+    font-style: italic;
 }
 
 #selectedCharacterBar .btn-light {
-    background: white;
-    color: #667eea;
-    border: none;
-    font-weight: 600;
+    background: transparent;
+    color: #8b4513;
+    border: 2px solid #2c1810;
+    border-radius: 0;
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 1rem;
 }
 
 #selectedCharacterBar .btn-light:hover {
-    background: #f8f9fa;
-    color: #764ba2;
+    background: #2c1810;
+    color: #faf8f0;
+    border-color: #2c1810;
+}
+
+/* Network stats and controls */
+#networkStats {
+    font-family: 'Caslon', 'Garamond', Georgia, serif;
+    color: #2c1810;
+    font-size: 0.9rem;
 }
 </style>
 
