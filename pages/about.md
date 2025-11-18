@@ -1,6 +1,6 @@
 ---
 layout: page-narrow
-title: About Oral History as Data
+title: About Digital Dramaturgy
 order: 1
 object-id: about
 permalink: /about.html
