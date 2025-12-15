@@ -432,8 +432,8 @@ class CharacterNetworkD3 {
                 <div class="action-buttons">
                     <button class="btn-1600s" onclick="openCharacterModal('${d.name.replace(/'/g, "\\'")}')">
                         View Full Details
-                    </button>
-                    <a href="/script.html?player=${d.name.replace(/\s+/g, '')}" class="btn-1600s" style="text-decoration: none;">
+                    </button><br/>
+                    <a href="/script.html?player=${d.name.replace(/\s+/g, '')}" class="btn-1600s-sm" style="text-decoration: none;">
                         View Lines in Script
                     </a>
                 </div>
