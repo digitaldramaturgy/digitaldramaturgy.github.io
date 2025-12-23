@@ -6,10 +6,10 @@ window.characterCSVData = [];
 {% if site.data.characters %}
 {% for character in site.data.characters %}
 window.characterCSVData.push({
-    character: "{{ character.character | escape }}",
-    description: "{{ character.description | escape }}",
-    image: "{{ character.image | escape }}",
-    notes: "{{ character.notes | escape }}"
+    character: "{{ character.character | strip | escape }}",
+    description: "{{ character.description | default: '' | strip | escape }}",
+    image: "{{ character.image | default: '' | strip | escape }}",
+    notes: "{{ character.notes | default: '' | strip | escape }}"
 });
 {% endfor %}
 {% endif %}
