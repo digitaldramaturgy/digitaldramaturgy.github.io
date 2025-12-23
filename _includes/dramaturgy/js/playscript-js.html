@@ -554,19 +554,10 @@ function selectPlayers(arr) {
     const filtersButton = document.getElementById('filters');
     if (filtersButton) {
       filtersButton.addEventListener('click', function() {
-        let url = new URL(window.location);
-        var sceneFilter = url.searchParams.get('scene');
-        if (sceneFilter) {
-          // No action taken if sceneFilter exists
-        } else {
-          const sideSceneScroll = document.getElementById('side-scene-scroll');
-          if (sideSceneScroll) {
-            sideSceneScroll.classList.toggle('d-none');
-          }
-          const resetButton = document.querySelector('button.reset');
-          if (resetButton) {
-            resetButton.click();
-          }
+        // Simply toggle the side scene scroll visibility
+        const sideSceneScroll = document.getElementById('side-scene-scroll');
+        if (sideSceneScroll) {
+          sideSceneScroll.classList.toggle('d-none');
         }
       });
     }
@@ -627,10 +618,33 @@ function selectPlayers(arr) {
 
   // Filter lines by search
   function filterLines() {
+    // First, reset everything to clean state
+    // Remove all highlight spans from previous searches
     document.querySelectorAll('.playerline').forEach(function(el) {
       el.classList.remove('anchored-highlight');
       el.classList.remove('featured');
+      // Remove any existing highlight spans
+      el.querySelectorAll('span.text-danger').forEach(function(span) {
+        var parent = span.parentNode;
+        parent.replaceChild(document.createTextNode(span.textContent), span);
+        parent.normalize(); // Merge adjacent text nodes
+      });
     });
+
+    // Make sure all lines are visible (reset any player/scene filters)
+    document.querySelectorAll('.playline').forEach(function(line) {
+      line.style.display = '';
+    });
+
+    // Reset the filter dropdowns
+    const playersSelect = document.getElementById('players');
+    if (playersSelect && playersSelect.options.length > 0) {
+      playersSelect.value = playersSelect.options[0].value;
+    }
+    const scenesSelect = document.getElementById('scenes');
+    if (scenesSelect && scenesSelect.options.length > 0) {
+      scenesSelect.value = scenesSelect.options[0].value;
+    }
 
     var input = document.getElementById("quicksearch");
     if (!input) return;
@@ -638,6 +652,9 @@ function selectPlayers(arr) {
     let url = new URL(window.location);
     let params = url.searchParams;
     params.set('q', input.value);
+    // Remove other filter params since we're resetting them
+    params.delete('player');
+    params.delete('scene');
     var p = params.toString();
     window.history.replaceState({}, '', location.pathname + '?' + p);
 
