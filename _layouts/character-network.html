@@ -8,18 +8,60 @@ custom-foot: dramaturgy/js/character-network-js.html
 <div id="characterNetworkContainer" class="mt-4">
     <div class="row">
         <div class="col-12">
-            <h3>Character Network Visualization</h3>
-            <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
-                dialogue.</p>
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h3 class="d-inline">Character Network</h3>
+                    <button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal"
+                        data-bs-target="#networkHelpModal">
+                        {% include feature/icon.html icon="question-circle" %}
+                    </button>
+                    <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
+                        dialogue.</p>
+                </div>
                 <div id="networkStats">
                     <p><strong>Characters:</strong> <span class="me-3" id="characterCount">0</span><strong>Connections:</strong> <span class="me-3" id="connectionCount">0</span><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
                 </div>
+            </div>
         </div>
     </div>
 
     <!-- Network Controls Button Group -->
-    <div class="row mb-2">
-        <div class="col-12">
+    <div class="row my-2">
+        
+       
+   
+
+
+
+    <div class="col-lg-6">
+        <div id="selectedCharacterCard" class="character-detail-card slide-container">
+            <!-- Character List View (shown by default) -->
+            <div id="characterListView" class="character-list-view">
+                <div class="text-center text-muted py-5">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading characters...</span>
+                    </div>
+                    <p class="mt-2">Loading characters...</p>
+                </div>
+            </div>
+
+            <!-- Featured Character View (hidden by default) -->
+            <div id="featuredCharacterView" class="character-detail-expanded" style="display: none;">
+                <!-- Content populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+       
+        <div id="networkVisualization" style="width: 100%; height: 500px; min-height: 500px;">
+            <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
+                <div class="spinner-border text-dark" role="status">
+                    <span class="visually-hidden">Loading network...</span>
+                </div>
+            </div>
+        </div>
+ <div class=" text-end justify-content-end">
             <div class="btn-group" role="group" aria-label="Network Controls">
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleLabels()">
                     <i class="fas fa-tags"></i> Toggle Labels
@@ -27,69 +69,310 @@ custom-foot: dramaturgy/js/character-network-js.html
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="adjustNodeSize()">
                     <i class="fas fa-expand-arrows-alt"></i> Adjust Size
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                data-bs-target="#networkHelpModal">
-                <i class="fas fa-question-circle"></i> How to Read/Use
-            </button>
             </div>
     
         </div>
-       
-   
-
-
-
-    <div class="col-lg-8">
-        <div id="networkVisualization" style="width: 100%; height: 600px; min-height: 600px;">
-            <div id="loadingIndicator" class="d-flex justify-content-center align-items-center h-100">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading network...</span>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Selected Character</h5>
-            </div>
-            <div class="card-body">
-                <div id="selectedCharacterInfo">
-                    <p class="text-muted">Click on a character node to see details</p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 </div>
 
-<!-- Character Connections Section - positioned after network visualization -->
-<div class="mt-5 mb-5">
-    <h2>Character Connections</h2>
-    <p class="text-muted">Explore detailed character relationships and shared scenes.</p>
-    {% include dramaturgy/feature/character-connections.html %}
-</div>
-
-<!-- Character Detail Modal -->
+<!-- Character Detail Modal - 1600s Book Design -->
 <div class="modal fade" id="characterDetailModal" tabindex="-1" aria-labelledby="characterDetailModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="characterDetailModalLabel">Character Details</h5>
+        <div class="modal-content character-modal-1600s">
+            <div class="modal-header border-0 pb-0">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="characterDetailContent">
+            <div class="modal-body p-5" id="characterDetailContent">
                 <!-- Content will be populated by JavaScript -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer border-0 pt-0 justify-content-center">
+                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* 1600s Book Design Aesthetic */
+.character-modal-1600s {
+    background: #fafaf8;
+    border: 2px solid #2d2d2d;
+    font-family: 'Garamond', 'Georgia', serif;
+}
+
+.character-modal-1600s .modal-body {
+    background: linear-gradient(to right, #fafaf8 0%, #f5f5f0 50%, #fafaf8 100%);
+}
+
+/* Character detail card styling */
+.character-detail-card {
+    min-height: 500px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    padding: 0;
+    overflow-y: auto;
+    max-height: 700px;
+}
+
+.character-detail-placeholder {
+    padding: 2rem;
+    text-align: center;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.character-detail-expanded {
+    background: white;
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: 680px;
+}
+
+.character-info-header {
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.character-info-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #212529;
+}
+
+.character-info-subtitle {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.character-info-section {
+    margin-bottom: 1.5rem;
+}
+
+.character-info-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.character-stat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.character-stat-list li {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.character-stat-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+    min-width: 140px;
+    color: #495057;
+}
+
+.connection-list {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #495057;
+}
+
+.connection-category {
+    margin-bottom: 0.75rem;
+}
+
+.connection-category-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.scene-link {
+    display: inline-block;
+    margin: 0.15rem 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.8rem;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.scene-link:hover {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.info-icon {
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-left: 0.25rem;
+}
+
+.info-icon:hover {
+    color: #0d6efd;
+}
+
+.action-buttons {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Character list styling */
+.character-list-view {
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 680px;
+}
+
+.character-list-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+}
+
+.character-list-item:hover {
+    background: #f8f9fa;
+}
+
+.character-list-item.active {
+    background: #e7f1ff;
+    border-left: 3px solid #0d6efd;
+    padding-left: calc(0.5rem - 3px);
+}
+
+.character-list-item-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.character-list-item-content {
+    flex-grow: 1;
+}
+
+.character-list-item-name {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.character-list-item-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+
+
+/* Slide transitions */
+.slide-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slide-content {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.character-list-view,
+.character-detail-expanded {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.slide-out-left {
+    animation: slideOutLeft 0.5s ease-in-out forwards;
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+.slide-in-from-right {
+    animation: slideInFromRight 0.5s ease-in-out forwards;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-out-right {
+    animation: slideOutRight 0.5s ease-in-out forwards;
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.slide-in-from-left {
+    animation: slideInFromLeft 0.5s ease-in-out forwards;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>
 
 <!-- Network Help Modal -->
 <div class="modal fade" id="networkHelpModal" tabindex="-1" aria-labelledby="networkHelpModalLabel" aria-hidden="true">
@@ -107,11 +390,11 @@ custom-foot: dramaturgy/js/character-network-js.html
 
                 <h6 class="mt-4">Character Classifications</h6>
                 <ul>
-                    <li><strong>Major Characters</strong> (Red): Top 15% by combined scene presence and dialogue share
+                    <li><strong>Major Characters</strong> <span class="badge bg-primary">Primary</span>: Top 15% by combined scene presence and dialogue share
                     </li>
-                    <li><strong>Supporting Characters</strong> (Orange): 8-15% range - important secondary roles</li>
-                    <li><strong>Minor Characters</strong> (Green): 2-8% range - moderate presence in the play</li>
-                    <li><strong>Background Characters</strong> (Blue): Under 2% - minimal speaking roles</li>
+                    <li><strong>Supporting Characters</strong> <span class="badge bg-success">Success</span>: 8-15% range - important secondary roles</li>
+                    <li><strong>Minor Characters</strong> <span class="badge bg-info text-dark">Info</span>: 2-8% range - moderate presence in the play</li>
+                    <li><strong>Background Characters</strong> <span class="badge bg-secondary">Secondary</span>: Under 2% - minimal speaking roles</li>
                 </ul>
 
                 <h6 class="mt-4">How to Use</h6>
@@ -127,6 +410,33 @@ custom-foot: dramaturgy/js/character-network-js.html
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
                     <i class="fas fa-check"></i> Got it!
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Connection Strength Info Modal -->
+<div class="modal fade" id="connectionInfoModal" tabindex="-1" aria-labelledby="connectionInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="connectionInfoModalLabel">
+                    <i class="fas fa-info-circle"></i> Connection Strength
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Character connections are determined by the number of scenes two characters share together.</p>
+
+                <h6 class="mt-3 mb-2">Connection Categories:</h6>
+                <ul class="mb-0">
+                    <li><strong>Strong Connections:</strong> Characters who share 3 or more scenes together</li>
+                    <li><strong>Medium Connections:</strong> Characters who share exactly 2 scenes together</li>
+                    <li><strong>Weak Connections:</strong> Characters who share only 1 scene together</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
