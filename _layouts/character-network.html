@@ -10,10 +10,11 @@ custom-foot: dramaturgy/js/character-network-js.html
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <h3>Character Network <button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal"
-                data-bs-target="#networkHelpModal">
-                {% include feature/icon.html icon="question-circle" %}
-            </button></h3>
+                    <h3 class="d-inline">Character Network</h3>
+                    <button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal"
+                        data-bs-target="#networkHelpModal">
+                        {% include feature/icon.html icon="question-circle" %}
+                    </button>
                     <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
                         dialogue.</p>
                 </div>
@@ -60,7 +61,7 @@ custom-foot: dramaturgy/js/character-network-js.html
                 </div>
             </div>
         </div>
- <div class="col-12 text-end justify-content-end">
+ <div class=" text-end justify-content-end">
             <div class="btn-group" role="group" aria-label="Network Controls">
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleLabels()">
                     <i class="fas fa-tags"></i> Toggle Labels
