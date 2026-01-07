@@ -11,6 +11,30 @@ Welcome to the comprehensive reference guide for Digital Dramaturgy features. Th
 
 ---
 
+## How Digital Dramaturgy Works {#overview}
+
+Digital Dramaturgy transforms a simple spreadsheet of playscript data into an interactive, annotated digital edition with filtering, search, and visualization capabilities.
+
+**The Platform Architecture:**
+
+Digital Dramaturgy pulls playscript data from a CSV source—either a published Google Sheet or a static CSV file—and renders it as an interactive web experience. 
+
+Your spreadsheet becomes the database: each row represents a line of dialogue or stage direction, with columns for act, scene, character, text, and optional annotations, revisions, or cuts. When the site loads, it reads this data and generates a filterable, searchable script view along with automatic character network visualizations.
+
+**The Workflow:**
+
+Users typically start by creating their annotated playscript in Google Sheets, which offers real-time collaboration and easy editing. By publishing the sheet as CSV, you can immediately connect it to the main Digital Dramaturgy site to preview how it will appear—no installation required, and any changes to your spreadsheet update the preview automatically.
+
+When you're ready to publish your work permanently, you copy the Digital Dramaturgy GitHub template repository to your own account. This creates your own independent site with custom branding, navigation, and features. Point your new site's configuration at your published Google Sheet (or a local CSV file), enable GitHub Pages, and your annotated edition goes live as a free, fast static website.
+
+**The Flexibility:**
+
+Because Digital Dramaturgy is built on [CollectionBuilder](https://collectionbuilder.github.io/), a static site framework for digital collections, you can extend your playscript with supplementary materials: production photos, historical documents, interpretive essays, timelines, and more. Everything is version-controlled, preservable, and runs without a database or server-side processing.
+
+**For complete step-by-step setup instructions, see the [Quick Start Guide]({{ '/directions.html' | relative_url }}).**
+
+---
+
 ## Quick Reference {#quick-reference}
 
 **Essential Links:**
@@ -22,9 +46,13 @@ Welcome to the comprehensive reference guide for Digital Dramaturgy features. Th
 - [Setting up a playscript](#playscripts)
 - [Configuring cover pages](#cover-pages)
 - [Creating character networks](#character-network)
-- [Filling in your About Page](#about-page)
+- [Customizing your About page](#about-page)
+- [Updating the navigation menu](#navigation)
 - [Adding essay pages](#essays)
 - [Building production timelines](#timeline)
+- [Publishing your site](#publishing)
+- [CollectionBuilder Options](#collections)
+- [Config Files](#configuration)
 
 ---
 
@@ -48,7 +76,7 @@ Your playscript CSV/Google Sheet **must include** these four core fields:
 | Field | Description | Example |
 |-------|-------------|---------|
 | `annotation` | Line-by-line annotation text (can use markdown) | `A **gawd** is an ornament or a trinket.` |
-| `highlight` | Highlighting/emphasis marker | the word or phrase to highlight in the script (must match with string in "text" field) | `gawd` 
+| `highlight` | Highlighting/emphasis marker | the word or phrase to highlight in the script (must match with string in "text" field) | `gawd`
 | `cutting` | Cut the line | enter `True` if you'd like to cut the line |
 | `revision` | Revise the line | `To Beat or not to Beat` |
 
@@ -69,14 +97,9 @@ You can include metadata about the play in the first row:
 - Annotations appear in tooltips or sidebar (depending on theme)
 - Link to collection items or external resources from annotations
 
-#### Navigation
-- Scene navigation sidebar (desktop)
-- Previous/Next scene buttons
-- Jump to specific line numbers
-
 #### Filters
 
-Filters can be seen by clicking the `Filters` button at the top right of the playscript. All of these filters are enabled by your spreadsheet. 
+Filters can be seen by clicking the `Filters` button at the top right of the playscript. All of these filters are enabled by your spreadsheet.
 
 **Dropdown:**
 - **By Scene:** Dropdown menu to view specific acts/scenes
@@ -86,23 +109,23 @@ Filters can be seen by clicking the `Filters` button at the top right of the pla
 - Full-text search across all lines
 - Instant highlighting of search results
 
-**Versions/Cuttings Buttons:** 
-- Buttons to help compare play versions 
+**Versions/Cuttings Buttons:**
+- Buttons to help compare play versions
 - These only appears if:
   - you've added a `True` value in `cutting`
   - put a revision value in the `revision` column
   - added a new line by
-    - adding a line to the CSV/spreadsheet 
+    - adding a line to the CSV/spreadsheet
     - entering a value in `revision` but not having a value in `text`
-- Cut/Revised button: 
-  - The default. 
+- Cut/Revised button:
+  - The default.
   - when selected will show the main version appearing on the site
-- Original: 
+- Original:
   - When selected, shows the original version without any cuttings or revisions
-- Compare Both: 
+- Compare Both:
   - When selected, this will show the cut (red highlight), revised (yellow highlight), and added lines (green highlight)
 
-### Configuration
+### Connecting Your Annotated Playscript to the site
 
 If you're using your own reporistory, you'll set your playscript data source in `_config.yml`:
 
@@ -117,7 +140,7 @@ play: /assets/data/my-play.csv
 play: https://example.com/my-play.csv
 ```
 
-You can also configure, publish and check your annotation by connecting a google sheet to the digital dramaturgy home page by adding the link like so: 
+You can also configure, publish and check your annotation by connecting a google sheet to the digital dramaturgy home page by adding the link like so:
 
 
 ### Google Sheets URL (published as CSV)
@@ -126,7 +149,7 @@ You can also configure, publish and check your annotation by connecting a google
 ### OR external CSV URL
 `https://digitaldramaturgy.github.io?play=https://example.com/my-play.csv`
 
-
+---
 
 ## Cover Pages {#cover-pages}
 
@@ -152,9 +175,9 @@ cover-style: minimal
 
 ### Customizing Cover Content
 
-You can edit the the title, author, and description of your play by [adding that info to the first line of your spreadsheet](optional-metadata-fields-first-row). 
+You can edit the the title, author, and description of your play by [adding that info to the first line of your spreadsheet](optional-metadata-fields-first-row).
 
-Of if you're using your own GitHub repository, you can edit this data by editing the Site Settings portion of your `_config.yml` file, which can be found at the root of your repostitory. 
+Of if you're using your own GitHub repository, you can edit this data by editing the Site Settings portion of your `_config.yml` file, which can be found at the root of your repostitory.
 
 ```yaml
 # Site SETTINGS
@@ -162,7 +185,7 @@ Of if you're using your own GitHub repository, you can edit this data by editing
 title: Measure for Measure
 # description appears in meta tags and other locations
 # this description might appear in search result lists, keep around 160 characters max
-description: A revised version of Shakespeare's famous play 
+description: A revised version of Shakespeare's famous play
 # keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
 keywords: shakesepare; measure for measure; annotation; digital dramaturgy; digital humanities; theater;
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
@@ -201,8 +224,6 @@ The network graph automatically analyzes your playscript to:
 
 - Playscript CSV with `player` and `actscene` fields
 
-### Configuration
-
 The network page is created automatically. To customize the text at the top of the page, edit `pages/character-network.md` adding your text below the `---` that ends the page's frontmatter:
 
 ```markdown
@@ -217,9 +238,9 @@ Optional description text about the network visualization...
 
 ### Edit the Character's descriptions (optional)
 
-For those using your own repository, you can edit the descriptions of your characters and add images. If you edit the `characters.csv` file in your _data folder, as long as those character names match those in your playscript, new data will show. 
+For those using your own repository, you can edit the descriptions of your characters and add images. If you edit the `characters.csv` file in your _data folder, as long as those character names match those in your playscript, new data will show.
 
-You can see how this works in Measure for Measure: 
+You can see how this works in Measure for Measure:
 
 [Measure For Measure Character Network with updated characters.csv file](https://digitaldramaturgy.github.io/character-network.html?play=https://docs.google.com/spreadsheets/d/e/2PACX-1vQna6SB4jJeyPY5MOH3BSHh53Ja3Njwfk_Zkxr7EGtU7xkn1juhUbEXduy6Ycbi6ayOg33a_NjjFqC_/pub?output=csv)
 
@@ -242,6 +263,110 @@ You can see how this works in Measure for Measure:
 
 ---
 
+## Customizing the About Page {#about-page}
+
+The About page is where you'll add information about your specific project, production, or annotation. Replacing the default content with your own is simple.
+
+### Editing the About Page
+
+1. Open the file `pages/about.md` in your repository
+2. Delete everything **below** the closing `---` of the front matter
+3. Write your content using Markdown
+
+**Example:**
+
+```markdown
+---
+layout: page-narrow
+title: About Digital Dramaturgy
+order: 1
+object-id: about
+permalink: /about.html
+---
+
+## About This Production
+
+This annotated edition of *Measure for Measure* was created by students in
+THEA 351: Dramaturgy at the University of Idaho in Fall 2024.
+
+### Our Approach
+
+We focused on exploring themes of justice, mercy, and power through a
+contemporary lens...
+
+### The Team
+
+- **Director:** Dr. Sarah Fogarty-Morrison
+- **Dramaturgs:** [Student names]
+- **Research Assistants:** [Student names]
+
+### Acknowledgments
+
+We would like to thank...
+```
+
+### Content Tips
+
+- Use Markdown for formatting (headings, lists, links, etc.)
+- Add images using CollectionBuilder includes: `{% raw %}{% include feature/image.html objectid="photo001" %}{% endraw %}`
+- Keep it concise - this is an overview, not a full history
+- Link to essay pages for more detailed analysis
+
+For more about Markdown syntax, see the [Markdown Guide](https://www.markdownguide.org/){:target="_blank" rel="noopener"}.
+
+---
+
+## Updating the Navigation Menu {#navigation}
+
+The navigation menu is controlled by the `_data/config-nav.csv` file. Edit this file to add, remove, or reorganize menu items.
+
+### Navigation File Structure
+
+The CSV has three columns:
+
+| Column | Description | Required |
+|--------|-------------|----------|
+| `display_name` | Text shown in the menu | Yes |
+| `stub` | Page URL (relative to site root) | Yes |
+| `dropdown_parent` | Parent menu item for dropdowns | No |
+
+### Examples
+
+**Simple top-level menu:**
+
+```csv
+display_name,stub,dropdown_parent
+Home,/,
+Read the Play,/script.html,
+Character Network,/character-network.html,
+Timeline,/timeline.html,
+About,/about.html,
+```
+
+**Menu with dropdown:**
+
+```csv
+display_name,stub,dropdown_parent
+Home,/,
+Read the Play,/script.html,
+Essays,/essays.html,
+Introduction,/introduction.html,Essays
+Historical Context,/context.html,Essays
+Character Analysis,/characters-essay.html,Essays
+Timeline,/timeline.html,
+About,/about.html,
+```
+
+### Tips
+
+- Keep menu items to 5-7 for best usability
+- Use clear, concise names for menu items
+- Group related pages under dropdown menus
+- The `stub` must match the `permalink` in your page's front matter
+- Leave `dropdown_parent` empty for top-level items
+- For dropdown items, put the parent's `display_name` in `dropdown_parent`
+
+---
 
 ## Essay Pages {#essays}
 
@@ -327,36 +452,52 @@ Essay content uses standard Markdown with support for:
 
 ## Production Timeline {#timeline}
 
-Create interactive production timelines to document the historical performances of your play. 
+Create interactive production timelines using [TimelineJS](https://timeline.knightlab.com/) to document the historical performances of your play, track production history, or showcase important dates related to your project.
+
+### How It Works
+
+The timeline feature uses the **TimelineJS** library from Knight Lab to create a scrollable, interactive timeline. The data is pulled from `_data/production-timeline.csv` and automatically converted to TimelineJS format via `assets/data/timelinejs.json`.
 
 ### Timeline Data
 
-The timeline uses your main metadata CSV. Ensure these fields are present:
+Create a CSV file at `_data/production-timeline.csv` with the following fields:
+
+**Required Fields:**
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `date` | Event date | `1603-07-02` or `1603` |
-| `title` | Event title | `First Performance` |
-| `description` | Event description | `First known performance at the Globe Theatre` |
-| `image` | Event image (optional) | `objectid` or image path |
+| `title` | Event title | `First Performance at the Globe` |
+| `date` | Event date (YYYY, YYYY-MM-DD, or YYYY/MM/DD) | `1603-07-02` or `1603` |
+| `description` | Event description (supports markdown) | `First known performance at the Globe Theatre` |
 
-### Timeline Configuration
+**Optional Fields:**
 
-Edit `_data/theme.yml` to configure timeline display:
+| Field | Description | Example |
+|-------|-------------|---------|
+| `media` | Path to image/media file | `/objects/performance-photo.jpg` |
+| `objectid` | Reference to collection item (alternative to `media`) | `photo001` |
+| `link` | External link for the event | `https://example.com/article` |
+| `adaptor-translator` | Adaptor or translator name | `John Smith` |
+| `key-personnel` | Key people involved | `Director: Jane Doe` |
 
-```yaml
-# Timeline Settings
-year-navigation: true
-year-nav-increment: 10
+**Notes:**
+- If you provide an `objectid`, the timeline will use the image from your collection metadata
+- If you provide a `media` path, it will use that image directly
+- Dates can be just a year (YYYY), month and year (YYYY-MM), or full date (YYYY-MM-DD)
+- The `description` field supports basic markdown formatting
+
+### Example CSV
+
+```csv
+objectid,title,description,date,media,link,adaptor-translator,key-personnel
+,First Production,First known performance at the Globe Theatre,1603-07-02,/objects/globe.jpg,,Original Cast
+,Broadway Premiere,Opened at the Imperial Theatre,1957-03-21,,https://ibdb.com/...,John Gielgud,Director: Peter Hall
+photo001,2024 Revival,Modern interpretation set in a dystopian future,2024-09-15,,,Sarah Johnson,
 ```
-
-**Options:**
-- `year-navigation`: Enable/disable year dropdown (true/false)
-- `year-nav-increment`: Group years by increments (5, 10, 25, 50)
 
 ### Timeline Page
 
-The timeline page is at `pages/timeline.md`:
+The timeline page is located at `pages/timeline.md`:
 
 ```markdown
 ---
@@ -365,20 +506,89 @@ title: Production Timeline
 permalink: /timeline.html
 ---
 
-Optional introduction text about your production timeline...
+## Collection Timeline
+
+Add optional introductory text here about your production history...
+```
+
+### Customization
+
+You can customize the timeline's title card by editing `_data/theme.yml`:
+
+```yaml
+# Timeline title card settings
+timeline-title: "Production History of Hamlet"
+timeline-featured-img: /objects/your-image.jpg
+timeline-featured-img-caption: "A caption for your featured image"
 ```
 
 ### Features
 
-- **Year-based navigation:** Jump to specific year ranges
-- **Chronological display:** Events sorted by date
-- **Rich media support:** Images, videos, links
-- **Responsive grid:** Adapts to screen size
-- **Lazy loading:** Images load as you scroll
+- **Interactive scrolling:** Navigate chronologically through events
+- **Rich media support:** Images, videos, and embedded content
+- **Responsive design:** Works on all screen sizes
+- **Automatic date parsing:** Handles various date formats
+- **Collection integration:** Reference items from your collection via objectid
 
-### TimelineJS Integration
+For more information about TimelineJS capabilities, see the [TimelineJS documentation](https://timeline.knightlab.com/docs/index.html){:target="_blank" rel="noopener"}.
 
-For more advanced timelines with TimelineJS features, see the [CollectionBuilder Timeline documentation](https://collectionbuilder.github.io/cb-docs/docs/theme/timeline/){:target="_blank" rel="noopener"}.
+---
+
+## Publishing Your Annotation {#publishing}
+
+Once you've finalized your annotation and customized your site, you'll want to publish it online. GitHub Pages provides free hosting for your Digital Dramaturgy site.
+
+### Prerequisites
+
+- A GitHub account
+- Your own copy of the Digital Dramaturgy repository (see [Quick Start Guide]({{ '/directions.html' | relative_url }}))
+
+### Deployment Steps
+
+1. **Open Settings**
+   - Go to your repository on GitHub
+   - Click the "Settings" tab (right side of the top menu)
+
+2. **Navigate to Pages**
+   - In the left sidebar, click "Pages"
+
+3. **Configure GitHub Actions**
+   - Under "Build and Deployment", find "Source"
+   - Select "GitHub Actions" from the dropdown menu
+   - A "GitHub Pages Jekyll" option will appear
+   - Click the "Configure" button
+
+4. **Commit the Workflow**
+   - A new page will open with a workflow file (you don't need to edit it)
+   - Click the green "Commit changes..." button
+   - In the dialog, click "Commit changes" again
+
+5. **Wait for Build**
+   - GitHub will start building your site (typically 2-5 minutes)
+   - Check progress on your repository's main page
+   - Green checkmark = success; yellow circle = building; red X = error
+
+### Your Site URL
+
+Once deployed, your site will be available at:
+
+```
+https://[your-username].github.io/[repository-name]/
+```
+
+For example: `https://johndoe.github.io/hamlet-annotation/`
+
+### Updating Your Site
+
+After the initial deployment, any changes you push to GitHub will automatically trigger a rebuild. Just edit files and commit changes - your site updates automatically within a few minutes.
+
+### Troubleshooting Deployment
+
+- **Build failing?** Check the Actions tab for error messages
+- **Pages not showing up?** Verify `permalink` in front matter matches `stub` in config-nav.csv
+- **Images not loading?** Check file paths are correct and files are in the repository
+
+For more deployment options and custom domains, see the [GitHub Pages documentation](https://docs.github.com/en/pages){:target="_blank" rel="noopener"}.
 
 ---
 
@@ -390,7 +600,7 @@ Digital Dramaturgy is built on CollectionBuilder, which allows you to create a c
 
 **Collection = Playscript + Digital Objects**
 
-1. **Playscript:** Your play script data (defined by the `play:` setting in `_config.yml`), or by the link you've added to the digitaldramaturgy.github.io site. 
+1. **Playscript:** Your play script data (defined by the `play:` setting in `_config.yml`), or by the link you've added to the digitaldramaturgy.github.io site.
 2. **Collection Items:** Supplementary materials like photos, programs, documents, videos (defined by the `metadata:` setting in `_config.yml`)
 - note this only applies to those using their own repository
 
@@ -532,103 +742,64 @@ See the [CollectionBuilder metadata documentation](https://collectionbuilder.git
 
 ---
 
-## Data Structure {#data-structure}
+## Configuration {#configuration}
 
-Understanding the data structure helps you customize and extend Digital Dramaturgy.
+Digital Dramaturgy is built on CollectionBuilder and uses similar configuration files. This section covers the essential settings specific to Digital Dramaturgy. **For comprehensive CollectionBuilder configuration options, see the [CollectionBuilder Configuration Documentation](https://collectionbuilder.github.io/cb-docs/docs/config/){:target="_blank" rel="noopener"}.**
 
-### File Organization
+### Essential Files
 
 ```
 your-project/
 ├── _config.yml                 # Main site configuration
 ├── _data/
-│   ├── config-nav.csv          # Navigation menu
+│   ├── config-nav.csv          # Navigation menu (see below)
 │   ├── theme.yml               # Theme settings
-│   ├── characters.csv          # Character data (optional)
-│   ├── your-collection.csv     # Collection metadata
-│   └── config-theme-colors.csv # Color scheme
-├── objects/                    # Media files (images, PDFs, etc.)
+│   ├── production-timeline.csv # Timeline data (see above)
+│   └── characters.csv          # Character data (optional)
 ├── pages/                      # Page content (.md files)
-└── _layouts/                   # Page templates (.html files)
+└── objects/                    # Media files (images, PDFs, etc.)
 ```
 
-**Note:** Your playscript CSV can be:
-- Hosted on Google Sheets (published as CSV)
-- Stored locally in `/assets/data/` or `/_data/`
-- Hosted externally on any accessible URL
+### Key Settings in _config.yml
 
-### Key Configuration Files
-
-#### _config.yml
+**Digital Dramaturgy-Specific Settings:**
 
 ```yaml
-# Site Settings
-title: Digital Dramaturgy
-description: An annotated edition of [Play Name]
-author: your-name
-
 # Playscript Source (choose one option)
-# Option 1: Google Sheets published CSV
+# Google Sheets published CSV:
 play: https://docs.google.com/spreadsheets/d/.../pub?output=csv
-# Option 2: Local file
+# OR Local file:
 # play: /assets/data/hamlet.csv
-# Option 3: External URL
+# OR External URL:
 # play: https://example.com/hamlet.csv
-
-# Collection metadata (CSV filename without .csv extension)
-metadata: your-collection
 
 # Development Mode (enables testing with different play URLs)
 development-mode: true
 ```
 
-#### _data/theme.yml
+**Standard Site Settings:**
 
 ```yaml
-# Cover Page
-cover-style: minimal
+# Site Information
+title: Your Play Title
+description: A brief description of your project
+author: your-name
 
-# Typography
-base-font-size: 1.2em
-text-color: "#191919"
-
-# Navigation
-navbar-color: dark
-navbar-background: dark
-
-# Features
-year-navigation: true
+# Collection metadata (if using CollectionBuilder features)
+# Use CSV filename without .csv extension
+metadata: your-collection-name
 ```
 
-#### _data/config-nav.csv
+### Cover Page Styles in _data/theme.yml
 
-```csv
-display_name,stub,dropdown_parent
-Home,/,
-Features,/features.html,
-Documentation,/docs.html,
-Read the Play,/script.html,
-Essays,/essays.html,
-Essay 1,/essay-1.html,Essays
-Essay 2,/essay-2.html,Essays
+The most important Digital Dramaturgy-specific theme setting is the cover page style:
+
+```yaml
+# Cover Page Style (see Cover Pages section above)
+cover-style: minimal  # Options: minimal, minimal-movement, dramatists, cyberpunk, 2010
 ```
 
-**Navigation Structure:**
-- First two columns required: `display_name`, `stub`
-- Third column optional: `dropdown_parent` (for nested menus)
-- Leave `dropdown_parent` empty for top-level items
-
-### CSV Data Guidelines
-
-**Best Practices:**
-- Use UTF-8 encoding for special characters
-- Enclose fields with commas in quotes: `"Hamlet, Prince of Denmark"`
-- Use consistent formatting for dates: `YYYY-MM-DD`
-- Keep objectids simple: lowercase, no spaces, use hyphens
-
-**Required vs Optional Fields:**
-- **Required:** Only what your specific feature needs (see each section above)
-- **Optional:** Any additional metadata you want to track
+**For all other theme.yml options (colors, fonts, navigation styles, etc.), see the [CollectionBuilder Theme Documentation](https://collectionbuilder.github.io/cb-docs/docs/theme/){:target="_blank" rel="noopener"}.**
 
 ---
 
