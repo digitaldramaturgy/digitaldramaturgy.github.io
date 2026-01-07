@@ -16,12 +16,13 @@ Welcome to the comprehensive reference guide for Digital Dramaturgy features. Th
 **Essential Links:**
 - [Quick Start Guide]({{ '/directions.html' | relative_url }}) - Get started in 5 steps
 - [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/){:target="_blank" rel="noopener"} - General features documentation
-- [GitHub Repository](https://github.com/digitaldramaturgy/digitaldramaturgy.github.io){:target="_blank" rel="noopener"} - Source code and templates
+- [GitHub Repository](https://github.com/digitaldramaturgy/digitaldramaturgy.github.io){:target="_blank" rel="noopener"} - Source code and template to start your own project
 
 **Common Tasks:**
 - [Setting up a playscript](#playscripts)
 - [Configuring cover pages](#cover-pages)
 - [Creating character networks](#character-network)
+- [Filling in your About Page](#about-page)
 - [Adding essay pages](#essays)
 - [Building production timelines](#timeline)
 
@@ -46,10 +47,10 @@ Your playscript CSV/Google Sheet **must include** these four core fields:
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `annotation` | Line-by-line annotation text | `Hamlet's famous soliloquy on mortality` |
-| `highlight` | Highlighting/emphasis marker | the word or phrase to highlight in the script (must match with string in `text` field) |
+| `annotation` | Line-by-line annotation text (can use markdown) | `A **gawd** is an ornament or a trinket.` |
+| `highlight` | Highlighting/emphasis marker | the word or phrase to highlight in the script (must match with string in "text" field) | `gawd` 
 | `cutting` | Cut the line | enter `True` if you'd like to cut the line |
-| `revision` | Revise the line | `this will replace the original line with a revised line` |
+| `revision` | Revise the line | `To Beat or not to Beat` |
 
 ### Optional Metadata Fields (First Row)
 
@@ -75,7 +76,7 @@ You can include metadata about the play in the first row:
 
 #### Filters
 
-Filters can be seen by clicking the `Filters` button at the top right of the playscript. 
+Filters can be seen by clicking the `Filters` button at the top right of the playscript. All of these filters are enabled by your spreadsheet. 
 
 **Dropdown:**
 - **By Scene:** Dropdown menu to view specific acts/scenes
@@ -103,7 +104,7 @@ Filters can be seen by clicking the `Filters` button at the top right of the pla
 
 ### Configuration
 
-Set your playscript data source in `_config.yml`:
+If you're using your own reporistory, you'll set your playscript data source in `_config.yml`:
 
 ```yaml
 # Google Sheets URL (published as CSV)
@@ -116,44 +117,20 @@ play: /assets/data/my-play.csv
 play: https://example.com/my-play.csv
 ```
 
-### Example Playscript Structure
+You can also configure, publish and check your annotation by connecting a google sheet to the digital dramaturgy home page by adding the link like so: 
 
-**Basic Example:**
-```csv
-act,scene,player,text
-III,I,HAMLET,"To be, or not to be, that is the question"
-III,I,HAMLET,"Whether 'tis nobler in the mind to suffer"
-III,I,OPHELIA,"Good my lord, how does your honour for this many a day?"
-```
 
-**With Annotations:**
-```csv
-act,scene,player,text,annotation
-III,I,HAMLET,"To be, or not to be, that is the question","Hamlet's famous soliloquy on existence and mortality"
-III,I,HAMLET,"Whether 'tis nobler in the mind to suffer","Contemplating passive vs active response to suffering"
-III,I,OPHELIA,"Good my lord, how does your honour for this many a day?","Ophelia interrupts his meditation"
-```
+### Google Sheets URL (published as CSV)
+`https://docs.google.com/spreadsheets/d/e/2PACX-1vTR-PrLzlbvViHiBNVdkzUZ8iPjkw-LMmugCYpNYs0QWkvLmpi6hWXc9_edxYx5D7vAUoG369W4-5wo/pub?output=csv`
 
-**With Full Metadata (first row contains play info):**
-```csv
-play,author,description,act,scene,player,text,annotation
-Hamlet,William Shakespeare,"Annotated by Professor Smith's class",,,,
-,,,I,I,StageDirection,"Enter HAMLET"
-,,,I,I,HAMLET,"O, that this too too solid flesh would melt"
-```
+### OR external CSV URL
+`https://digitaldramaturgy.github.io?play=https://example.com/my-play.csv`
 
-**Accessibility:** The playscript viewer includes:
-- Semantic HTML with proper heading hierarchy
-- ARIA labels for filter controls
-- Keyboard navigation support
-- Screen reader announcements for filter changes
-
----
 
 
 ## Cover Pages {#cover-pages}
 
-Digital Dramaturgy offers **six unique cover page styles** to make a striking first impression for your project.
+Digital Dramaturgy offers **five unique cover page styles** to make a striking first impression for your project.
 
 ### Available Styles
 
@@ -171,27 +148,26 @@ cover-style: minimal
 | `minimal-movement` | Minimal with subtle animations | Adding visual interest |
 | `dramatists` | Theater-focused aesthetic | Classical or theatrical productions |
 | `cyberpunk` | Bold, stylized design | Contemporary or experimental work |
-| `notebook` | Handwritten notebook aesthetic | Educational or collaborative projects |
 | `2010` | Retro-styled design | Period-appropriate presentations |
 
 ### Customizing Cover Content
 
-Edit `pages/index.md` to customize your cover page text:
+You can edit the the title, author, and description of your play by [adding that info to the first line of your spreadsheet](optional-metadata-fields-first-row). 
 
-```markdown
----
-layout: home-cover
-title: Your Play Title
----
+Of if you're using your own GitHub repository, you can edit this data by editing the Site Settings portion of your `_config.yml` file, which can be found at the root of your repostitory. 
 
-# Your Play Title
-
-By Your Name
-
-Additional subtitle or description text...
+```yaml
+# Site SETTINGS
+# Site
+title: Measure for Measure
+# description appears in meta tags and other locations
+# this description might appear in search result lists, keep around 160 characters max
+description: A revised version of Shakespeare's famous play 
+# keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
+keywords: shakesepare; measure for measure; annotation; digital dramaturgy; digital humanities; theater;
+# creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
+author: Your-GITHub-username
 ```
-
-**Accessibility Note:** All cover styles include proper heading hierarchy and semantic HTML for screen readers.
 
 ---
 
@@ -221,9 +197,13 @@ The network graph automatically analyzes your playscript to:
 - **Hover:** Highlight connections
 - **Zoom/Pan:** Explore large networks
 
+### Requirements
+
+- Playscript CSV with `player` and `actscene` fields
+
 ### Configuration
 
-The network page is created automatically. To customize, edit `pages/character-network.md`:
+The network page is created automatically. To customize the text at the top of the page, edit `pages/character-network.md` adding your text below the `---` that ends the page's frontmatter:
 
 ```markdown
 ---
@@ -235,10 +215,14 @@ permalink: /character-network.html
 Optional description text about the network visualization...
 ```
 
-### Requirements
+### Edit the Character's descriptions (optional)
 
-- Playscript CSV with `player` and `actscene` fields
-- Optional: `characters.csv` for enhanced character details
+For those using your own repository, you can edit the descriptions of your characters and add images. If you edit the `characters.csv` file in your _data folder, as long as those character names match those in your playscript, new data will show. 
+
+You can see how this works in Measure for Measure: 
+
+[Measure For Measure Character Network with updated characters.csv file](https://digitaldramaturgy.github.io/character-network.html?play=https://docs.google.com/spreadsheets/d/e/2PACX-1vQna6SB4jJeyPY5MOH3BSHh53Ja3Njwfk_Zkxr7EGtU7xkn1juhUbEXduy6Ycbi6ayOg33a_NjjFqC_/pub?output=csv)
+
 
 ### Technical Details
 
@@ -258,42 +242,6 @@ Optional description text about the network visualization...
 
 ---
 
-## Character System {#characters}
-
-Digital Dramaturgy also includes an optional character search 
-
-### Creating characters.csv
-
-Create a file at `_data/characters.csv` with these fields:
-
-| Field | Required | Description | Example |
-|-------|----------|-------------|---------|
-| `character` | Yes | Character name (must match `player` in playscript) | `HAMLET` |
-| `full_name` | No | Full character name | `Prince Hamlet of Denmark` |
-| `description` | No | Character description | `Prince of Denmark, son of the late king` |
-| `role` | No | Character role/category | `protagonist`, `antagonist`, `minor` |
-| `actor` | No | Actor name (for production docs) | `John Smith` |
-| `image` | No | Character image (objectid or path) | `/images/hamlet.jpg` |
-
-### Example characters.csv
-
-```csv
-character,full_name,description,role,image
-HAMLET,Prince Hamlet,Prince of Denmark seeking revenge,protagonist,hamlet-portrait
-CLAUDIUS,King Claudius,Current king and Hamlet's uncle,antagonist,claudius-portrait
-OPHELIA,Ophelia,Daughter of Polonius,supporting,ophelia-portrait
-HORATIO,Horatio,Hamlet's loyal friend,supporting,
-```
-
-### Using Character Data
-
-Character data automatically powers:
-- Character network visualizations
-- Character card displays
-- Character filtering in playscript viewer
-- Character relationship tracking
-
----
 
 ## Essay Pages {#essays}
 
@@ -355,7 +303,7 @@ Your essay content here...
 
 You can specify images in two ways:
 
-**1. Object ID (from your collection):**
+**1. Object ID (from your CollectionBuilder collection):**
 ```yaml
 header-image: demo_001
 ```
@@ -371,22 +319,15 @@ Essay content uses standard Markdown with support for:
 - Headings, paragraphs, lists
 - Images, videos, embeds
 - Blockquotes and code blocks
-- CollectionBuilder feature includes (alerts, cards, buttons)
+- [CollectionBuilder feature includes](https://collectionbuilder.github.io/cb-docs/docs/pages/features/#feature-includes) (alerts, cards, buttons)
+  - For an overview of all of these, with code, see our [Includes Bonanza Page](https://collectionbuilder.github.io/collectionbuilder-gh/feature_options.html)
 
-### Accessibility Features
-
-All essay header styles include:
-- Proper heading hierarchy (h1, h2, h3)
-- Alt text for images
-- Sufficient color contrast for overlay text (full header)
-- Responsive image sizing
-- Semantic HTML structure
 
 ---
 
 ## Production Timeline {#timeline}
 
-Create beautiful production timelines to document rehearsals, performances, or historical context.
+Create interactive production timelines to document the historical performances of your play. 
 
 ### Timeline Data
 
@@ -449,8 +390,9 @@ Digital Dramaturgy is built on CollectionBuilder, which allows you to create a c
 
 **Collection = Playscript + Digital Objects**
 
-1. **Playscript:** Your play script data (defined by the `play:` setting in `_config.yml`)
+1. **Playscript:** Your play script data (defined by the `play:` setting in `_config.yml`), or by the link you've added to the digitaldramaturgy.github.io site. 
 2. **Collection Items:** Supplementary materials like photos, programs, documents, videos (defined by the `metadata:` setting in `_config.yml`)
+- note this only applies to those using their own repository
 
 ### Setting Up Your Collection
 
