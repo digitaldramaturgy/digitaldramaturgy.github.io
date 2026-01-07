@@ -3,7 +3,9 @@ layout: page
 custom-foot: dramaturgy/js/character-network-js.html
 ---
 
-{{ content }}
+{% include dramaturgy/js/character-csv-data.html %}
+{% include dramaturgy/feature/character-network.html %}
+{% include dramaturgy/feature/character-detail.html %}
 
 <div id="characterNetworkContainer" class="mt-4">
     <div class="row">
@@ -15,8 +17,7 @@ custom-foot: dramaturgy/js/character-network-js.html
                         data-bs-target="#networkHelpModal">
                         {% include feature/icon.html icon="question-circle" %}
                     </button>
-                    <p class="text-muted d-none">Interactive network showing character relationships based on shared scenes and
-                        dialogue.</p>
+                    {{ content }}
                 </div>
                 <div id="networkStats">
                     <p><strong>Characters:</strong> <span class="me-3" id="characterCount">0</span><strong>Connections:</strong> <span class="me-3" id="connectionCount">0</span><strong>Scenes:</strong> <span id="sceneCount">0</span></p>
