@@ -242,7 +242,8 @@ For those using your own repository, you can edit the descriptions of your chara
 
 You can see how this works in Measure for Measure:
 
-[Measure For Measure Character Network with updated characters.csv file](https://digitaldramaturgy.github.io/character-network.html?play=https://docs.google.com/spreadsheets/d/e/2PACX-1vQna6SB4jJeyPY5MOH3BSHh53Ja3Njwfk_Zkxr7EGtU7xkn1juhUbEXduy6Ycbi6ayOg33a_NjjFqC_/pub?output=csv)
+{% include feature/button.html text="See an Enhanced Character Network Page" link="https://digitaldramaturgy.github.io/character-network.html?play=https://docs.google.com/spreadsheets/d/e/2PACX-1vQna6SB4jJeyPY5MOH3BSHh53Ja3Njwfk_Zkxr7EGtU7xkn1juhUbEXduy6Ycbi6ayOg33a_NjjFqC_/pub?output=csv" color="info"%}
+
 
 
 ### Technical Details
