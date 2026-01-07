@@ -15,7 +15,7 @@ cover-style: minimal # choose from 'dramatists', 'cyberpunk', 'minimal', 'minima
 ##########
 
 ##########
-# HOME PAGE
+# HOME PAGE (this style is not typically used in Digital Dramaturgy )
 #
 # featured image is used in home page banner and in meta markup to represent the collection
 # use either an objectid (from an item in this collect), a relative location of an image in this repo, or a full url to an image elsewhere
